@@ -7,8 +7,8 @@ import (
 )
 
 type router struct {
-	roots    map[string]*node
-	handlers map[string]HandlerFunc
+	roots    map[string]*node       // Method root, GET POST ...
+	handlers map[string]HandlerFunc // Get handler by pattern
 }
 
 func newRouter() *router {
@@ -18,6 +18,7 @@ func newRouter() *router {
 	}
 }
 
+// 解析 pattern 若解析到 '*' 停止解析
 func parsePattern(pattern string) []string {
 	var parts []string
 	vs := strings.Split(pattern, "/")
@@ -32,6 +33,7 @@ func parsePattern(pattern string) []string {
 	return parts
 }
 
+// 添加路由方法 parttern 与 handler 对应
 func (r *router) addRoute(method string, pattern string, handler HandlerFunc) {
 	log.Printf("Route %4s - %s", method, pattern)
 
@@ -44,10 +46,11 @@ func (r *router) addRoute(method string, pattern string, handler HandlerFunc) {
 	r.handlers[key] = handler
 }
 
+// 获取路由
 func (r *router) getRoute(method string, path string) (*node, map[string]string) {
-	searchParts := parsePattern(path)
-	params := make(map[string]string)
-	root, ok := r.roots[method]
+	searchParts := parsePattern(path) // 解析各部分
+	params := make(map[string]string) // 解析参数
+	root, ok := r.roots[method]       // '根'
 	if !ok {
 		return nil, nil
 	}
@@ -58,10 +61,11 @@ func (r *router) getRoute(method string, path string) (*node, map[string]string)
 	}
 	parts := parsePattern(n.pattern)
 	for idx, part := range parts {
-		if part[0] == ':' {
+		if part[0] == ':' { // :param 直接对应该搜索
 			params[part[1:]] = searchParts[idx]
 		}
 		if part[0] == '*' && len(part) > 1 {
+			// * 后续停止查询
 			params[part[1:]] = strings.Join(searchParts[idx:], "/")
 			break
 		}
