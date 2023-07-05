@@ -9,10 +9,15 @@ import (
 type H map[string]interface{}
 
 type Context struct {
-	Writer     http.ResponseWriter
-	Req        *http.Request
-	Path       string
-	Method     string
+	// origin objects
+	Writer http.ResponseWriter
+	Req    *http.Request
+
+	// request info
+	Path   string
+	Method string
+	Params map[string]string
+	// response info
 	StatusCode int
 }
 
@@ -23,6 +28,11 @@ func newContext(w http.ResponseWriter, r *http.Request) *Context {
 		Path:   r.URL.Path,
 		Method: r.Method,
 	}
+}
+
+func (c *Context) Param(key string) string {
+	value, _ := c.Params[key]
+	return value
 }
 
 func (c *Context) PostForm(key string) string {
@@ -67,10 +77,3 @@ func (c *Context) HTML(code int, html string) {
 	c.Status(code)
 	c.Writer.Write([]byte(html))
 }
-
-/*
-curl -i http://localhost:9999/
-curl "http://localhost:9999/hello?name=geektutu"
-curl "http://localhost:9999/login" -X POST -d 'username=geektutu&password=1234'
-curl "http://localhost:9999/xxx"
-*/
