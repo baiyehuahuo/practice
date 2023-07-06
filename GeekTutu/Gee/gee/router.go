@@ -1,7 +1,6 @@
 package gee
 
 import (
-	"log"
 	"net/http"
 	"strings"
 )
@@ -35,8 +34,6 @@ func parsePattern(pattern string) []string {
 
 // 添加路由方法 parttern 与 handler 对应
 func (r *router) addRoute(method string, pattern string, handler HandlerFunc) {
-	log.Printf("Route %4s - %s", method, pattern)
-
 	parts := parsePattern(pattern)
 	key := method + "-" + pattern
 	if _, ok := r.roots[method]; !ok {
