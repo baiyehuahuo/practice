@@ -33,6 +33,7 @@ func main() {
 	// Engine 里有个未命名的 RouterGroup 可以直接使用
 	// 它的前缀为 "" ，即所有路由都会使用
 	r.Use(gee.Logger())
+	r.Use(gee.Recovery())
 	r.GET("/", func(ctx *gee.Context) {
 		ctx.HTML(http.StatusOK, "css.tmpl", nil)
 	})
@@ -48,6 +49,10 @@ func main() {
 			"now":   time.Now(),
 		})
 	})
+	r.GET("/panic", func(ctx *gee.Context) {
+		names := []string{"geektutu"}
+		ctx.String(http.StatusOK, names[100])
+	})
 
 	log.Fatal(r.Run(":9999"))
 }
@@ -57,4 +62,5 @@ http://localhost:9999/
 http://localhost:9999/date
 http://localhost:9999/students
 http://localhost:9999/assets/file1.txt
+curl http://localhost:9999/panic
 */
