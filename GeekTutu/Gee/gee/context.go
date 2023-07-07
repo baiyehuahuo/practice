@@ -63,7 +63,7 @@ func (c *Context) Next() {
 	c.index++
 	s := len(c.handlers)
 	for ; c.index < s; c.index++ {
-		c.handlers[c.index](c)
+		c.handlers[c.index](c) // 较好的兼容方式，因为不是每个中间件都会调用 .Next
 	}
 }
 

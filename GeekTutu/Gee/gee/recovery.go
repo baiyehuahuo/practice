@@ -32,6 +32,6 @@ func Recovery() HandlerFunc {
 				ctx.Fail(http.StatusInternalServerError, "Internal Server Error")
 			}
 		}()
-		ctx.Next()
+		ctx.Next() // 先去执行下一个中间件 倒叙回来执行本 defer 函数 （不能少，否则 defer 会直接运行结束）
 	}
 }

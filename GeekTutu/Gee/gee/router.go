@@ -71,7 +71,7 @@ func (r *router) getRoute(method string, path string) (*node, map[string]string)
 }
 
 func (r *router) handle(c *Context) {
-	defer c.Next()
+	defer c.Next() // 中间件在这里被执行
 	n, params := r.getRoute(c.Method, c.Path)
 	if n == nil {
 		c.handlers = append(c.handlers, func(ctx *Context) {
