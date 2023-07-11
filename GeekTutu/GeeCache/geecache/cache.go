@@ -1,5 +1,5 @@
 // 并发控制
-package GeeCache
+package geecache
 
 import (
 	"geecache/lru"

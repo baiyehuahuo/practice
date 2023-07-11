@@ -1,5 +1,5 @@
 // 负责与外部交互，控制缓存存储和获取主流程
-package GeeCache
+package geecache
 
 import (
 	"fmt"
@@ -60,10 +60,10 @@ func (g *Group) Get(key string) (ByteView, error) {
 	if key == "" {
 		return ByteView{}, fmt.Errorf("key is required")
 	}
-	if v, ok := g.mainCache.get(key); ok {
+	if v, ok := g.mainCache.get(key); ok { // 先查缓存 缓存查得到就返回
 		return v, nil
 	}
-	return g.load(key)
+	return g.load(key) // 缓存查不到就查数据库
 }
 
 func (g *Group) load(key string) (ByteView, error) {
@@ -71,12 +71,12 @@ func (g *Group) load(key string) (ByteView, error) {
 }
 
 func (g *Group) getLocally(key string) (ByteView, error) {
-	bytes, err := g.getter.Get(key)
-	if err != nil {
+	bytes, err := g.getter.Get(key) // 查数据库
+	if err != nil {                 // 数据库查不到就返回错误信息
 		return ByteView{}, err
 	}
 	value := ByteView{b: cloneBytes(bytes)}
-	g.populateCache(key, value)
+	g.populateCache(key, value) // 数据库查得到就保存到缓存里
 	return value, nil
 }
 

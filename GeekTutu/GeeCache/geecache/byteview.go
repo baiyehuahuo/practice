@@ -1,5 +1,5 @@
 // 缓存值的抽象与封装
-package GeeCache
+package geecache
 
 // A ByteView holds an immutable view of bytes
 type ByteView struct {
