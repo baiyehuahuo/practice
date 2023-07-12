@@ -3,6 +3,7 @@ package geecache
 
 import (
 	"geecache/lru"
+	"log"
 	"sync"
 )
 
@@ -29,6 +30,7 @@ func (c *cache) get(key string) (value ByteView, ok bool) {
 	}
 
 	if v, ok := c.lru.Get(key); ok {
+		log.Printf("[GeeCache] search key %s", key)
 		return v.(ByteView), true
 	}
 	return

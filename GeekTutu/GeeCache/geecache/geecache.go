@@ -3,6 +3,7 @@ package geecache
 
 import (
 	"fmt"
+	"log"
 	"sync"
 )
 
@@ -24,6 +25,7 @@ type Group struct {
 	name      string
 	getter    Getter
 	mainCache cache
+	peers     PeerPicker
 }
 
 var (
@@ -66,8 +68,34 @@ func (g *Group) Get(key string) (ByteView, error) {
 	return g.load(key) // 缓存查不到就查数据库
 }
 
+// RegisterPeers registers a PeerPicker for choosing remote peer
+func (g *Group) RegisterPeers(peers PeerPicker) {
+	if g.peers != nil {
+		panic("RegisterPeerPicker called more than once")
+	}
+	g.peers = peers
+}
+
 func (g *Group) load(key string) (ByteView, error) {
+	if g.peers != nil {
+		if peer, ok := g.peers.PickPeer(key); ok {
+			value, err := g.getFromPeer(peer, key)
+			if err == nil {
+				return value, nil
+			}
+			log.Println("[GeePeer] Failed to get from peer", err)
+		}
+		log.Printf("[GeePeer] search peer for key %s Failed", key)
+	}
 	return g.getLocally(key)
+}
+
+func (g *Group) getFromPeer(peer PeerGetter, key string) (ByteView, error) {
+	bytes, err := peer.Get(g.name, key) // 查询远端节点 （如果是本地 相当于无限循环）
+	if err != nil {
+		return ByteView{}, err
+	}
+	return ByteView{b: bytes}, nil
 }
 
 func (g *Group) getLocally(key string) (ByteView, error) {
