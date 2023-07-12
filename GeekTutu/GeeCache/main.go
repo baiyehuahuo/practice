@@ -75,10 +75,15 @@ func main() {
 }
 
 /*
+
+缓存雪崩：缓存在同一时刻全部失效，造成瞬时 DB 请求量大，造成雪崩。通常因为缓存服务器宕机、缓存的 key 设置了相同的过期时间等引起
+缓存击穿：一个存在的 key，在缓存过期的瞬间，有大量请求，击穿缓存到 DB，造成 DB 瞬时请求量大
+缓存穿透：查询一个不存在的数据，因为不存在，不会写在缓存中，不断请求 DB，如果瞬间流量过大，穿透到 DB，造成宕机
+
 这三个要并行运行，开三个窗口：
 go run . -port=8001
 go run . -port=8002
-go run . -port=8003 api
+go run . -port=8003 -api
 
-curl http://localhost:9999/api?key=Tom
+curl "http://localhost:9999/api?key=Tom"
 */
