@@ -1,0 +1,9 @@
+syntax = "proto3"; // 默认版本是 proto2 该语法表明版本
+option go_package="./;main"; // 路径/包名
+package main; // 防止命名冲突
+
+message Student { // 关键字定义
+  string name = 1; // = 后面的数字是标识符，每个字段都需要唯一的标识符。标识各个字段
+  bool male = 2;
+  repeated int32 scores = 3; // repeated 表示可重复，在 go 中是数组类型
+}

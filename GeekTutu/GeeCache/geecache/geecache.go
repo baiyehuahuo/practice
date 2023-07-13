@@ -3,6 +3,7 @@ package geecache
 
 import (
 	"fmt"
+	"geecache/geecachepb"
 	"geecache/singleflight"
 	"log"
 	"sync"
@@ -99,11 +100,15 @@ func (g *Group) load(key string) (ByteView, error) {
 }
 
 func (g *Group) getFromPeer(peer PeerGetter, key string) (ByteView, error) {
-	bytes, err := peer.Get(g.name, key) // 查询远端节点 （如果是本地 相当于无限循环）
-	if err != nil {
+	req := &geecachepb.Request{
+		Group: g.name,
+		Key:   key,
+	}
+	res := &geecachepb.Response{} // 编解码都变成 pb 文件创建的格式
+	if err := peer.Get(req, res); err != nil {
 		return ByteView{}, err
 	}
-	return ByteView{b: bytes}, nil
+	return ByteView{b: res.Value}, nil
 }
 
 func (g *Group) getLocally(key string) (ByteView, error) {

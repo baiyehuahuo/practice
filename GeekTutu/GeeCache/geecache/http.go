@@ -5,6 +5,8 @@ import (
 	"bytes"
 	"fmt"
 	"geecache/consistenthash"
+	"geecache/geecachepb"
+	"github.com/golang/protobuf/proto"
 	"io"
 	"log"
 	"net/http"
@@ -60,8 +62,14 @@ func (p *HTTPPool) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+	// 输入输出变成 pb 文件格式的要求
+	body, err := proto.Marshal(&geecachepb.Response{Value: view.ByteSlice()})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	w.Header().Set("Content-Type", "application/octet-stream")
-	w.Write(view.ByteSlice())
+	w.Write(body)
 }
 
 // Set updates the pool's list of peers
@@ -91,23 +99,27 @@ type httpGetter struct {
 	baseURL string
 }
 
-func (h *httpGetter) Get(group string, key string) ([]byte, error) {
-	u := fmt.Sprintf("%v%v/%v", h.baseURL, url.QueryEscape(group), url.QueryEscape(key)) // 查询该节点
+func (h *httpGetter) Get(in *geecachepb.Request, out *geecachepb.Response) error { // 符合接口
+	u := fmt.Sprintf("%v%v/%v", h.baseURL, url.QueryEscape(in.GetGroup()), url.QueryEscape(in.GetKey())) // 查询该节点
 	res, err := http.Get(u)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("server returned: %v", res.Status)
+		return fmt.Errorf("server returned: %v", res.Status)
 	}
 
 	var buffer bytes.Buffer
 	if _, err = io.Copy(&buffer, res.Body); err != nil {
-		return nil, err
+		return err
 	}
-	return buffer.Bytes(), nil
+	// 编解码都变成 pb 文件创建的格式
+	if err = proto.Unmarshal(buffer.Bytes(), out); err != nil {
+		return fmt.Errorf("decoding response body: %v", err)
+	}
+	return nil
 }
 
 // check httpGetter implemented PeerGetter
