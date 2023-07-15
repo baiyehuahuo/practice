@@ -1,67 +1,48 @@
 package session
 
 import (
-	"database/sql"
+	"fmt"
 	"geeorm/log"
+	"geeorm/schema"
+	"reflect"
 	"strings"
 )
 
-type Session struct {
-	db      *sql.DB
-	sql     strings.Builder
-	sqlVars []interface{}
-}
-
-// New create a instance for Session
-func New(db *sql.DB) *Session {
-	return &Session{
-		db:      db,
-		sql:     strings.Builder{},
-		sqlVars: nil,
+func (s *Session) Model(value interface{}) *Session {
+	if s.refTable == nil || reflect.TypeOf(value) != reflect.TypeOf(s.refTable.Model) {
+		s.refTable = schema.Parse(value, s.dialect)
 	}
-}
-
-func (s *Session) Clear() {
-	s.sql.Reset()
-	s.sqlVars = s.sqlVars[:0]
-}
-
-func (s *Session) DB() *sql.DB {
-	return s.db
-}
-
-func (s *Session) Raw(sql string, values ...interface{}) *Session { // ??? 为什么要返回 Session 他不是调用者吗
-	s.sql.WriteString(sql)
-	s.sql.WriteByte(' ')
-	s.sqlVars = append(s.sqlVars, values...)
 	return s
 }
 
-// 封装是为了打印日志和清空变量，以便执行多次 SQL
-
-// Exec raw sql with sqlVals
-func (s *Session) Exec() (result sql.Result, err error) {
-	defer s.Clear()
-	log.Info(s.sql.String(), s.sqlVars)
-	if result, err = s.DB().Exec(s.sql.String(), s.sqlVars...); err != nil {
-		log.Error(err)
+func (s *Session) RefTable() *schema.Schema {
+	if s.refTable == nil {
+		log.Error("Model is not set")
 	}
-	return
+	return s.refTable
 }
 
-// QueryRow gets a record from db
-func (s *Session) QueryRow() *sql.Row {
-	defer s.Clear()
-	log.Info(s.sql.String(), s.sqlVars)
-	return s.DB().QueryRow(s.sql.String(), s.sqlVars...)
+func (s *Session) CreateTable() error {
+	table := s.RefTable()
+	var columns []string
+	for _, field := range table.Fields {
+		columns = append(columns, fmt.Sprintf("%s %s %s", field.Name, field.Type, field.Tag))
+	}
+	desc := strings.Join(columns, ",")
+	_, err := s.Raw(fmt.Sprintf("CREATE TABLE %s (%s)", table.Name, desc)).Exec()
+	return err
 }
 
-// QueryRows gets a list of records from db
-func (s *Session) QueryRows() (rows *sql.Rows, err error) {
-	defer s.Clear()
-	log.Info(s.sql.String(), s.sqlVars)
-	if rows, err = s.DB().Query(s.sql.String(), s.sqlVars...); err != nil {
-		log.Error(err)
-	}
-	return
+func (s *Session) DropTable() error {
+	_, err := s.Raw(fmt.Sprintf("DROP TABLE %s", s.RefTable().Name)).Exec()
+	return err
+}
+
+func (s *Session) HasTable() bool {
+	existSQL, vals := s.dialect.TableExistSQL(s.RefTable().Name)
+	row := s.Raw(existSQL, vals...).QueryRow()
+	var str string
+	row.Scan(&str)
+	fmt.Println(str)
+	return str == s.RefTable().Name
 }
