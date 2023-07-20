@@ -39,7 +39,7 @@ func (s *Session) DB() *sql.DB {
 	return s.db
 }
 
-func (s *Session) Raw(sql string, values ...interface{}) *Session { // ??? 为什么要返回 Session 他不是调用者吗
+func (s *Session) Raw(sql string, values ...interface{}) *Session { // 链式调用 返回后可以直接被 exec
 	s.sql.WriteString(sql)
 	s.sql.WriteByte(' ')
 	s.sqlVars = append(s.sqlVars, values...)
@@ -48,7 +48,7 @@ func (s *Session) Raw(sql string, values ...interface{}) *Session { // ??? 为�
 
 // 封装是为了打印日志和清空变量，以便执行多次 SQL
 
-// Exec raw sql with sqlVals
+// Exec raw sql with sqlVars
 func (s *Session) Exec() (result sql.Result, err error) {
 	defer s.Clear()
 	log.Info(s.sql.String(), s.sqlVars)
