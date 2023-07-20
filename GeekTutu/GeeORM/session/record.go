@@ -11,6 +11,7 @@ func (s *Session) Insert(values ...interface{}) (int64, error) {
 	table := s.Model(values[0]).RefTable()                    // 获取模型
 	s.clause.Set(clause.INSERT, table.Name, table.FieldNames) // 插入语句
 	for _, value := range values {
+		s.CallMethod(BeforeInsert, value)
 		recordValues = append(recordValues, table.RecordValues(value)) // 插入的真实值
 	}
 	s.clause.Set(clause.VALUES, recordValues...)
@@ -19,10 +20,12 @@ func (s *Session) Insert(values ...interface{}) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
+	s.CallMethod(AfterInsert, nil)
 	return result.RowsAffected()
 }
 
 func (s *Session) Find(values interface{}) error {
+	s.CallMethod(BeforeQuery, nil)
 	destSlice := reflect.Indirect(reflect.ValueOf(values))
 	destType := destSlice.Type().Elem()
 	table := s.Model(reflect.New(destType).Elem().Interface()).RefTable()
@@ -43,6 +46,7 @@ func (s *Session) Find(values interface{}) error {
 		if err = rows.Scan(values...); err != nil {
 			return err
 		}
+		s.CallMethod(AfterQuery, dest.Addr().Interface())
 		destSlice.Set(reflect.Append(destSlice, dest)) // 通过反射返回值到输入的 values 中
 	}
 	return rows.Close()
@@ -62,6 +66,7 @@ func (s *Session) First(value interface{}) error {
 }
 
 func (s *Session) Update(kv ...interface{}) (int64, error) {
+	s.CallMethod(BeforeUpdate, nil)
 	m, ok := kv[0].(map[string]interface{}) // 入参为 map
 	if !ok {                                // 入参为序列
 		m = make(map[string]interface{})
@@ -75,16 +80,19 @@ func (s *Session) Update(kv ...interface{}) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
+	s.CallMethod(AfterUpdate, nil)
 	return result.RowsAffected()
 }
 
 func (s *Session) Delete() (int64, error) {
+	s.CallMethod(BeforeDelete, nil)
 	s.clause.Set(clause.DELETE, s.RefTable().Name)
 	sql, vars := s.clause.Build(clause.DELETE, clause.WHERE)
 	result, err := s.Raw(sql, vars...).Exec()
 	if err != nil {
 		return 0, err
 	}
+	s.CallMethod(AfterDelete, nil)
 	return result.RowsAffected()
 }
 
