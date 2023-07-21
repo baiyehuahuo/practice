@@ -43,6 +43,5 @@ func (s *Session) HasTable() bool {
 	row := s.Raw(existSQL, vals...).QueryRow()
 	var str string
 	row.Scan(&str)
-	fmt.Println(str)
 	return str == s.RefTable().Name
 }
