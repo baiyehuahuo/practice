@@ -2,6 +2,8 @@ package router
 
 import (
 	"douyin/service/basis"
+	"douyin/service/interaction"
+	"douyin/service/relation"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	_ "net/http/pprof"
@@ -15,29 +17,59 @@ func SetupRouter() *gin.Engine {
 	{
 		// baseproto interfaces
 		douyinGroup.GET("/feed", func(c *gin.Context) {
-			c.JSON(http.StatusOK, basis.GetFeed(c))
+			c.JSON(http.StatusOK, basis.ServeFeed(c))
 		})
-		douyinGroup.POST("/user/register", nil)
-		douyinGroup.POST("/user/login", nil)
-		douyinGroup.GET("/user", nil)
-		douyinGroup.POST("/publish/action", nil)
-		douyinGroup.GET("/publish/list", nil)
+		douyinGroup.POST("/user/register", func(c *gin.Context) {
+			c.JSON(http.StatusOK, basis.ServeUserRegister(c))
+		})
+		douyinGroup.POST("/user/login", func(c *gin.Context) {
+			c.JSON(http.StatusOK, basis.ServeUserLogin(c))
+		})
+		douyinGroup.GET("/user", func(c *gin.Context) {
+			c.JSON(http.StatusOK, basis.ServeUserInfo(c))
+		})
+		douyinGroup.POST("/publish/action", func(c *gin.Context) {
+			c.JSON(http.StatusOK, basis.ServePublishAction(c))
+		})
+		douyinGroup.GET("/publish/list", func(c *gin.Context) {
+			c.JSON(http.StatusOK, basis.ServePublishList(c))
+		})
 	}
 	{
 		// interactionproto interfaces
-		douyinGroup.POST("/favorite/action", nil)
-		douyinGroup.GET("/favorite/list", nil)
-		douyinGroup.POST("/comment/action", nil)
-		douyinGroup.GET("/comment/list", nil)
+		douyinGroup.POST("/favorite/action", func(c *gin.Context) {
+			c.JSON(http.StatusOK, interaction.ServeFavoriteAction(c))
+		})
+		douyinGroup.GET("/favorite/list", func(c *gin.Context) {
+			c.JSON(http.StatusOK, interaction.ServeFavoriteList(c))
+		})
+		douyinGroup.POST("/comment/action", func(c *gin.Context) {
+			c.JSON(http.StatusOK, interaction.ServeCommentAction(c))
+		})
+		douyinGroup.GET("/comment/list", func(c *gin.Context) {
+			c.JSON(http.StatusOK, interaction.ServeCommentList(c))
+		})
 	}
 	{
 		// relationproto interfaces
-		douyinGroup.POST("/relationproto/action", nil)
-		douyinGroup.GET("/relationproto/follow/list", nil)
-		douyinGroup.GET("/relationproto/follower/list", nil)
-		douyinGroup.GET("/relationproto/friend/list", nil)
-		douyinGroup.GET("/message/chat", nil)
-		douyinGroup.POST("/message/action", nil)
+		douyinGroup.POST("/relation/action", func(c *gin.Context) {
+			c.JSON(http.StatusOK, relation.ServeRelationAction(c))
+		})
+		douyinGroup.GET("/relation/follow/list", func(c *gin.Context) {
+			c.JSON(http.StatusOK, relation.ServeRelationFollowList(c))
+		})
+		douyinGroup.GET("/relation/follower/list", func(c *gin.Context) {
+			c.JSON(http.StatusOK, relation.ServeRelationFollowerList(c))
+		})
+		douyinGroup.GET("/relation/friend/list", func(c *gin.Context) {
+			c.JSON(http.StatusOK, relation.ServeRelationFriendList(c))
+		})
+		douyinGroup.GET("/message/chat", func(c *gin.Context) {
+			c.JSON(http.StatusOK, relation.ServeMessageChat(c))
+		})
+		douyinGroup.POST("/message/action", func(c *gin.Context) {
+			c.JSON(http.StatusOK, relation.ServeMessageAction(c))
+		})
 	}
 	return r
 }

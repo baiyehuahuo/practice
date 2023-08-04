@@ -1,4 +1,4 @@
-package interaction
+package basis
 
 import (
 	"douyin/configs"
@@ -6,9 +6,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func ServeFavoriteAction(c *gin.Context) *pb.DouyinFavoriteActionResponse {
-	return &pb.DouyinFavoriteActionResponse{
+func ServeUserInfo(c *gin.Context) *pb.DouyinUserResponse {
+	return &pb.DouyinUserResponse{
 		StatusCode: &configs.DefaultInt32,
 		StatusMsg:  &configs.DefaultString,
+		User:       configs.DefaultUser,
 	}
 }
