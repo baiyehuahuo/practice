@@ -1,6 +1,7 @@
 package router
 
 import (
+	"douyin/configs"
 	"douyin/service/basis"
 	"douyin/service/interaction"
 	"douyin/service/relation"
@@ -17,13 +18,43 @@ func SetupRouter() *gin.Engine {
 	{
 		// baseproto interfaces
 		douyinGroup.GET("/feed", func(c *gin.Context) {
-			c.JSON(http.StatusOK, basis.ServeFeed(c))
+			res, err := basis.ServeFeed(c)
+			if err != nil {
+				switch err {
+				case configs.LatestTimeParamError:
+					c.String(http.StatusBadRequest, err.Error())
+				default:
+					c.String(http.StatusInternalServerError, err.Error())
+				}
+				return
+			}
+			c.JSON(http.StatusOK, res)
 		})
 		douyinGroup.POST("/user/register", func(c *gin.Context) {
-			c.JSON(http.StatusOK, basis.ServeUserRegister(c))
+			res, err := basis.ServeUserRegister(c)
+			if err != nil {
+				switch err {
+				case configs.ParamEmptyError:
+					c.String(http.StatusBadRequest, err.Error())
+				default:
+					c.String(http.StatusInternalServerError, err.Error())
+				}
+				return
+			}
+			c.JSON(http.StatusOK, res)
 		})
 		douyinGroup.POST("/user/login", func(c *gin.Context) {
-			c.JSON(http.StatusOK, basis.ServeUserLogin(c))
+			res, err := basis.ServeUserLogin(c)
+			if err != nil {
+				switch err {
+				case configs.ParamEmptyError:
+					c.String(http.StatusBadRequest, err.Error())
+				default:
+					c.String(http.StatusInternalServerError, err.Error())
+				}
+				return
+			}
+			c.JSON(http.StatusOK, res)
 		})
 		douyinGroup.GET("/user", func(c *gin.Context) {
 			c.JSON(http.StatusOK, basis.ServeUserInfo(c))
