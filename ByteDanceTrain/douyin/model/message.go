@@ -1,0 +1,9 @@
+package model
+
+type Message struct {
+	Id         int64  `json:"id,omitempty"`           // 消息id
+	ToUserId   int64  `json:"to_user_id,omitempty"`   // 该消息接收者的id
+	FromUserId int64  `json:"from_user_id,omitempty"` // 该消息发送者的id
+	Content    string `json:"content,omitempty"`      // 消息内容
+	CreateTime string `json:"create_time,omitempty"`  // 消息创建时间
+}
