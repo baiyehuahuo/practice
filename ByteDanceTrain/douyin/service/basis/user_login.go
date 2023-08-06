@@ -7,10 +7,14 @@ import (
 	"log"
 )
 
+// ServeUserLogin handle user login request
+// 通过用户名和密码进行登录，登录成功后返回用户 id 和权限 token
+// Method is POST
+// username, password is required
 func ServeUserLogin(c *gin.Context) (res *pb.DouyinUserLoginResponse, err error) {
 	username, password := c.PostForm("username"), c.PostForm("password")
-	log.Printf("username: %v, password: %v", username, password)
 	if username == "" || password == "" {
+		log.Printf("username: %v, password: %v", username, password)
 		return nil, configs.ParamEmptyError
 	}
 	return &pb.DouyinUserLoginResponse{

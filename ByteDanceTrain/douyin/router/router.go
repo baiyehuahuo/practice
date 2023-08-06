@@ -16,16 +16,11 @@ func SetupRouter() *gin.Engine {
 	r.Static("/static", "./assets")
 	douyinGroup := r.Group("/douyin")
 	{
-		// baseproto interfaces
+		// base interfaces
 		douyinGroup.GET("/feed", func(c *gin.Context) {
 			res, err := basis.ServeFeed(c)
 			if err != nil {
-				switch err {
-				case configs.LatestTimeParamError:
-					c.String(http.StatusBadRequest, err.Error())
-				default:
-					c.String(http.StatusInternalServerError, err.Error())
-				}
+				handleError(c, err)
 				return
 			}
 			c.JSON(http.StatusOK, res)
@@ -33,12 +28,7 @@ func SetupRouter() *gin.Engine {
 		douyinGroup.POST("/user/register", func(c *gin.Context) {
 			res, err := basis.ServeUserRegister(c)
 			if err != nil {
-				switch err {
-				case configs.ParamEmptyError:
-					c.String(http.StatusBadRequest, err.Error())
-				default:
-					c.String(http.StatusInternalServerError, err.Error())
-				}
+				handleError(c, err)
 				return
 			}
 			c.JSON(http.StatusOK, res)
@@ -46,61 +36,130 @@ func SetupRouter() *gin.Engine {
 		douyinGroup.POST("/user/login", func(c *gin.Context) {
 			res, err := basis.ServeUserLogin(c)
 			if err != nil {
-				switch err {
-				case configs.ParamEmptyError:
-					c.String(http.StatusBadRequest, err.Error())
-				default:
-					c.String(http.StatusInternalServerError, err.Error())
-				}
+				handleError(c, err)
 				return
 			}
 			c.JSON(http.StatusOK, res)
 		})
 		douyinGroup.GET("/user", func(c *gin.Context) {
-			c.JSON(http.StatusOK, basis.ServeUserInfo(c))
+			res, err := basis.ServeUserInfo(c)
+			if err != nil {
+				handleError(c, err)
+				return
+			}
+			c.JSON(http.StatusOK, res)
 		})
 		douyinGroup.POST("/publish/action", func(c *gin.Context) {
-			c.JSON(http.StatusOK, basis.ServePublishAction(c))
+			res, err := basis.ServePublishAction(c)
+			if err != nil {
+				handleError(c, err)
+				return
+			}
+			c.JSON(http.StatusOK, res)
 		})
 		douyinGroup.GET("/publish/list", func(c *gin.Context) {
-			c.JSON(http.StatusOK, basis.ServePublishList(c))
+			res, err := basis.ServePublishList(c)
+			if err != nil {
+				handleError(c, err)
+				return
+			}
+			c.JSON(http.StatusOK, res)
 		})
 	}
 	{
 		// interactionproto interfaces
 		douyinGroup.POST("/favorite/action", func(c *gin.Context) {
-			c.JSON(http.StatusOK, interaction.ServeFavoriteAction(c))
+			res, err := interaction.ServeFavoriteAction(c)
+			if err != nil {
+				handleError(c, err)
+				return
+			}
+			c.JSON(http.StatusOK, res)
 		})
 		douyinGroup.GET("/favorite/list", func(c *gin.Context) {
-			c.JSON(http.StatusOK, interaction.ServeFavoriteList(c))
+			res, err := interaction.ServeFavoriteList(c)
+			if err != nil {
+				handleError(c, err)
+				return
+			}
+			c.JSON(http.StatusOK, res)
 		})
 		douyinGroup.POST("/comment/action", func(c *gin.Context) {
-			c.JSON(http.StatusOK, interaction.ServeCommentAction(c))
+			res, err := interaction.ServeCommentAction(c)
+			if err != nil {
+				handleError(c, err)
+				return
+			}
+			c.JSON(http.StatusOK, res)
 		})
 		douyinGroup.GET("/comment/list", func(c *gin.Context) {
-			c.JSON(http.StatusOK, interaction.ServeCommentList(c))
+			res, err := interaction.ServeCommentList(c)
+			if err != nil {
+				handleError(c, err)
+				return
+			}
+			c.JSON(http.StatusOK, res)
 		})
 	}
 	{
 		// relationproto interfaces
 		douyinGroup.POST("/relation/action", func(c *gin.Context) {
-			c.JSON(http.StatusOK, relation.ServeRelationAction(c))
+			res, err := relation.ServeRelationAction(c)
+			if err != nil {
+				handleError(c, err)
+				return
+			}
+			c.JSON(http.StatusOK, res)
 		})
 		douyinGroup.GET("/relation/follow/list", func(c *gin.Context) {
-			c.JSON(http.StatusOK, relation.ServeRelationFollowList(c))
+			res, err := relation.ServeRelationFollowList(c)
+			if err != nil {
+				handleError(c, err)
+				return
+			}
+			c.JSON(http.StatusOK, res)
 		})
 		douyinGroup.GET("/relation/follower/list", func(c *gin.Context) {
-			c.JSON(http.StatusOK, relation.ServeRelationFollowerList(c))
+			res, err := relation.ServeRelationFollowerList(c)
+			if err != nil {
+				handleError(c, err)
+				return
+			}
+			c.JSON(http.StatusOK, res)
 		})
 		douyinGroup.GET("/relation/friend/list", func(c *gin.Context) {
-			c.JSON(http.StatusOK, relation.ServeRelationFriendList(c))
+			res, err := relation.ServeRelationFriendList(c)
+			if err != nil {
+				handleError(c, err)
+				return
+			}
+			c.JSON(http.StatusOK, res)
 		})
 		douyinGroup.GET("/message/chat", func(c *gin.Context) {
-			c.JSON(http.StatusOK, relation.ServeMessageChat(c))
+			res, err := relation.ServeMessageChat(c)
+			if err != nil {
+				handleError(c, err)
+				return
+			}
+			c.JSON(http.StatusOK, res)
 		})
 		douyinGroup.POST("/message/action", func(c *gin.Context) {
-			c.JSON(http.StatusOK, relation.ServeMessageAction(c))
+			res, err := relation.ServeMessageAction(c)
+			if err != nil {
+				handleError(c, err)
+				return
+			}
+			c.JSON(http.StatusOK, res)
 		})
 	}
 	return r
+}
+
+func handleError(c *gin.Context, err error) {
+	switch err {
+	case configs.ParamEmptyError, configs.ParamInputTypeError, configs.ParamUnknownActionTypeError, configs.ParamInputLengthExceededError:
+		c.String(http.StatusBadRequest, err.Error())
+	default:
+		c.String(http.StatusInternalServerError, err.Error())
+	}
 }

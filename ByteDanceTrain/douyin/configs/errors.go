@@ -3,6 +3,8 @@ package configs
 import "errors"
 
 var (
-	LatestTimeParamError = errors.New("latest time is wrong")
-	ParamEmptyError      = errors.New("required param is empty")
+	ParamInputTypeError           = errors.New("input param type is wrong")
+	ParamInputLengthExceededError = errors.New("input param length exceeded")
+	ParamEmptyError               = errors.New("required param is empty")
+	ParamUnknownActionTypeError   = errors.New("unknown action type")
 )
