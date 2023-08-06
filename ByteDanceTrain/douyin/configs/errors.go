@@ -8,3 +8,7 @@ var (
 	ParamEmptyError               = errors.New("required param is empty")
 	ParamUnknownActionTypeError   = errors.New("unknown action type")
 )
+
+var (
+	DBCreateUserError = errors.New("create user fail")
+)

@@ -2,7 +2,9 @@ package basis
 
 import (
 	"douyin/configs"
+	"douyin/model"
 	"douyin/pb"
+	"douyin/repository"
 	"github.com/gin-gonic/gin"
 	"log"
 )
@@ -21,7 +23,13 @@ func ServeUserRegister(c *gin.Context) (res *pb.DouyinUserRegisterResponse, err 
 		log.Printf("username: %v, password: %v", username, password)
 		return nil, configs.ParamInputLengthExceededError
 	}
-
+	user := &model.User{
+		Name:     username,
+		Password: password,
+	}
+	if err = repository.CreateUser(user); err != nil {
+		return nil, configs.DBCreateUserError
+	}
 	return &pb.DouyinUserRegisterResponse{
 		StatusCode: &configs.DefaultInt32,
 		StatusMsg:  &configs.DefaultString,

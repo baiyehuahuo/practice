@@ -2,7 +2,9 @@ package basis
 
 import (
 	"douyin/configs"
+	"douyin/model"
 	"douyin/pb"
+	"douyin/repository"
 	"github.com/gin-gonic/gin"
 	"log"
 )
@@ -17,6 +19,21 @@ func ServeUserLogin(c *gin.Context) (res *pb.DouyinUserLoginResponse, err error)
 		log.Printf("username: %v, password: %v", username, password)
 		return nil, configs.ParamEmptyError
 	}
+	user := &model.User{
+		Name: username,
+	}
+	repository.FindUser(user)
+	if user.Password != password {
+		errCode := int32(1)
+		errMessage := "username or password is wrong"
+		return &pb.DouyinUserLoginResponse{
+			StatusCode: &errCode,
+			StatusMsg:  &errMessage,
+			UserId:     &configs.DefaultInt64,
+			Token:      &configs.DefaultString,
+		}, nil
+	}
+
 	return &pb.DouyinUserLoginResponse{
 		StatusCode: &configs.DefaultInt32,
 		StatusMsg:  &configs.DefaultString,
