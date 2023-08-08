@@ -1,7 +1,7 @@
 package interaction
 
 import (
-	"douyin/configs"
+	"douyin/constants"
 	"douyin/pb"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -24,9 +24,9 @@ func ServeCommentAction(c *gin.Context) (res *pb.DouyinCommentActionResponse, er
 	}
 
 	return &pb.DouyinCommentActionResponse{
-		StatusCode: &configs.DefaultInt32,
-		StatusMsg:  &configs.DefaultString,
-		Comment:    configs.DefaultComment,
+		StatusCode: &constants.DefaultInt32,
+		StatusMsg:  &constants.DefaultString,
+		Comment:    constants.DefaultComment,
 	}, nil
 }
 
@@ -35,19 +35,19 @@ func checkCommentActionParams(c *gin.Context, pToken *string, pVideoID *int64, p
 	commentText, commentID := c.PostForm("comment_text"), c.PostForm("comment_id")
 	if token == "" || videoID == "" || actionType == "" {
 		log.Printf("token: %v, videoID: %v, actionType: %v", token, videoID, actionType)
-		return configs.ParamEmptyError
+		return constants.ParamEmptyError
 	}
 	action, _ := strconv.Atoi(actionType)
 	if action != 1 && action != 2 {
-		return configs.ParamUnknownActionTypeError
+		return constants.ParamUnknownActionTypeError
 	}
 	if action == 1 && commentText == "" || action == 2 && commentID == "" {
-		return configs.ParamEmptyError
+		return constants.ParamEmptyError
 	}
 	vid, err1 := strconv.Atoi(videoID)
 	cid, err2 := strconv.Atoi(commentID)
 	if err1 != nil || err2 != nil {
-		return configs.ParamInputTypeError
+		return constants.ParamInputTypeError
 	}
 
 	*pToken = token

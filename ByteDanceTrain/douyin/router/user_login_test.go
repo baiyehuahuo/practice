@@ -2,7 +2,6 @@ package router
 
 import (
 	"bytes"
-	"douyin/configs"
 	"douyin/constants"
 	"douyin/pb"
 	"encoding/json"
@@ -91,7 +90,7 @@ func TestLoginSuccess(t *testing.T) {
 	if err = json.Unmarshal(buf[:n], body); err != nil {
 		t.Fatalf("Convert respond body failed, err: %v", err)
 	}
-	if *body.StatusCode != configs.DefaultInt32 || *body.StatusMsg != configs.DefaultString || *body.UserId != constants.TestUserID || *body.Token == configs.DefaultString {
+	if *body.StatusCode != constants.DefaultInt32 || *body.StatusMsg != constants.DefaultString || *body.UserId != constants.TestUserID || *body.Token == constants.DefaultString {
 		t.Fatalf("Test results are not as expected: %v", body)
 	}
 	t.Log("Test login passed successfully")

@@ -1,7 +1,7 @@
 package basis
 
 import (
-	"douyin/configs"
+	"douyin/constants"
 	"douyin/pb"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -21,10 +21,10 @@ func ServeFeed(c *gin.Context) (res *pb.DouyinFeedResponse, err error) {
 		return nil, err
 	}
 	feedRes := pb.DouyinFeedResponse{
-		StatusCode: &configs.DefaultInt32,
-		StatusMsg:  &configs.DefaultString,
-		VideoList:  []*pb.Video{configs.DefaultVideo},
-		NextTime:   &configs.DefaultInt64,
+		StatusCode: &constants.DefaultInt32,
+		StatusMsg:  &constants.DefaultString,
+		VideoList:  []*pb.Video{constants.DefaultVideo},
+		NextTime:   &constants.DefaultInt64,
 	}
 
 	return &feedRes, nil
@@ -36,7 +36,7 @@ func checkFeedParams(c *gin.Context, pLatestTime *time.Time, pToken *string) err
 		t, err := strconv.Atoi(latestTime)
 		if err != nil {
 			log.Printf("latestTimeStr: %v, token: %v", latestTime, token)
-			return configs.ParamInputTypeError
+			return constants.ParamInputTypeError
 		}
 		*pLatestTime = time.UnixMilli(int64(t))
 	} else {

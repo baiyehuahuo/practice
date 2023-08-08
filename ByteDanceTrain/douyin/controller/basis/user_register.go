@@ -2,7 +2,7 @@ package basis
 
 import (
 	"douyin/common"
-	"douyin/configs"
+	"douyin/constants"
 	"douyin/model/entity"
 	"douyin/pb"
 	"douyin/service/UserService"
@@ -26,14 +26,14 @@ func ServeUserRegister(c *gin.Context) (res *pb.DouyinUserRegisterResponse, err 
 		Password: password,
 	}
 	if err = UserService.CreateUser(user); err != nil {
-		return nil, configs.DBCreateUserError
+		return nil, constants.DBCreateUserError
 	}
 	UserService.QueryUser(user)
 	token := common.GenerateToken()
 	common.SetToken(token, user.ID)
 	return &pb.DouyinUserRegisterResponse{
-		StatusCode: &configs.DefaultInt32,
-		StatusMsg:  &configs.DefaultString,
+		StatusCode: &constants.DefaultInt32,
+		StatusMsg:  &constants.DefaultString,
 		UserId:     &user.ID,
 		Token:      &token,
 	}, nil
@@ -43,11 +43,11 @@ func checkUserRegisterParams(c *gin.Context, pUsername, pPassword *string) error
 	username, password := c.PostForm("username"), c.PostForm("password")
 	if username == "" || password == "" {
 		log.Printf("username: %v, password: %v", username, password)
-		return configs.ParamEmptyError
+		return constants.ParamEmptyError
 	}
 	if len(username) > 32 || len(password) > 32 {
 		log.Printf("username: %v, password: %v", username, password)
-		return configs.ParamInputLengthExceededError
+		return constants.ParamInputLengthExceededError
 	}
 	*pUsername = username
 	*pPassword = password

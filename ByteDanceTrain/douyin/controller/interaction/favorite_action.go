@@ -1,7 +1,7 @@
 package interaction
 
 import (
-	"douyin/configs"
+	"douyin/constants"
 	"douyin/pb"
 	"github.com/gin-gonic/gin"
 	"strconv"
@@ -21,23 +21,23 @@ func ServeFavoriteAction(c *gin.Context) (res *pb.DouyinFavoriteActionResponse, 
 		return nil, err
 	}
 	return &pb.DouyinFavoriteActionResponse{
-		StatusCode: &configs.DefaultInt32,
-		StatusMsg:  &configs.DefaultString,
+		StatusCode: &constants.DefaultInt32,
+		StatusMsg:  &constants.DefaultString,
 	}, nil
 }
 
 func checkFavoriteActionParams(c *gin.Context, pToken *string, pVideoID *int64, pActionType *int) error {
 	token, videoID, actionType := c.PostForm("token"), c.PostForm("video_id"), c.PostForm("action_type")
 	if token == "" || videoID == "" || actionType == "" {
-		return configs.ParamEmptyError
+		return constants.ParamEmptyError
 	}
 	id, err1 := strconv.Atoi(videoID)
 	action, err2 := strconv.Atoi(actionType)
 	if err1 != nil || err2 != nil {
-		return configs.ParamInputTypeError
+		return constants.ParamInputTypeError
 	}
 	if action != 1 && action != 2 {
-		return configs.ParamUnknownActionTypeError
+		return constants.ParamUnknownActionTypeError
 	}
 	*pToken = token
 	*pVideoID = int64(id)

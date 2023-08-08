@@ -1,7 +1,7 @@
 package interaction
 
 import (
-	"douyin/configs"
+	"douyin/constants"
 	"douyin/pb"
 	"github.com/gin-gonic/gin"
 	"strconv"
@@ -21,20 +21,20 @@ func ServeCommentList(c *gin.Context) (res *pb.DouyinCommentListResponse, err er
 	}
 
 	return &pb.DouyinCommentListResponse{
-		StatusCode:  &configs.DefaultInt32,
-		StatusMsg:   &configs.DefaultString,
-		CommentList: []*pb.Comment{configs.DefaultComment},
+		StatusCode:  &constants.DefaultInt32,
+		StatusMsg:   &constants.DefaultString,
+		CommentList: []*pb.Comment{constants.DefaultComment},
 	}, nil
 }
 
 func checkCommentListParams(c *gin.Context, pToken *string, pVideoID *int64) error {
 	token, videoID := c.Query("token"), c.Query("video_id")
 	if token == "" || videoID == "" {
-		return configs.ParamEmptyError
+		return constants.ParamEmptyError
 	}
 	id, err := strconv.Atoi(videoID)
 	if err != nil {
-		return configs.ParamInputTypeError
+		return constants.ParamInputTypeError
 	}
 	*pToken = token
 	*pVideoID = int64(id)

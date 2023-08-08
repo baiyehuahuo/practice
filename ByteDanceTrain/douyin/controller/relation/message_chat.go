@@ -1,7 +1,7 @@
 package relation
 
 import (
-	"douyin/configs"
+	"douyin/constants"
 	"douyin/pb"
 	"github.com/gin-gonic/gin"
 	"strconv"
@@ -19,20 +19,20 @@ func ServeMessageChat(c *gin.Context) (res *pb.DouyinMessageChatResponse, err er
 		return nil, err
 	}
 	return &pb.DouyinMessageChatResponse{
-		StatusCode:  &configs.DefaultInt32,
-		StatusMsg:   &configs.DefaultString,
-		MessageList: []*pb.Message{configs.DefaultMessage},
+		StatusCode:  &constants.DefaultInt32,
+		StatusMsg:   &constants.DefaultString,
+		MessageList: []*pb.Message{constants.DefaultMessage},
 	}, nil
 }
 
 func checkMessageChatParams(c *gin.Context, pToken *string, pToUserID *int64) error {
 	token, toUserID := c.Query("token"), c.Query("to_user_id")
 	if token == "" || toUserID == "" {
-		return configs.ParamEmptyError
+		return constants.ParamEmptyError
 	}
 	id, err := strconv.Atoi(toUserID)
 	if err != nil {
-		return configs.ParamInputTypeError
+		return constants.ParamInputTypeError
 	}
 	*pToken = token
 	*pToUserID = int64(id)

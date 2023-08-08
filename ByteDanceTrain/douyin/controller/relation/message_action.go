@@ -1,7 +1,7 @@
 package relation
 
 import (
-	"douyin/configs"
+	"douyin/constants"
 	"douyin/pb"
 	"github.com/gin-gonic/gin"
 	"strconv"
@@ -21,23 +21,23 @@ func ServeMessageAction(c *gin.Context) (res *pb.DouyinMessageActionResponse, er
 	}
 
 	return &pb.DouyinMessageActionResponse{
-		StatusCode: &configs.DefaultInt32,
-		StatusMsg:  &configs.DefaultString,
+		StatusCode: &constants.DefaultInt32,
+		StatusMsg:  &constants.DefaultString,
 	}, nil
 }
 
 func checkMessageActionParams(c *gin.Context, pToken *string, pToUserID *int64, pActionType *int, pContent *string) error {
 	token, toUserID, actionType, content := c.PostForm("token"), c.PostForm("to_user_id"), c.PostForm("action_type"), c.PostForm("content")
 	if token == "" || toUserID == "" || actionType == "" || content == "" {
-		return configs.ParamEmptyError
+		return constants.ParamEmptyError
 	}
 	id, err1 := strconv.Atoi(toUserID)
 	action, err2 := strconv.Atoi(actionType)
 	if err1 != nil || err2 != nil {
-		return configs.ParamInputTypeError
+		return constants.ParamInputTypeError
 	}
 	if action != 1 {
-		return configs.ParamUnknownActionTypeError
+		return constants.ParamUnknownActionTypeError
 	}
 	*pToken = token
 	*pToUserID = int64(id)

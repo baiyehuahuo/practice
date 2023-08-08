@@ -2,7 +2,6 @@ package common
 
 import (
 	"bytes"
-	"douyin/configs"
 	"douyin/constants"
 	"github.com/patrickmn/go-cache"
 	"math/rand"
@@ -20,7 +19,7 @@ func SetToken(token string, userID int64) {
 
 func CheckToken(token string, userID int64) error {
 	if checkID, found := GetUserIDFromToken(token); !found || checkID != userID {
-		return configs.AuthTokenFail
+		return constants.AuthTokenFail
 	}
 	return nil
 }

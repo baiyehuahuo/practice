@@ -1,7 +1,6 @@
 package basis
 
 import (
-	"douyin/configs"
 	"douyin/constants"
 	"douyin/pb"
 	"github.com/gin-gonic/gin"
@@ -27,8 +26,8 @@ func ServePublishAction(c *gin.Context) (res *pb.DouyinPublishActionResponse, er
 		return nil, err
 	}
 	return &pb.DouyinPublishActionResponse{
-		StatusCode: &configs.DefaultInt32,
-		StatusMsg:  &configs.DefaultString,
+		StatusCode: &constants.DefaultInt32,
+		StatusMsg:  &constants.DefaultString,
 	}, nil
 }
 
@@ -37,7 +36,7 @@ func checkPublishActionParams(c *gin.Context, pToken, pTitle *string, pFile **mu
 	file, err := c.FormFile("file")
 	if token == "" || title == "" || err == http.ErrMissingFile {
 		log.Printf("token: %v, title: %v, err: %v", token, title, err)
-		return configs.ParamEmptyError
+		return constants.ParamEmptyError
 	}
 	if err != nil {
 		return err

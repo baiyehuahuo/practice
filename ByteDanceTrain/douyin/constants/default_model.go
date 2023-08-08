@@ -1,4 +1,4 @@
-package configs
+package constants
 
 import "douyin/pb"
 

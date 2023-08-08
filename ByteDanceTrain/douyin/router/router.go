@@ -1,7 +1,6 @@
 package router
 
 import (
-	"douyin/configs"
 	"douyin/constants"
 	"douyin/controller/basis"
 	"douyin/controller/interaction"
@@ -158,7 +157,7 @@ func SetupRouter() *gin.Engine {
 
 func handleError(c *gin.Context, err error) {
 	switch err {
-	case configs.ParamEmptyError, configs.ParamInputTypeError, configs.ParamUnknownActionTypeError, configs.ParamInputLengthExceededError:
+	case constants.ParamEmptyError, constants.ParamInputTypeError, constants.ParamUnknownActionTypeError, constants.ParamInputLengthExceededError:
 		c.String(http.StatusBadRequest, err.Error())
 	default:
 		c.String(http.StatusInternalServerError, err.Error())

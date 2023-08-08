@@ -2,7 +2,7 @@ package basis
 
 import (
 	"douyin/common"
-	"douyin/configs"
+	"douyin/constants"
 	"douyin/model/entity"
 	"douyin/pb"
 	"douyin/service/UserService"
@@ -26,15 +26,15 @@ func ServeUserLogin(c *gin.Context) (res *pb.DouyinUserLoginResponse, err error)
 	}
 	UserService.QueryUser(user)
 	if user.Password != password {
-		return nil, configs.AuthUsernameOrPasswordFail
+		return nil, constants.AuthUsernameOrPasswordFail
 	}
 
 	token := common.GenerateToken()
 	common.SetToken(token, user.ID)
 
 	return &pb.DouyinUserLoginResponse{
-		StatusCode: &configs.DefaultInt32,
-		StatusMsg:  &configs.DefaultString,
+		StatusCode: &constants.DefaultInt32,
+		StatusMsg:  &constants.DefaultString,
 		UserId:     &user.ID,
 		Token:      &token,
 	}, nil
@@ -44,7 +44,7 @@ func checkUserLoginParams(c *gin.Context, pUsername, pPassword *string) error {
 	username, password := c.PostForm("username"), c.PostForm("password")
 	if username == "" || password == "" {
 		log.Printf("username: %v, password: %v", username, password)
-		return configs.ParamEmptyError
+		return constants.ParamEmptyError
 	}
 	*pUsername = username
 	*pPassword = password

@@ -1,7 +1,7 @@
 package relation
 
 import (
-	"douyin/configs"
+	"douyin/constants"
 	"douyin/pb"
 	"github.com/gin-gonic/gin"
 	"strconv"
@@ -19,20 +19,20 @@ func ServeRelationFriendList(c *gin.Context) (res *pb.DouyinRelationFriendListRe
 		return nil, err
 	}
 	return &pb.DouyinRelationFriendListResponse{
-		StatusCode: &configs.DefaultInt32,
-		StatusMsg:  &configs.DefaultString,
-		UserList:   []*pb.User{configs.DefaultUser},
+		StatusCode: &constants.DefaultInt32,
+		StatusMsg:  &constants.DefaultString,
+		UserList:   []*pb.User{constants.DefaultUser},
 	}, nil
 }
 
 func checkRelationFriendListParams(c *gin.Context, pUserID *int64, pToken *string) error {
 	userID, token := c.Query("user_id"), c.Query("token")
 	if userID == "" || token == "" {
-		return configs.ParamEmptyError
+		return constants.ParamEmptyError
 	}
 	id, err := strconv.Atoi(userID)
 	if err != nil {
-		return configs.ParamInputTypeError
+		return constants.ParamInputTypeError
 	}
 	*pUserID = int64(id)
 	*pToken = token
