@@ -1,10 +1,10 @@
 package basis
 
 import (
-	"douyin/common"
 	"douyin/constants"
 	"douyin/model/entity"
 	"douyin/pb"
+	"douyin/service/TokenService"
 	"douyin/service/UserService"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -29,8 +29,8 @@ func ServeUserLogin(c *gin.Context) (res *pb.DouyinUserLoginResponse, err error)
 		return nil, constants.AuthUsernameOrPasswordFail
 	}
 
-	token := common.GenerateToken()
-	common.SetToken(token, user.ID)
+	token := TokenService.GenerateToken()
+	TokenService.SetToken(token, user.ID)
 
 	return &pb.DouyinUserLoginResponse{
 		StatusCode: &constants.DefaultInt32,

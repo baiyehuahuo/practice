@@ -21,7 +21,7 @@ const (
 	RouteCommentAction  = "/comment/action"
 	RouteCommentList    = "/comment/list"
 
-	//	relation
+	// relation
 	RouteRelationAction       = "/relation/action"
 	RouteRelationFollowList   = "/relation/follow/list"
 	RouteRelationFollowerList = "/relation/follower/list"

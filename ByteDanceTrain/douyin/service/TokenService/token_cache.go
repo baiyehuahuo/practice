@@ -1,4 +1,4 @@
-package common
+package TokenService
 
 import (
 	"bytes"
@@ -15,13 +15,6 @@ func init() {
 
 func SetToken(token string, userID int64) {
 	c.Set(token, userID, 0)
-}
-
-func CheckToken(token string, userID int64) error {
-	if checkID, found := GetUserIDFromToken(token); !found || checkID != userID {
-		return constants.AuthTokenFail
-	}
-	return nil
 }
 
 func GenerateToken() string {
