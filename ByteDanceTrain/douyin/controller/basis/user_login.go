@@ -43,7 +43,7 @@ func ServeUserLogin(c *gin.Context) (res *pb.DouyinUserLoginResponse, err error)
 func checkUserLoginParams(c *gin.Context, pUsername, pPassword *string) error {
 	username, password := c.PostForm("username"), c.PostForm("password")
 	if username == "" || password == "" {
-		log.Printf("username: %v, password: %v\t %v", username, password, c.Request)
+		log.Printf("username: %v, password: %v", username, password)
 		return configs.ParamEmptyError
 	}
 	*pUsername = username
