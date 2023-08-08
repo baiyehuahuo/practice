@@ -2,6 +2,7 @@ package interaction
 
 import (
 	"douyin/constants"
+	"douyin/model/dyerror"
 	"douyin/pb"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -13,7 +14,7 @@ import (
 // Method is POST
 // token, video_id, action_type is required
 // comment_text comment_id is optional
-func ServeCommentAction(c *gin.Context) (res *pb.DouyinCommentActionResponse, err error) {
+func ServeCommentAction(c *gin.Context) (res *pb.DouyinCommentActionResponse, err *dyerror.DouyinError) {
 	var (
 		token, commentText string
 		videoID, commentID int64
@@ -30,24 +31,24 @@ func ServeCommentAction(c *gin.Context) (res *pb.DouyinCommentActionResponse, er
 	}, nil
 }
 
-func checkCommentActionParams(c *gin.Context, pToken *string, pVideoID *int64, pAction *int, pCommentText *string, pCommentID *int64) error {
+func checkCommentActionParams(c *gin.Context, pToken *string, pVideoID *int64, pAction *int, pCommentText *string, pCommentID *int64) *dyerror.DouyinError {
 	token, videoID, actionType := c.PostForm("token"), c.PostForm("video_id"), c.PostForm("action_type")
 	commentText, commentID := c.PostForm("comment_text"), c.PostForm("comment_id")
 	if token == "" || videoID == "" || actionType == "" {
 		log.Printf("token: %v, videoID: %v, actionType: %v", token, videoID, actionType)
-		return constants.ParamEmptyError
+		return dyerror.ParamEmptyError
 	}
 	action, _ := strconv.Atoi(actionType)
 	if action != 1 && action != 2 {
-		return constants.ParamUnknownActionTypeError
+		return dyerror.ParamUnknownActionTypeError
 	}
 	if action == 1 && commentText == "" || action == 2 && commentID == "" {
-		return constants.ParamEmptyError
+		return dyerror.ParamEmptyError
 	}
 	vid, err1 := strconv.Atoi(videoID)
 	cid, err2 := strconv.Atoi(commentID)
 	if err1 != nil || err2 != nil {
-		return constants.ParamInputTypeError
+		return dyerror.ParamInputTypeError
 	}
 
 	*pToken = token

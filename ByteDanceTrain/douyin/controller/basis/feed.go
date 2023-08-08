@@ -2,6 +2,7 @@ package basis
 
 import (
 	"douyin/constants"
+	"douyin/model/dyerror"
 	"douyin/pb"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -12,7 +13,7 @@ import (
 // ServeFeed handle feed request
 // 不限制登录状态，返回按投稿时间倒序的视频列表，视频数由服务端控制，单次最多30个
 // Method is GET
-func ServeFeed(c *gin.Context) (res *pb.DouyinFeedResponse, err error) {
+func ServeFeed(c *gin.Context) (res *pb.DouyinFeedResponse, err *dyerror.DouyinError) {
 	var (
 		latestTime time.Time
 		token      string
@@ -30,13 +31,13 @@ func ServeFeed(c *gin.Context) (res *pb.DouyinFeedResponse, err error) {
 	return &feedRes, nil
 }
 
-func checkFeedParams(c *gin.Context, pLatestTime *time.Time, pToken *string) error {
+func checkFeedParams(c *gin.Context, pLatestTime *time.Time, pToken *string) *dyerror.DouyinError {
 	latestTime, token := c.Query("latest_time"), c.Query("token")
 	if latestTime != "" {
 		t, err := strconv.Atoi(latestTime)
 		if err != nil {
 			log.Printf("latestTimeStr: %v, token: %v", latestTime, token)
-			return constants.ParamInputTypeError
+			return dyerror.ParamInputTypeError
 		}
 		*pLatestTime = time.UnixMilli(int64(t))
 	} else {

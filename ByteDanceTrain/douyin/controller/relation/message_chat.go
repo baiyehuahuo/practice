@@ -2,6 +2,7 @@ package relation
 
 import (
 	"douyin/constants"
+	"douyin/model/dyerror"
 	"douyin/pb"
 	"github.com/gin-gonic/gin"
 	"strconv"
@@ -10,7 +11,7 @@ import (
 // ServeMessageChat handle message chat request
 // Method is GET
 // token, to_user_id is required
-func ServeMessageChat(c *gin.Context) (res *pb.DouyinMessageChatResponse, err error) {
+func ServeMessageChat(c *gin.Context) (res *pb.DouyinMessageChatResponse, err *dyerror.DouyinError) {
 	var (
 		token    string
 		toUserID int64
@@ -25,14 +26,14 @@ func ServeMessageChat(c *gin.Context) (res *pb.DouyinMessageChatResponse, err er
 	}, nil
 }
 
-func checkMessageChatParams(c *gin.Context, pToken *string, pToUserID *int64) error {
+func checkMessageChatParams(c *gin.Context, pToken *string, pToUserID *int64) *dyerror.DouyinError {
 	token, toUserID := c.Query("token"), c.Query("to_user_id")
 	if token == "" || toUserID == "" {
-		return constants.ParamEmptyError
+		return dyerror.ParamEmptyError
 	}
 	id, err := strconv.Atoi(toUserID)
 	if err != nil {
-		return constants.ParamInputTypeError
+		return dyerror.ParamInputTypeError
 	}
 	*pToken = token
 	*pToUserID = int64(id)

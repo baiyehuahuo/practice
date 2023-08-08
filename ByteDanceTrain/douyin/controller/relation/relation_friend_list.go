@@ -2,6 +2,7 @@ package relation
 
 import (
 	"douyin/constants"
+	"douyin/model/dyerror"
 	"douyin/pb"
 	"github.com/gin-gonic/gin"
 	"strconv"
@@ -10,7 +11,7 @@ import (
 // ServeRelationFriendList handle relation friend list request
 // Method is GET
 // user_id, token is required
-func ServeRelationFriendList(c *gin.Context) (res *pb.DouyinRelationFriendListResponse, err error) {
+func ServeRelationFriendList(c *gin.Context) (res *pb.DouyinRelationFriendListResponse, err *dyerror.DouyinError) {
 	var (
 		userID int64
 		token  string
@@ -25,14 +26,14 @@ func ServeRelationFriendList(c *gin.Context) (res *pb.DouyinRelationFriendListRe
 	}, nil
 }
 
-func checkRelationFriendListParams(c *gin.Context, pUserID *int64, pToken *string) error {
+func checkRelationFriendListParams(c *gin.Context, pUserID *int64, pToken *string) *dyerror.DouyinError {
 	userID, token := c.Query("user_id"), c.Query("token")
 	if userID == "" || token == "" {
-		return constants.ParamEmptyError
+		return dyerror.ParamEmptyError
 	}
 	id, err := strconv.Atoi(userID)
 	if err != nil {
-		return constants.ParamInputTypeError
+		return dyerror.ParamInputTypeError
 	}
 	*pUserID = int64(id)
 	*pToken = token

@@ -2,6 +2,7 @@ package basis
 
 import (
 	"douyin/constants"
+	"douyin/model/dyerror"
 	"douyin/pb"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -12,7 +13,7 @@ import (
 // 获取用户的 id、昵称，如果实现社交部分的功能，还会返回关注数和粉丝数
 // Method is GET
 // user_id, token is required
-func ServeUserInfo(c *gin.Context) (res *pb.DouyinUserResponse, err error) {
+func ServeUserInfo(c *gin.Context) (res *pb.DouyinUserResponse, err *dyerror.DouyinError) {
 	var (
 		userID int64
 		token  string
@@ -27,17 +28,17 @@ func ServeUserInfo(c *gin.Context) (res *pb.DouyinUserResponse, err error) {
 	}, nil
 }
 
-func checkUserInfoParams(c *gin.Context, pUserID *int64, pToken *string) error {
+func checkUserInfoParams(c *gin.Context, pUserID *int64, pToken *string) *dyerror.DouyinError {
 	userID, token := c.Query("user_id"), c.Query("token")
 	if userID == "" || token == "" {
 		log.Printf("userID: %v, token: %v", userID, token)
-		return constants.ParamEmptyError
+		return dyerror.ParamEmptyError
 	}
 
 	id, err := strconv.Atoi(userID)
 	if err != nil {
 		log.Printf("userID: %v, token: %v", userID, token)
-		return constants.ParamInputTypeError
+		return dyerror.ParamInputTypeError
 	}
 	*pUserID = int64(id)
 	*pToken = token

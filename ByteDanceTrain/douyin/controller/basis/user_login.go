@@ -2,6 +2,7 @@ package basis
 
 import (
 	"douyin/constants"
+	"douyin/model/dyerror"
 	"douyin/model/entity"
 	"douyin/pb"
 	"douyin/service/TokenService"
@@ -14,7 +15,7 @@ import (
 // 通过用户名和密码进行登录，登录成功后返回用户 id 和权限 token
 // Method is POST
 // username, password is required
-func ServeUserLogin(c *gin.Context) (res *pb.DouyinUserLoginResponse, err error) {
+func ServeUserLogin(c *gin.Context) (res *pb.DouyinUserLoginResponse, err *dyerror.DouyinError) {
 	var (
 		username, password string
 	)
@@ -26,7 +27,7 @@ func ServeUserLogin(c *gin.Context) (res *pb.DouyinUserLoginResponse, err error)
 	}
 	UserService.QueryUser(user)
 	if user.Password != password {
-		return nil, constants.AuthUsernameOrPasswordFail
+		return nil, dyerror.AuthUsernameOrPasswordFailError
 	}
 
 	token := TokenService.GenerateToken()
@@ -40,11 +41,11 @@ func ServeUserLogin(c *gin.Context) (res *pb.DouyinUserLoginResponse, err error)
 	}, nil
 }
 
-func checkUserLoginParams(c *gin.Context, pUsername, pPassword *string) error {
+func checkUserLoginParams(c *gin.Context, pUsername, pPassword *string) *dyerror.DouyinError {
 	username, password := c.PostForm("username"), c.PostForm("password")
 	if username == "" || password == "" {
 		log.Printf("username: %v, password: %v", username, password)
-		return constants.ParamEmptyError
+		return dyerror.ParamEmptyError
 	}
 	*pUsername = username
 	*pPassword = password

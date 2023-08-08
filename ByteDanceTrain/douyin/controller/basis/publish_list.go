@@ -2,6 +2,7 @@ package basis
 
 import (
 	"douyin/constants"
+	"douyin/model/dyerror"
 	"douyin/pb"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -12,7 +13,7 @@ import (
 // 用户的视频发布列表，直接列出用户所有投稿过的视频
 // Method is GET
 // user_id, token is required
-func ServePublishList(c *gin.Context) (res *pb.DouyinPublishListResponse, err error) {
+func ServePublishList(c *gin.Context) (res *pb.DouyinPublishListResponse, err *dyerror.DouyinError) {
 	var (
 		userID int64
 		token  string
@@ -31,17 +32,17 @@ func ServePublishList(c *gin.Context) (res *pb.DouyinPublishListResponse, err er
 	}, nil
 }
 
-func checkPublishListParams(c *gin.Context, pUserID *int64, pToken *string) error {
+func checkPublishListParams(c *gin.Context, pUserID *int64, pToken *string) *dyerror.DouyinError {
 	userID, token := c.Query("user_id"), c.Query("token")
 	if userID == "" || token == "" {
 		log.Printf("userID: %v, token: %v", userID, token)
-		return constants.ParamEmptyError
+		return dyerror.ParamEmptyError
 	}
 
 	id, err := strconv.Atoi(userID)
 	if err != nil {
 		log.Printf("userID: %v, token: %v", userID, token)
-		return constants.ParamInputTypeError
+		return dyerror.ParamInputTypeError
 	}
 	*pUserID = int64(id)
 	*pToken = token

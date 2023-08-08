@@ -2,6 +2,7 @@ package relation
 
 import (
 	"douyin/constants"
+	"douyin/model/dyerror"
 	"douyin/pb"
 	"github.com/gin-gonic/gin"
 	"strconv"
@@ -10,7 +11,7 @@ import (
 // ServeMessageAction handle message action request
 // Method is POST
 // token, to_user_id, action_type, content is required
-func ServeMessageAction(c *gin.Context) (res *pb.DouyinMessageActionResponse, err error) {
+func ServeMessageAction(c *gin.Context) (res *pb.DouyinMessageActionResponse, err *dyerror.DouyinError) {
 	var (
 		token, content string
 		toUserID       int64
@@ -26,18 +27,18 @@ func ServeMessageAction(c *gin.Context) (res *pb.DouyinMessageActionResponse, er
 	}, nil
 }
 
-func checkMessageActionParams(c *gin.Context, pToken *string, pToUserID *int64, pActionType *int, pContent *string) error {
+func checkMessageActionParams(c *gin.Context, pToken *string, pToUserID *int64, pActionType *int, pContent *string) *dyerror.DouyinError {
 	token, toUserID, actionType, content := c.PostForm("token"), c.PostForm("to_user_id"), c.PostForm("action_type"), c.PostForm("content")
 	if token == "" || toUserID == "" || actionType == "" || content == "" {
-		return constants.ParamEmptyError
+		return dyerror.ParamEmptyError
 	}
 	id, err1 := strconv.Atoi(toUserID)
 	action, err2 := strconv.Atoi(actionType)
 	if err1 != nil || err2 != nil {
-		return constants.ParamInputTypeError
+		return dyerror.ParamInputTypeError
 	}
 	if action != 1 {
-		return constants.ParamUnknownActionTypeError
+		return dyerror.ParamUnknownActionTypeError
 	}
 	*pToken = token
 	*pToUserID = int64(id)
