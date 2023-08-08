@@ -1,4 +1,4 @@
-package model
+package entity
 
 type Video struct {
 	Id            int64  `json:"id,omitempty"`             // 视频唯一标识

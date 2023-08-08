@@ -15,3 +15,7 @@ CREATE TABLE Users
     `favorite_count` INT DEFAULT  0 COMMENT '点赞数量',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO Users  (`name`, `password`)
+VALUES ('fwf', 'fwf233');
+

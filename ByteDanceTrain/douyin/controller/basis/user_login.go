@@ -3,9 +3,9 @@ package basis
 import (
 	"douyin/common"
 	"douyin/configs"
-	"douyin/model"
+	"douyin/model/entity"
 	"douyin/pb"
-	"douyin/repository"
+	"douyin/service/UserService"
 	"github.com/gin-gonic/gin"
 	"log"
 )
@@ -21,10 +21,10 @@ func ServeUserLogin(c *gin.Context) (res *pb.DouyinUserLoginResponse, err error)
 	if err = checkUserLoginParams(c, &username, &password); err != nil {
 		return nil, err
 	}
-	user := &model.User{
+	user := &entity.User{
 		Name: username,
 	}
-	repository.QueryUser(user)
+	UserService.QueryUser(user)
 	if user.Password != password {
 		return nil, configs.AuthUsernameOrPasswordFail
 	}
@@ -43,7 +43,7 @@ func ServeUserLogin(c *gin.Context) (res *pb.DouyinUserLoginResponse, err error)
 func checkUserLoginParams(c *gin.Context, pUsername, pPassword *string) error {
 	username, password := c.PostForm("username"), c.PostForm("password")
 	if username == "" || password == "" {
-		log.Printf("username: %v, password: %v", username, password)
+		log.Printf("username: %v, password: %v\t %v", username, password, c.Request)
 		return configs.ParamEmptyError
 	}
 	*pUsername = username

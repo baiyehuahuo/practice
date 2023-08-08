@@ -1,4 +1,4 @@
-package repository
+package DBService
 
 import (
 	"douyin/constants"

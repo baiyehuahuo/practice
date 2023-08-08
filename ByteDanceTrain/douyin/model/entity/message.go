@@ -1,4 +1,4 @@
-package model
+package entity
 
 type Message struct {
 	Id         int64  `json:"id,omitempty"`           // 消息id

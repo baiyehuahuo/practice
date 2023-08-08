@@ -1,4 +1,4 @@
-package model
+package entity
 
 type Comment struct {
 	Id         int64  `json:"id,omitempty"`          // 视频评论id

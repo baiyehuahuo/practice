@@ -3,9 +3,9 @@ package basis
 import (
 	"douyin/common"
 	"douyin/configs"
-	"douyin/model"
+	"douyin/model/entity"
 	"douyin/pb"
-	"douyin/repository"
+	"douyin/service/UserService"
 	"github.com/gin-gonic/gin"
 	"log"
 )
@@ -21,14 +21,14 @@ func ServeUserRegister(c *gin.Context) (res *pb.DouyinUserRegisterResponse, err 
 	if err = checkUserRegisterParams(c, &username, &password); err != nil {
 		return nil, err
 	}
-	user := &model.User{
+	user := &entity.User{
 		Name:     username,
 		Password: password,
 	}
-	if err = repository.CreateUser(user); err != nil {
+	if err = UserService.CreateUser(user); err != nil {
 		return nil, configs.DBCreateUserError
 	}
-	repository.QueryUser(user)
+	UserService.QueryUser(user)
 	token := common.GenerateToken()
 	common.SetToken(token, user.ID)
 	return &pb.DouyinUserRegisterResponse{

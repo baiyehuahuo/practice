@@ -2,13 +2,14 @@ package main
 
 import (
 	"douyin/constants"
-	_ "douyin/repository"
 	"douyin/router"
+	_ "douyin/service/DBService"
 	"log"
 	"os"
 )
 
 func main() {
+
 	r := router.SetupRouter()
 	if err := r.Run("127.0.0.1:20000"); err != nil {
 		log.Fatal(err)
