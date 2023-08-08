@@ -1,9 +1,40 @@
 package constants
 
-import "fmt"
+import (
+	"fmt"
+)
+
+const (
+	ProjectGroup = "/douyin"
+
+	// basis
+	RouteFeed          = "/feed"
+	RouteUserRegister  = "/user/register"
+	RouteUserLogin     = "/user/login"
+	RouteUserInfo      = "/user"
+	RoutePublishAction = "/publish/action"
+	RoutePublishList   = "/publish/list"
+
+	// interaction
+	RouteFavoriteAction = "/favorite/action"
+	RouteFavoriteList   = "/favorite/list"
+	RouteCommentAction  = "/comment/action"
+	RouteCommentList    = "/comment/list"
+
+	//	relation
+	RouteRelationAction       = "/relation/action"
+	RouteRelationFollowList   = "/relation/follow/list"
+	RouteRelationFollowerList = "/relation/follower/list"
+	RouteRelationFriendList   = "/relation/friend/list"
+	RouteMessageChat          = "/message/chat"
+	RouteMessageAction        = "/message/action"
+)
 
 const (
 	UploadFileDir = "uploadfiles"
+
+	Assets      = "/Users/weifengfan/Documents/Practice/ByteDanceTrain/douyin/assets"
+	UserSQLPath = "/user.sql"
 )
 
 const (

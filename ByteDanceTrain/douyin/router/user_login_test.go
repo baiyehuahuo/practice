@@ -13,37 +13,9 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"path"
 	"strings"
 	"testing"
-)
-
-/* this is a typical case
-func TestRouter(t *testing.T) {
-	r := setupRouter()
-	w := httptest.NewRecorder()
-	req, err := http.NewRequest("GET", "/someJSON", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-	r.ServeHTTP(w, req)
-
-	assert.Equal(t, http.StatusOK, w.Code)
-	message := &gin.H{}
-	if err = json.Unmarshal(w.Body.Bytes(), message); err != nil {
-		t.Fatal(err)
-	}
-	//for key, val := range *message {
-	//	log.Printf("key: %v %T\tval: %v %T", key, key, val, val)
-	//}
-	assert.Equal(t, gin.H{"message": "Hey", "status": float64(http.StatusOK)}, *message)
-}
-*/
-
-const (
-	UserSQLPath         = "/Users/weifengfan/Documents/Practice/ByteDanceTrain/douyin/assets/user.sql"
-	DefaultUserID       = int64(1)
-	DefaultUserName     = "fwf"
-	DefaultUserPassword = "fwf233"
 )
 
 var (
@@ -85,7 +57,7 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		panic(err)
 	}
-	if err = execSQLFile(UserSQLPath); err != nil {
+	if err = execSQLFile(path.Join(constants.Assets, constants.UserSQLPath)); err != nil {
 		panic(err)
 	}
 	m.Run()
@@ -95,12 +67,12 @@ func TestLoginSuccess(t *testing.T) {
 	r := SetupRouter()
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)
-	_ = writer.WriteField("username", DefaultUserName)
-	_ = writer.WriteField("password", DefaultUserPassword)
+	_ = writer.WriteField("username", constants.TestUserName)
+	_ = writer.WriteField("password", constants.TestUserPassword)
 	if err := writer.Close(); err != nil {
 		t.Fatalf("Write params failed, err: %v", err)
 	}
-	req, err := http.NewRequest(http.MethodPost, "/douyin/user/login", payload)
+	req, err := http.NewRequest(http.MethodPost, path.Join(constants.ProjectGroup, constants.RouteUserLogin), payload)
 	if err != nil {
 		t.Fatalf("Build request failed, err: %v", err)
 	}
@@ -119,7 +91,7 @@ func TestLoginSuccess(t *testing.T) {
 	if err = json.Unmarshal(buf[:n], body); err != nil {
 		t.Fatalf("Convert respond body failed, err: %v", err)
 	}
-	if *body.StatusCode != configs.DefaultInt32 || *body.StatusMsg != configs.DefaultString || *body.UserId != DefaultUserID || *body.Token == configs.DefaultString {
+	if *body.StatusCode != configs.DefaultInt32 || *body.StatusMsg != configs.DefaultString || *body.UserId != constants.TestUserID || *body.Token == configs.DefaultString {
 		t.Fatalf("Test results are not as expected: %v", body)
 	}
 	t.Log("Test login passed successfully")

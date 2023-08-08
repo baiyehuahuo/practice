@@ -2,6 +2,7 @@ package router
 
 import (
 	"douyin/configs"
+	"douyin/constants"
 	"douyin/controller/basis"
 	"douyin/controller/interaction"
 	"douyin/controller/relation"
@@ -14,10 +15,10 @@ import (
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
 	r.Static("/static", "./assets")
-	douyinGroup := r.Group("/douyin")
+	douyinGroup := r.Group(constants.ProjectGroup)
 	{
 		// base interfaces
-		douyinGroup.GET("/feed", func(c *gin.Context) {
+		douyinGroup.GET(constants.RouteFeed, func(c *gin.Context) {
 			res, err := basis.ServeFeed(c)
 			if err != nil {
 				handleError(c, err)
@@ -25,7 +26,7 @@ func SetupRouter() *gin.Engine {
 			}
 			c.JSON(http.StatusOK, res)
 		})
-		douyinGroup.POST("/user/register", func(c *gin.Context) {
+		douyinGroup.POST(constants.RouteUserRegister, func(c *gin.Context) {
 			res, err := basis.ServeUserRegister(c)
 			if err != nil {
 				handleError(c, err)
@@ -33,7 +34,7 @@ func SetupRouter() *gin.Engine {
 			}
 			c.JSON(http.StatusOK, res)
 		})
-		douyinGroup.POST("/user/login", func(c *gin.Context) {
+		douyinGroup.POST(constants.RouteUserLogin, func(c *gin.Context) {
 			res, err := basis.ServeUserLogin(c)
 			if err != nil {
 				handleError(c, err)
@@ -41,7 +42,7 @@ func SetupRouter() *gin.Engine {
 			}
 			c.JSON(http.StatusOK, res)
 		})
-		douyinGroup.GET("/user", func(c *gin.Context) {
+		douyinGroup.GET(constants.RouteUserInfo, func(c *gin.Context) {
 			res, err := basis.ServeUserInfo(c)
 			if err != nil {
 				handleError(c, err)
@@ -49,7 +50,7 @@ func SetupRouter() *gin.Engine {
 			}
 			c.JSON(http.StatusOK, res)
 		})
-		douyinGroup.POST("/publish/action", func(c *gin.Context) {
+		douyinGroup.POST(constants.RoutePublishAction, func(c *gin.Context) {
 			res, err := basis.ServePublishAction(c)
 			if err != nil {
 				handleError(c, err)
@@ -57,7 +58,7 @@ func SetupRouter() *gin.Engine {
 			}
 			c.JSON(http.StatusOK, res)
 		})
-		douyinGroup.GET("/publish/list", func(c *gin.Context) {
+		douyinGroup.GET(constants.RoutePublishList, func(c *gin.Context) {
 			res, err := basis.ServePublishList(c)
 			if err != nil {
 				handleError(c, err)
@@ -67,8 +68,8 @@ func SetupRouter() *gin.Engine {
 		})
 	}
 	{
-		// interactionproto interfaces
-		douyinGroup.POST("/favorite/action", func(c *gin.Context) {
+		// interaction interfaces
+		douyinGroup.POST(constants.RouteFavoriteAction, func(c *gin.Context) {
 			res, err := interaction.ServeFavoriteAction(c)
 			if err != nil {
 				handleError(c, err)
@@ -76,7 +77,7 @@ func SetupRouter() *gin.Engine {
 			}
 			c.JSON(http.StatusOK, res)
 		})
-		douyinGroup.GET("/favorite/list", func(c *gin.Context) {
+		douyinGroup.GET(constants.RouteFavoriteList, func(c *gin.Context) {
 			res, err := interaction.ServeFavoriteList(c)
 			if err != nil {
 				handleError(c, err)
@@ -84,7 +85,7 @@ func SetupRouter() *gin.Engine {
 			}
 			c.JSON(http.StatusOK, res)
 		})
-		douyinGroup.POST("/comment/action", func(c *gin.Context) {
+		douyinGroup.POST(constants.RouteCommentAction, func(c *gin.Context) {
 			res, err := interaction.ServeCommentAction(c)
 			if err != nil {
 				handleError(c, err)
@@ -92,7 +93,7 @@ func SetupRouter() *gin.Engine {
 			}
 			c.JSON(http.StatusOK, res)
 		})
-		douyinGroup.GET("/comment/list", func(c *gin.Context) {
+		douyinGroup.GET(constants.RouteCommentList, func(c *gin.Context) {
 			res, err := interaction.ServeCommentList(c)
 			if err != nil {
 				handleError(c, err)
@@ -102,8 +103,8 @@ func SetupRouter() *gin.Engine {
 		})
 	}
 	{
-		// relationproto interfaces
-		douyinGroup.POST("/relation/action", func(c *gin.Context) {
+		// relation interfaces
+		douyinGroup.POST(constants.RouteRelationAction, func(c *gin.Context) {
 			res, err := relation.ServeRelationAction(c)
 			if err != nil {
 				handleError(c, err)
@@ -111,7 +112,7 @@ func SetupRouter() *gin.Engine {
 			}
 			c.JSON(http.StatusOK, res)
 		})
-		douyinGroup.GET("/relation/follow/list", func(c *gin.Context) {
+		douyinGroup.GET(constants.RouteRelationFollowList, func(c *gin.Context) {
 			res, err := relation.ServeRelationFollowList(c)
 			if err != nil {
 				handleError(c, err)
@@ -119,7 +120,7 @@ func SetupRouter() *gin.Engine {
 			}
 			c.JSON(http.StatusOK, res)
 		})
-		douyinGroup.GET("/relation/follower/list", func(c *gin.Context) {
+		douyinGroup.GET(constants.RouteRelationFollowerList, func(c *gin.Context) {
 			res, err := relation.ServeRelationFollowerList(c)
 			if err != nil {
 				handleError(c, err)
@@ -127,7 +128,7 @@ func SetupRouter() *gin.Engine {
 			}
 			c.JSON(http.StatusOK, res)
 		})
-		douyinGroup.GET("/relation/friend/list", func(c *gin.Context) {
+		douyinGroup.GET(constants.RouteRelationFriendList, func(c *gin.Context) {
 			res, err := relation.ServeRelationFriendList(c)
 			if err != nil {
 				handleError(c, err)
@@ -135,7 +136,7 @@ func SetupRouter() *gin.Engine {
 			}
 			c.JSON(http.StatusOK, res)
 		})
-		douyinGroup.GET("/message/chat", func(c *gin.Context) {
+		douyinGroup.GET(constants.RouteMessageChat, func(c *gin.Context) {
 			res, err := relation.ServeMessageChat(c)
 			if err != nil {
 				handleError(c, err)
@@ -143,7 +144,7 @@ func SetupRouter() *gin.Engine {
 			}
 			c.JSON(http.StatusOK, res)
 		})
-		douyinGroup.POST("/message/action", func(c *gin.Context) {
+		douyinGroup.POST(constants.RouteMessageAction, func(c *gin.Context) {
 			res, err := relation.ServeMessageAction(c)
 			if err != nil {
 				handleError(c, err)
