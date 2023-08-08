@@ -6,6 +6,7 @@ import (
 	"douyin/pb"
 	"github.com/gin-gonic/gin"
 	"log"
+	"mime/multipart"
 	"net/http"
 	"path"
 )
@@ -15,13 +16,11 @@ import (
 // Method is POST
 // token, title and file is required.
 func ServePublishAction(c *gin.Context) (res *pb.DouyinPublishActionResponse, err error) {
-	token, title := c.PostForm("token"), c.PostForm("title")
-	file, err := c.FormFile("file")
-	if token == "" || title == "" || err == http.ErrMissingFile {
-		log.Printf("token: %v, title: %v, err: %v", token, title, err)
-		return nil, configs.ParamEmptyError
-	}
-	if err != nil {
+	var (
+		token, title string
+		file         *multipart.FileHeader
+	)
+	if err = checkPublishActionParams(c, &token, &title, &file); err != nil {
 		return nil, err
 	}
 	if err = c.SaveUploadedFile(file, path.Join(constants.UploadFileDir, file.Filename)); err != nil {
@@ -31,4 +30,20 @@ func ServePublishAction(c *gin.Context) (res *pb.DouyinPublishActionResponse, er
 		StatusCode: &configs.DefaultInt32,
 		StatusMsg:  &configs.DefaultString,
 	}, nil
+}
+
+func checkPublishActionParams(c *gin.Context, pToken, pTitle *string, pFile **multipart.FileHeader) error {
+	token, title := c.PostForm("token"), c.PostForm("title")
+	file, err := c.FormFile("file")
+	if token == "" || title == "" || err == http.ErrMissingFile {
+		log.Printf("token: %v, title: %v, err: %v", token, title, err)
+		return configs.ParamEmptyError
+	}
+	if err != nil {
+		return err
+	}
+	*pToken = token
+	*pTitle = title
+	*pFile = file
+	return nil
 }

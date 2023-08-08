@@ -11,18 +11,35 @@ import (
 // Method is POST
 // token, to_user_id, action_type is required
 func ServeRelationAction(c *gin.Context) (res *pb.DouyinRelationActionResponse, err error) {
-	token, toUserID, actionType := c.PostForm("token"), c.PostForm("to_user_id"), c.PostForm("action_type")
-	if token == "" || toUserID == "" || actionType == "" {
-		return nil, configs.ParamEmptyError
-	}
-	if _, err = strconv.Atoi(toUserID); err != nil {
-		return nil, configs.ParamInputTypeError
-	}
-	if action, _ := strconv.Atoi(actionType); action != 1 && action != 2 {
-		return nil, configs.ParamUnknownActionTypeError
+	var (
+		token      string
+		toUserID   int64
+		actionType int
+	)
+	if err = checkRelationActionParams(c, &token, &toUserID, &actionType); err != nil {
+		return nil, err
 	}
 	return &pb.DouyinRelationActionResponse{
 		StatusCode: &configs.DefaultInt32,
 		StatusMsg:  &configs.DefaultString,
 	}, nil
+}
+
+func checkRelationActionParams(c *gin.Context, pToken *string, pToUserID *int64, pActionType *int) error {
+	token, toUserID, actionType := c.PostForm("token"), c.PostForm("to_user_id"), c.PostForm("action_type")
+	if token == "" || toUserID == "" || actionType == "" {
+		return configs.ParamEmptyError
+	}
+	id, err1 := strconv.Atoi(toUserID)
+	action, err2 := strconv.Atoi(actionType)
+	if err1 != nil || err2 != nil {
+		return configs.ParamInputTypeError
+	}
+	if action != 1 && action != 2 {
+		return configs.ParamUnknownActionTypeError
+	}
+	*pToken = token
+	*pToUserID = int64(id)
+	*pActionType = action
+	return nil
 }

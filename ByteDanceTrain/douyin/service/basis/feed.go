@@ -13,19 +13,13 @@ import (
 // 不限制登录状态，返回按投稿时间倒序的视频列表，视频数由服务端控制，单次最多30个
 // Method is GET
 func ServeFeed(c *gin.Context) (res *pb.DouyinFeedResponse, err error) {
-	latestTimeStr, token := c.Query("latest_time"), c.Query("token")
-	var latestTime time.Time
-	if latestTimeStr != "" {
-		t, err := strconv.Atoi(latestTimeStr)
-		if err != nil {
-			log.Printf("latestTimeStr: %v, token: %v", latestTimeStr, token)
-			return nil, configs.ParamInputTypeError
-		}
-		latestTime = time.UnixMilli(int64(t))
-	} else {
-		latestTime = time.Now()
+	var (
+		latestTime time.Time
+		token      string
+	)
+	if err = checkFeedParams(c, &latestTime, &token); err != nil {
+		return nil, err
 	}
-	log.Printf("latestTime: %v", latestTime)
 	feedRes := pb.DouyinFeedResponse{
 		StatusCode: &configs.DefaultInt32,
 		StatusMsg:  &configs.DefaultString,
@@ -34,4 +28,20 @@ func ServeFeed(c *gin.Context) (res *pb.DouyinFeedResponse, err error) {
 	}
 
 	return &feedRes, nil
+}
+
+func checkFeedParams(c *gin.Context, pLatestTime *time.Time, pToken *string) error {
+	latestTime, token := c.Query("latest_time"), c.Query("token")
+	if latestTime != "" {
+		t, err := strconv.Atoi(latestTime)
+		if err != nil {
+			log.Printf("latestTimeStr: %v, token: %v", latestTime, token)
+			return configs.ParamInputTypeError
+		}
+		*pLatestTime = time.UnixMilli(int64(t))
+	} else {
+		*pLatestTime = time.Now()
+	}
+	*pToken = token
+	return nil
 }

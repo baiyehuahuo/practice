@@ -10,5 +10,10 @@ var (
 )
 
 var (
+	AuthTokenFail              = errors.New("token is wrong or timeout")
+	AuthUsernameOrPasswordFail = errors.New("username or password is wrong")
+)
+
+var (
 	DBCreateUserError = errors.New("create user fail")
 )

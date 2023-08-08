@@ -12,18 +12,35 @@ import (
 // Method is POST
 // token, video_id, action_type is required
 func ServeFavoriteAction(c *gin.Context) (res *pb.DouyinFavoriteActionResponse, err error) {
-	token, videoID, actionType := c.PostForm("token"), c.PostForm("video_id"), c.PostForm("action_type")
-	if token == "" || videoID == "" || actionType == "" {
-		return nil, configs.ParamEmptyError
-	}
-	if _, err = strconv.Atoi(videoID); err != nil {
-		return nil, configs.ParamInputTypeError
-	}
-	if action, _ := strconv.Atoi(actionType); action != 1 && action != 2 {
-		return nil, configs.ParamUnknownActionTypeError
+	var (
+		token      string
+		videoID    int64
+		actionType int
+	)
+	if err = checkFavoriteActionParams(c, &token, &videoID, &actionType); err != nil {
+		return nil, err
 	}
 	return &pb.DouyinFavoriteActionResponse{
 		StatusCode: &configs.DefaultInt32,
 		StatusMsg:  &configs.DefaultString,
 	}, nil
+}
+
+func checkFavoriteActionParams(c *gin.Context, pToken *string, pVideoID *int64, pActionType *int) error {
+	token, videoID, actionType := c.PostForm("token"), c.PostForm("video_id"), c.PostForm("action_type")
+	if token == "" || videoID == "" || actionType == "" {
+		return configs.ParamEmptyError
+	}
+	id, err1 := strconv.Atoi(videoID)
+	action, err2 := strconv.Atoi(actionType)
+	if err1 != nil || err2 != nil {
+		return configs.ParamInputTypeError
+	}
+	if action != 1 && action != 2 {
+		return configs.ParamUnknownActionTypeError
+	}
+	*pToken = token
+	*pVideoID = int64(id)
+	*pActionType = action
+	return nil
 }

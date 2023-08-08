@@ -14,7 +14,7 @@ func CreateUser(user *model.User) error {
 	return err
 }
 
-// FindUser query user information from mysql by id or name
-func FindUser(user *model.User) {
+// QueryUser query user information from mysql by id or name
+func QueryUser(user *model.User) {
 	db.First(user)
 }
