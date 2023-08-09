@@ -12,8 +12,7 @@ import (
 )
 
 // SetupRouter get a configured gin engine
-func SetupRouter() *gin.Engine {
-	r := gin.Default()
+func SetupRouter(r *gin.Engine) {
 	r.Static("/static", "./assets")
 	douyinGroup := r.Group(constants.ProjectGroup)
 	{
@@ -201,7 +200,6 @@ func SetupRouter() *gin.Engine {
 			c.JSON(http.StatusOK, res)
 		})
 	}
-	return r
 }
 
 //func handleError(c *gin.Context, err *dyerror.DouyinError) {
