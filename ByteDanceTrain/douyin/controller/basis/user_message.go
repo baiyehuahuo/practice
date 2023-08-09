@@ -3,7 +3,10 @@ package basis
 import (
 	"douyin/constants"
 	"douyin/model/dyerror"
+	"douyin/model/entity"
 	"douyin/pb"
+	"douyin/service/TokenService"
+	"douyin/service/UserService"
 	"github.com/gin-gonic/gin"
 	"log"
 	"strconv"
@@ -21,10 +24,17 @@ func ServeUserInfo(c *gin.Context) (res *pb.DouyinUserResponse, err *dyerror.Dou
 	if err = checkUserInfoParams(c, &userID, &token); err != nil {
 		return nil, err
 	}
+	if err = TokenService.CheckToken(token, userID); err != nil {
+		return nil, err
+	}
+	user := &entity.User{
+		ID: userID,
+	}
+	UserService.QueryUserByID(user)
 	return &pb.DouyinUserResponse{
 		StatusCode: &constants.DefaultInt32,
 		StatusMsg:  &constants.DefaultString,
-		User:       constants.DefaultUser,
+		User:       user.GetPBUser(),
 	}, nil
 }
 

@@ -15,6 +15,11 @@ func CreateUser(user *entity.User) error {
 	return err
 }
 
+// QueryUserByID query user information from mysql by id
+func QueryUserByID(user *entity.User) {
+	DBService.GetDB().First(user, user.ID)
+}
+
 // QueryUserByName query user information from mysql by name
 func QueryUserByName(user *entity.User) {
 	DBService.GetDB().Where("name = ?", user.Name).First(user)

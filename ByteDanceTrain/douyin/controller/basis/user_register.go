@@ -25,7 +25,7 @@ func ServeUserRegister(c *gin.Context) (res *pb.DouyinUserRegisterResponse, err 
 		Name:     username,
 		Password: password,
 	}
-	if err := UserService.CreateUser(user); err != nil {
+	if err := UserService.CreateUser(user); err != nil { // todo bad name
 		return nil, dyerror.DBCreateUserError
 	}
 	UserService.QueryUserByName(user)

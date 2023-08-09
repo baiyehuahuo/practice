@@ -3,6 +3,7 @@ package TokenService
 import (
 	"bytes"
 	"douyin/constants"
+	"douyin/model/dyerror"
 	"github.com/patrickmn/go-cache"
 	"math/rand"
 )
@@ -14,7 +15,7 @@ func init() {
 }
 
 func SetToken(token string, userID int64) {
-	c.Set(token, userID, 0)
+	c.Set(token, userID, cache.DefaultExpiration)
 }
 
 func GenerateToken() string {
@@ -33,4 +34,12 @@ func GetUserIDFromToken(token string) (userID int64, found bool) {
 	}
 	userID = inter.(int64)
 	return userID, true
+}
+
+func CheckToken(token string, userID int64) *dyerror.DouyinError {
+	tokenID, found := GetUserIDFromToken(token)
+	if !found || userID != tokenID {
+		return dyerror.AuthTokenFailError
+	}
+	return nil
 }
