@@ -41,7 +41,7 @@ func getUserRegisterResponse(t *testing.T, payload *bytes.Buffer, writer *multip
 	return body
 }
 
-func TestRegisterSuccess(t *testing.T) {
+func TestUserRegisterSuccess(t *testing.T) {
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)
 	_ = writer.WriteField("username", constants.TestUsername+"2")
@@ -56,7 +56,7 @@ func TestRegisterSuccess(t *testing.T) {
 	log.Printf("Test user register success passed successfully")
 }
 
-func TestRegisterParamsEmptyFail(t *testing.T) {
+func TestUserRegisterParamsEmptyFail(t *testing.T) {
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)
 	_ = writer.WriteField("username", constants.TestUsername)
@@ -70,7 +70,7 @@ func TestRegisterParamsEmptyFail(t *testing.T) {
 	log.Printf("Test register params empty passed successfully")
 }
 
-func TestCreateUserFail(t *testing.T) {
+func TestUserRegisterCreateUserFail(t *testing.T) {
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)
 	_ = writer.WriteField("username", constants.TestUsername)
@@ -85,7 +85,7 @@ func TestCreateUserFail(t *testing.T) {
 	log.Printf("Test user register create user error passed successfully")
 }
 
-func TestRegisterParamInputLengthExceededFail(t *testing.T) {
+func TestUserRegisterParamInputLengthExceededFail(t *testing.T) {
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)
 	_ = writer.WriteField("username", strings.Repeat(constants.TestUsername, 15))

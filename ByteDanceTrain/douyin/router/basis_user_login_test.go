@@ -40,7 +40,7 @@ func getUserLoginResponse(t *testing.T, payload *bytes.Buffer, writer *multipart
 	return body
 }
 
-func TestLoginSuccess(t *testing.T) {
+func TestUserLoginSuccess(t *testing.T) {
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)
 	_ = writer.WriteField("username", constants.TestUsername)
@@ -55,7 +55,7 @@ func TestLoginSuccess(t *testing.T) {
 	log.Printf("Test user login success passed successfully")
 }
 
-func TestLoginUsernameFail(t *testing.T) {
+func TestUserLoginUsernameFail(t *testing.T) {
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)
 	_ = writer.WriteField("username", constants.TestUsername[1:]) // 账号为 一位的话就会报错
@@ -70,7 +70,7 @@ func TestLoginUsernameFail(t *testing.T) {
 	log.Printf("Test user login username fail passed successfully")
 }
 
-func TestLoginPasswordFail(t *testing.T) {
+func TestUserLoginPasswordFail(t *testing.T) {
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)
 	_ = writer.WriteField("username", constants.TestUsername)
@@ -85,7 +85,7 @@ func TestLoginPasswordFail(t *testing.T) {
 	log.Printf("Test user login password fail passed successfully")
 }
 
-func TestLoginParamsEmptyFail(t *testing.T) {
+func TestUserLoginParamsEmptyFail(t *testing.T) {
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)
 	_ = writer.WriteField("username", constants.TestUsername)
