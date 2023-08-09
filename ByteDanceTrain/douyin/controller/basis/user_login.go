@@ -8,7 +8,6 @@ import (
 	"douyin/service/TokenService"
 	"douyin/service/UserService"
 	"github.com/gin-gonic/gin"
-	"log"
 )
 
 // ServeUserLogin handle user login request
@@ -25,7 +24,7 @@ func ServeUserLogin(c *gin.Context) (res *pb.DouyinUserLoginResponse, err *dyerr
 	user := &entity.User{
 		Name: username,
 	}
-	UserService.QueryUser(user)
+	UserService.QueryUserByName(user)
 	if user.Password != password {
 		return nil, dyerror.AuthUsernameOrPasswordFailError
 	}
@@ -44,7 +43,7 @@ func ServeUserLogin(c *gin.Context) (res *pb.DouyinUserLoginResponse, err *dyerr
 func checkUserLoginParams(c *gin.Context, pUsername, pPassword *string) *dyerror.DouyinError {
 	username, password := c.PostForm("username"), c.PostForm("password")
 	if username == "" || password == "" {
-		log.Printf("username: %v, password: %v", username, password)
+		//log.Printf("username: %v, password: %v", username, password)
 		return dyerror.ParamEmptyError
 	}
 	*pUsername = username

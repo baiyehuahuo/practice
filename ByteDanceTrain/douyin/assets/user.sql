@@ -13,9 +13,14 @@ CREATE TABLE Users
     `total_favorited` INT DEFAULT 0 COMMENT '获赞数量',
     `work_count` INT DEFAULT  0 COMMENT '作品数量',
     `favorite_count` INT DEFAULT  0 COMMENT '点赞数量',
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    KEY (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO Users  (`name`, `password`)
+VALUES ('root', 'rootpwd');
+
+INSERT INTO Users  (`name`, `password`)
 VALUES ('fwf', 'fwf233');
+
 

@@ -29,7 +29,7 @@ func ServeUserRegister(c *gin.Context) (res *pb.DouyinUserRegisterResponse, err 
 	if err := UserService.CreateUser(user); err != nil {
 		return nil, dyerror.DBCreateUserError
 	}
-	UserService.QueryUser(user)
+	UserService.QueryUserByName(user)
 	token := TokenService.GenerateToken()
 	TokenService.SetToken(token, user.ID)
 	return &pb.DouyinUserRegisterResponse{

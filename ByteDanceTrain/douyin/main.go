@@ -4,12 +4,14 @@ import (
 	"douyin/constants"
 	"douyin/router"
 	_ "douyin/service/DBService"
+	"github.com/gin-gonic/gin"
 	"log"
 	"os"
 )
 
 func main() {
-	r := router.SetupRouter()
+	r := gin.Default()
+	router.SetupRouter(r)
 	if err := r.Run("127.0.0.1:20000"); err != nil {
 		log.Fatal(err)
 	}
