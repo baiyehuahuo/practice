@@ -20,7 +20,7 @@ CREATE TABLE Users
 INSERT INTO Users  (`name`, `password`)
 VALUES ('root', 'rootpwd');
 
-INSERT INTO Users  (`name`, `password`)
-VALUES ('fwf', 'fwf233');
+INSERT INTO Users  (`id`, `name`, `password`, `follow_count`, `follower_count`, `is_follow`, `avatar`, `background_image`, `signature`,`total_favorited`, `work_count`, `favorite_count`)
+VALUES (2, 'fwf', 'fwf233', 1, 2, false, '/uploadfiles/fwf/avatar.png', '/uploadfiles/fwf/background.png', 'hello world', 3, 4, 5);
 
 

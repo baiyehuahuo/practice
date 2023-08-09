@@ -39,7 +39,7 @@ func (user *User) GetPBUser() *pb.User {
 	}
 	*pbUser.Id = user.ID
 	*pbUser.Name = user.Name
-	*pbUser.FollowCount = user.FollowerCount
+	*pbUser.FollowCount = user.FollowCount
 	*pbUser.FollowerCount = user.FollowerCount
 	*pbUser.IsFollow = user.IsFollow
 	*pbUser.Avatar = user.Avatar

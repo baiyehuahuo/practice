@@ -8,7 +8,6 @@ import (
 	"douyin/service/TokenService"
 	"douyin/service/UserService"
 	"github.com/gin-gonic/gin"
-	"log"
 	"strconv"
 )
 
@@ -41,13 +40,13 @@ func ServeUserInfo(c *gin.Context) (res *pb.DouyinUserResponse, err *dyerror.Dou
 func checkUserInfoParams(c *gin.Context, pUserID *int64, pToken *string) *dyerror.DouyinError {
 	userID, token := c.Query("user_id"), c.Query("token")
 	if userID == "" || token == "" {
-		log.Printf("userID: %v, token: %v", userID, token)
+		//log.Printf("userID: %v, token: %v", userID, token)
 		return dyerror.ParamEmptyError
 	}
 
 	id, err := strconv.Atoi(userID)
 	if err != nil {
-		log.Printf("userID: %v, token: %v", userID, token)
+		//log.Printf("userID: %v, token: %v", userID, token)
 		return dyerror.ParamInputTypeError
 	}
 	*pUserID = int64(id)
