@@ -8,7 +8,6 @@ import (
 	"douyin/service/TokenService"
 	"douyin/service/UserService"
 	"github.com/gin-gonic/gin"
-	"log"
 )
 
 // ServeUserRegister handle user register request
@@ -43,11 +42,11 @@ func ServeUserRegister(c *gin.Context) (res *pb.DouyinUserRegisterResponse, err 
 func checkUserRegisterParams(c *gin.Context, pUsername, pPassword *string) *dyerror.DouyinError {
 	username, password := c.PostForm("username"), c.PostForm("password")
 	if username == "" || password == "" {
-		log.Printf("username: %v, password: %v", username, password)
+		//log.Printf("username: %v, password: %v", username, password)
 		return dyerror.ParamEmptyError
 	}
 	if len(username) > 32 || len(password) > 32 {
-		log.Printf("username: %v, password: %v", username, password)
+		//log.Printf("username: %v, password: %v", username, password)
 		return dyerror.ParamInputLengthExceededError
 	}
 	*pUsername = username
