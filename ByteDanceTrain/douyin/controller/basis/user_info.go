@@ -3,7 +3,6 @@ package basis
 import (
 	"douyin/constants"
 	"douyin/model/dyerror"
-	"douyin/model/entity"
 	"douyin/pb"
 	"douyin/service/TokenService"
 	"douyin/service/UserService"
@@ -26,10 +25,7 @@ func ServeUserInfo(c *gin.Context) (res *pb.DouyinUserResponse, dyerr *dyerror.D
 	if dyerr = TokenService.CheckToken(token, userID); dyerr != nil {
 		return nil, dyerr
 	}
-	user := &entity.User{
-		ID: userID,
-	}
-	UserService.QueryUserByID(user)
+	user := UserService.QueryUserByID(userID) // fwf 假设可能存在查询不到的情况？
 	return &pb.DouyinUserResponse{
 		StatusCode: &constants.DefaultInt32,
 		StatusMsg:  &constants.DefaultString,

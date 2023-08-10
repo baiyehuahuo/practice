@@ -15,12 +15,8 @@ func CreateVideo(video *entity.Video) error {
 	return err
 }
 
-// QueryUserByID query user information from mysql by id
-//func QueryUserByID(user *entity.User) {
-//	DBService.GetDB().First(user, user.ID)
-//}
-
-// QueryUserByName query user information from mysql by name
-//func QueryUserByName(user *entity.User) {
-//	DBService.GetDB().Where("name = ?", user.Name).First(user)
-//}
+// QueryVideosByAuthorID query publish videos where author_id == authorID
+func QueryVideosByAuthorID(authorID int64) (videos []*entity.Video) {
+	DBService.GetDB().Where("author_id = ?", authorID).Find(&videos)
+	return videos
+}

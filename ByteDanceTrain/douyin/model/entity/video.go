@@ -1,5 +1,7 @@
 package entity
 
+import "douyin/pb"
+
 //type Video struct {
 //	Id            int64  `json:"id,omitempty"`             // 视频唯一标识
 //	Author        User   `json:"author,omitempty"`         // 视频作者信息
@@ -24,4 +26,25 @@ type Video struct {
 
 func (Video) TableName() string {
 	return "Videos"
+}
+
+func (video *Video) GetPBVideo(author *pb.User) *pb.Video {
+	pbVideo := &pb.Video{
+		Id:            new(int64),
+		Author:        author,
+		PlayUrl:       new(string),
+		CoverUrl:      new(string),
+		FavoriteCount: new(int64),
+		CommentCount:  new(int64),
+		IsFavorite:    new(bool),
+		Title:         new(string),
+	}
+	*pbVideo.Id = video.ID
+	*pbVideo.PlayUrl = video.PlayURL
+	*pbVideo.CoverUrl = video.CoverURL
+	*pbVideo.FavoriteCount = video.FavoriteCount
+	*pbVideo.CommentCount = video.CommentCount
+	*pbVideo.IsFavorite = video.IsFavorite
+	*pbVideo.Title = video.Title
+	return pbVideo
 }

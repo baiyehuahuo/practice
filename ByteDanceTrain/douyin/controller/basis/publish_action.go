@@ -32,12 +32,12 @@ func ServePublishAction(c *gin.Context) (res *pb.DouyinPublishActionResponse, dy
 	if dyerr != nil {
 		return nil, dyerr
 	}
-	author := &entity.User{ID: userID}
-	UserService.QueryUserByID(author)
+	author := UserService.QueryUserByID(userID)
 	filePath := path.Join(constants.UploadFileDir, author.Name, file.Filename)
 	if _, err := os.Stat(filePath); err == nil {
 		return nil, dyerror.UploadFileExistError
 	}
+	// todo 下面这两步应该用 事务 来执行的
 	if err := c.SaveUploadedFile(file, filePath); err != nil {
 		dyerr = dyerror.UnknownError
 		dyerr.ErrMessage = err.Error()

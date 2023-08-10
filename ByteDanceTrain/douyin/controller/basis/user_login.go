@@ -3,7 +3,6 @@ package basis
 import (
 	"douyin/constants"
 	"douyin/model/dyerror"
-	"douyin/model/entity"
 	"douyin/pb"
 	"douyin/service/TokenService"
 	"douyin/service/UserService"
@@ -21,10 +20,7 @@ func ServeUserLogin(c *gin.Context) (res *pb.DouyinUserLoginResponse, dyerr *dye
 	if dyerr = checkUserLoginParams(c, &username, &password); dyerr != nil {
 		return nil, dyerr
 	}
-	user := &entity.User{
-		Name: username,
-	}
-	UserService.QueryUserByName(user)
+	user := UserService.QueryUserByName(username)
 	if user.Password != password {
 		return nil, dyerror.AuthUsernameOrPasswordFailError
 	}

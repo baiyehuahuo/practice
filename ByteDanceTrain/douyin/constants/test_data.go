@@ -14,3 +14,7 @@ const (
 	TestUserWorkCount       = 4
 	TestUserFavoriteCount   = 5
 )
+
+const (
+	TestVideoID = int64(2)
+)
