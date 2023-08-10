@@ -12,6 +12,7 @@ var c *cache.Cache
 
 func init() {
 	c = cache.New(constants.CacheTokenExpiration, constants.CacheCleanInterval)
+	c.Set("gyo7VknhMe5oQf28rVJm6mXoNzsdgVMa", constants.TestUserID, cache.DefaultExpiration) // use for test
 }
 
 func SetToken(token string, userID int64) {
@@ -27,18 +28,18 @@ func GenerateToken() string {
 	return buf.String()
 }
 
-func GetUserIDFromToken(token string) (userID int64, found bool) {
+func GetUserIDFromToken(token string) (userID int64, err *dyerror.DouyinError) {
 	inter, found := c.Get(token)
 	if !found {
-		return 0, false
+		return 0, dyerror.AuthTokenFailError // userID forever not zero
 	}
 	userID = inter.(int64)
-	return userID, true
+	return userID, nil
 }
 
 func CheckToken(token string, userID int64) *dyerror.DouyinError {
-	tokenID, found := GetUserIDFromToken(token)
-	if !found || userID != tokenID {
+	tokenID, err := GetUserIDFromToken(token)
+	if err != nil || userID != tokenID {
 		return dyerror.AuthTokenFailError
 	}
 	return nil

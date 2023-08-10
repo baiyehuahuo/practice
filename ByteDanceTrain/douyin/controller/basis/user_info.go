@@ -15,16 +15,16 @@ import (
 // 获取用户的 id、昵称，如果实现社交部分的功能，还会返回关注数和粉丝数
 // Method is GET
 // user_id, token is required
-func ServeUserInfo(c *gin.Context) (res *pb.DouyinUserResponse, err *dyerror.DouyinError) {
+func ServeUserInfo(c *gin.Context) (res *pb.DouyinUserResponse, dyerr *dyerror.DouyinError) {
 	var (
 		userID int64
 		token  string
 	)
-	if err = checkUserInfoParams(c, &userID, &token); err != nil {
-		return nil, err
+	if dyerr = checkUserInfoParams(c, &userID, &token); dyerr != nil {
+		return nil, dyerr
 	}
-	if err = TokenService.CheckToken(token, userID); err != nil {
-		return nil, err
+	if dyerr = TokenService.CheckToken(token, userID); dyerr != nil {
+		return nil, dyerr
 	}
 	user := &entity.User{
 		ID: userID,

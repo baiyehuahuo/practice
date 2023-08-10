@@ -14,12 +14,12 @@ import (
 // 通过用户名和密码进行登录，登录成功后返回用户 id 和权限 token
 // Method is POST
 // username, password is required
-func ServeUserLogin(c *gin.Context) (res *pb.DouyinUserLoginResponse, err *dyerror.DouyinError) {
+func ServeUserLogin(c *gin.Context) (res *pb.DouyinUserLoginResponse, dyerr *dyerror.DouyinError) {
 	var (
 		username, password string
 	)
-	if err = checkUserLoginParams(c, &username, &password); err != nil {
-		return nil, err
+	if dyerr = checkUserLoginParams(c, &username, &password); dyerr != nil {
+		return nil, dyerr
 	}
 	user := &entity.User{
 		Name: username,

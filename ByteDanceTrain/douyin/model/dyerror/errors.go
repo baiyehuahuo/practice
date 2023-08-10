@@ -21,7 +21,13 @@ var (
 
 var (
 	// DBError 3xx
-	DBCreateUserError = &DouyinError{ErrCode: 301, ErrMessage: "create user fail"}
+	DBCreateUserError  = &DouyinError{ErrCode: 301, ErrMessage: "create user fail"}
+	DBCreateVideoError = &DouyinError{ErrCode: 302, ErrMessage: "create video fail"}
+)
+
+var (
+	// uploadError 4xx
+	UploadFileExistError = &DouyinError{ErrCode: 401, ErrMessage: "upload file exist"}
 )
 
 var (

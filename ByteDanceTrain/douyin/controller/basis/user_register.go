@@ -14,18 +14,18 @@ import (
 // 新用户注册时提供用户名，密码即可，用户名需要保证唯一。创建成功后返回用户 id 和权限token
 // Method is POST
 // username, password is required
-func ServeUserRegister(c *gin.Context) (res *pb.DouyinUserRegisterResponse, err *dyerror.DouyinError) {
+func ServeUserRegister(c *gin.Context) (res *pb.DouyinUserRegisterResponse, dyerr *dyerror.DouyinError) {
 	var (
 		username, password string
 	)
-	if err = checkUserRegisterParams(c, &username, &password); err != nil {
-		return nil, err
+	if dyerr = checkUserRegisterParams(c, &username, &password); dyerr != nil {
+		return nil, dyerr
 	}
 	user := &entity.User{
 		Name:     username,
 		Password: password,
 	}
-	if err := UserService.CreateUser(user); err != nil { // todo bad name
+	if err := UserService.CreateUser(user); err != nil {
 		return nil, dyerror.DBCreateUserError
 	}
 	UserService.QueryUserByName(user)
