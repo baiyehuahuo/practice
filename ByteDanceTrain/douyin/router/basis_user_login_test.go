@@ -6,7 +6,6 @@ import (
 	"douyin/model/dyerror"
 	"douyin/pb"
 	"encoding/json"
-	"log"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
@@ -52,7 +51,6 @@ func TestUserLoginSuccess(t *testing.T) {
 		len(*body.Token) != constants.TokenLength {
 		t.Fatalf("Test results are not as expected: %v", body)
 	}
-	log.Printf("Test user login success passed successfully")
 }
 
 func TestUserLoginUsernameFail(t *testing.T) {
@@ -67,7 +65,6 @@ func TestUserLoginUsernameFail(t *testing.T) {
 		*body.Token != constants.DefaultString {
 		t.Fatalf("Test results are not as expected: %v", body)
 	}
-	log.Printf("Test user login username fail passed successfully")
 }
 
 func TestUserLoginPasswordFail(t *testing.T) {
@@ -82,7 +79,6 @@ func TestUserLoginPasswordFail(t *testing.T) {
 		*body.Token != constants.DefaultString {
 		t.Fatalf("Test results are not as expected: %v", body)
 	}
-	log.Printf("Test user login password fail passed successfully")
 }
 
 func TestUserLoginParamsEmptyFail(t *testing.T) {
@@ -97,5 +93,4 @@ func TestUserLoginParamsEmptyFail(t *testing.T) {
 		*body.Token != constants.DefaultString {
 		t.Fatalf("Test results are not as expected: %v", body)
 	}
-	log.Printf("Test user login password empty passed successfully")
 }

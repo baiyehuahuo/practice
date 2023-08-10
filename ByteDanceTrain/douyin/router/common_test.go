@@ -27,6 +27,11 @@ func TestMain(m *testing.M) {
 	if err = userRebuild(); err != nil {
 		panic(err)
 	}
+	log.Print("users rebuild")
+	if err = videoRebuild(); err != nil {
+		panic(err)
+	}
+	log.Print("videos rebuild")
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)
 	_ = writer.WriteField("username", constants.TestUsername)
@@ -67,32 +72,32 @@ func userRebuild() error {
 	return execSQLFile(path.Join(constants.Assets, constants.UserSQLPath))
 }
 
-// if response user success and user info is test data return true
-func checkUserInfoSuccess(user *pb.User) bool {
-	return *user.Id == constants.TestUserID &&
-		*user.Name == constants.TestUsername &&
-		*user.FollowCount == constants.TestUserFollowCount &&
-		*user.FollowerCount == constants.TestUserFollowerCount &&
-		*user.IsFollow == constants.TestUserIsFollow &&
-		*user.Avatar == constants.TestUserAvatar &&
-		*user.BackgroundImage == constants.TestUserBackgroundImage &&
-		*user.Signature == constants.TestUserSignature &&
-		*user.TotalFavorited == constants.TestUserTotalFavorited &&
-		*user.WorkCount == constants.TestUserWorkCount &&
-		*user.FavoriteCount == constants.TestUserFavoriteCount
+func videoRebuild() error {
+	return execSQLFile(path.Join(constants.Assets, constants.VideoSQLPath))
 }
 
-// if response user fail and user info is default return true
-func checkUserInfoFail(user *pb.User) bool {
-	return *user.Id == constants.DefaultInt64 &&
-		*user.Name == constants.DefaultString &&
-		*user.FollowCount == constants.DefaultInt64 &&
-		*user.FollowerCount == constants.DefaultInt64 &&
-		*user.IsFollow == constants.DefaultBool &&
-		*user.Avatar == constants.DefaultString &&
-		*user.BackgroundImage == constants.DefaultString &&
-		*user.Signature == constants.DefaultString &&
-		*user.TotalFavorited == constants.DefaultInt64 &&
-		*user.WorkCount == constants.DefaultInt64 &&
-		*user.FavoriteCount == constants.DefaultInt64
+// if response user1 equals to user2 return true
+func checkUserEqual(user1, user2 *pb.User) bool {
+	return *user1.Id == *user2.Id &&
+		*user1.Name == *user2.Name &&
+		*user1.FollowCount == *user2.FollowCount &&
+		*user1.FollowerCount == *user2.FollowerCount &&
+		*user1.IsFollow == *user2.IsFollow &&
+		*user1.Avatar == *user2.Avatar &&
+		*user1.BackgroundImage == *user2.BackgroundImage &&
+		*user1.Signature == *user2.Signature &&
+		*user1.TotalFavorited == *user2.TotalFavorited &&
+		*user1.WorkCount == *user2.WorkCount &&
+		*user1.FavoriteCount == *user2.FavoriteCount
+}
+
+func checkVideoEqual(video1, video2 *pb.Video) bool {
+	return *video1.Id == *video2.Id &&
+		checkUserEqual(video1.Author, video2.Author) &&
+		*video1.PlayUrl == *video2.PlayUrl &&
+		*video1.CoverUrl == *video2.CoverUrl &&
+		*video1.FavoriteCount == *video2.FavoriteCount &&
+		*video1.CommentCount == *video2.CommentCount &&
+		*video1.IsFavorite == *video2.IsFavorite &&
+		*video1.Title == *video2.Title
 }

@@ -33,8 +33,9 @@ const (
 const (
 	UploadFileDir = "uploadfiles"
 
-	Assets      = "/Users/weifengfan/Documents/Practice/ByteDanceTrain/douyin/assets"
-	UserSQLPath = "/user.sql"
+	Assets       = "/Users/weifengfan/Documents/Practice/ByteDanceTrain/douyin/assets"
+	UserSQLPath  = "/user.sql"
+	VideoSQLPath = "/video.sql"
 )
 
 const (

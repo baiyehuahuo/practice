@@ -13,8 +13,8 @@ import (
 	"testing"
 )
 
-func getUserInfoResponse(t *testing.T, data url.Values) (body *pb.DouyinUserResponse) {
-	req, err := http.NewRequest(http.MethodGet, path.Join(constants.ProjectGroup, constants.RouteUserInfo), nil)
+func getPublishListResponse(t *testing.T, data url.Values) (body *pb.DouyinPublishListResponse) {
+	req, err := http.NewRequest(http.MethodGet, path.Join(constants.ProjectGroup, constants.RoutePublishList), nil)
 	if err != nil {
 		t.Fatalf("Build request failed, err: %v", err)
 	}
@@ -30,57 +30,65 @@ func getUserInfoResponse(t *testing.T, data url.Values) (body *pb.DouyinUserResp
 	if err != nil {
 		t.Fatalf("Read respond body failed, err: %v", err)
 	}
-	body = &pb.DouyinUserResponse{}
+	body = &pb.DouyinPublishListResponse{}
 	if err = json.Unmarshal(buf[:n], body); err != nil {
 		t.Fatalf("Convert respond body failed, err: %v", err)
 	}
 	return body
 }
 
-func TestUserInfoSuccess(t *testing.T) {
+func TestPublishListSuccess(t *testing.T) {
 	data := url.Values{}
 	data.Add("user_id", strconv.Itoa(int(constants.TestUserID)))
 	data.Add("token", token)
-	body := getUserInfoResponse(t, data)
+	body := getPublishListResponse(t, data)
 	if *body.StatusCode != constants.DefaultInt32 ||
 		*body.StatusMsg != constants.DefaultString ||
-		!checkUserEqual(body.User, constants.TestUser) {
+		len(body.VideoList) != len(constants.TestVideos) {
 		t.Fatalf("Test results are not as expected: %v", body)
+	}
+	for i := range body.VideoList {
+		if !checkVideoEqual(body.VideoList[i], constants.TestVideos[i]) {
+			t.Fatalf("Test result video %d are not as expected: %v", i, body.VideoList[i])
+		}
 	}
 }
 
-func TestUserInfoParamsEmptyFail(t *testing.T) {
+func TestPublishListParamsEmptyFail(t *testing.T) {
 	data := url.Values{}
 	data.Add("user_id", strconv.Itoa(int(constants.TestUserID)))
 	//data.Add("token", token)
-	body := getUserInfoResponse(t, data)
+	body := getPublishListResponse(t, data)
 	if *body.StatusCode != dyerror.ParamEmptyError.ErrCode ||
 		*body.StatusMsg != dyerror.ParamEmptyError.ErrMessage ||
-		!checkUserEqual(body.User, constants.DefaultUser) {
+		len(body.VideoList) != 1 ||
+		!checkVideoEqual(body.VideoList[0], constants.DefaultVideo) {
 		t.Fatalf("Test results are not as expected: %v", body)
 	}
 }
 
-func TestUserInfoInputTypeFail(t *testing.T) {
+func TestPublishListParamsInputTypeFail(t *testing.T) {
 	data := url.Values{}
-	data.Add("user_id", "hello")
+	data.Add("user_id", "jiliguala")
 	data.Add("token", token)
-	body := getUserInfoResponse(t, data)
+	body := getPublishListResponse(t, data)
 	if *body.StatusCode != dyerror.ParamInputTypeError.ErrCode ||
 		*body.StatusMsg != dyerror.ParamInputTypeError.ErrMessage ||
-		!checkUserEqual(body.User, constants.DefaultUser) {
+		len(body.VideoList) != 1 ||
+		!checkVideoEqual(body.VideoList[0], constants.DefaultVideo) {
 		t.Fatalf("Test results are not as expected: %v", body)
 	}
 }
 
-func TestUserInfoTokenAuthFail(t *testing.T) {
+func TestPublishListAuthTokenFail(t *testing.T) {
 	data := url.Values{}
 	data.Add("user_id", strconv.Itoa(int(constants.TestUserID)))
 	data.Add("token", token[1:])
-	body := getUserInfoResponse(t, data)
+	body := getPublishListResponse(t, data)
 	if *body.StatusCode != dyerror.AuthTokenFailError.ErrCode ||
 		*body.StatusMsg != dyerror.AuthTokenFailError.ErrMessage ||
-		!checkUserEqual(body.User, constants.DefaultUser) {
+		len(body.VideoList) != 1 ||
+		!checkVideoEqual(body.VideoList[0], constants.DefaultVideo) {
 		t.Fatalf("Test results are not as expected: %v", body)
 	}
 }

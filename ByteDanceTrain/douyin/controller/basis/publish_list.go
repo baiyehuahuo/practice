@@ -8,7 +8,6 @@ import (
 	"douyin/service/UserService"
 	"douyin/service/VideoService"
 	"github.com/gin-gonic/gin"
-	"log"
 	"strconv"
 )
 
@@ -44,13 +43,13 @@ func ServePublishList(c *gin.Context) (res *pb.DouyinPublishListResponse, err *d
 func checkPublishListParams(c *gin.Context, pUserID *int64, pToken *string) *dyerror.DouyinError {
 	userID, token := c.Query("user_id"), c.Query("token")
 	if userID == "" || token == "" {
-		log.Printf("userID: %v, token: %v", userID, token)
+		//log.Printf("userID: %v, token: %v", userID, token)
 		return dyerror.ParamEmptyError
 	}
 
 	id, err := strconv.Atoi(userID)
 	if err != nil {
-		log.Printf("userID: %v, token: %v", userID, token)
+		//log.Printf("userID: %v, token: %v", userID, token)
 		return dyerror.ParamInputTypeError
 	}
 	*pUserID = int64(id)

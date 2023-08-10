@@ -6,7 +6,6 @@ import (
 	"douyin/model/dyerror"
 	"douyin/pb"
 	"encoding/json"
-	"log"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
@@ -53,7 +52,6 @@ func TestUserRegisterSuccess(t *testing.T) {
 		len(*body.Token) != constants.TokenLength {
 		t.Fatalf("Test results are not as expected: %v", body)
 	}
-	log.Printf("Test user register success passed successfully")
 }
 
 func TestUserRegisterParamsEmptyFail(t *testing.T) {
@@ -67,7 +65,6 @@ func TestUserRegisterParamsEmptyFail(t *testing.T) {
 		*body.Token != constants.DefaultString {
 		t.Fatalf("Test results are not as expected: %v", body)
 	}
-	log.Printf("Test register params empty passed successfully")
 }
 
 func TestUserRegisterCreateUserFail(t *testing.T) {
@@ -82,7 +79,6 @@ func TestUserRegisterCreateUserFail(t *testing.T) {
 		*body.Token != constants.DefaultString {
 		t.Fatalf("Test results are not as expected: %v", body)
 	}
-	log.Printf("Test user register create user error passed successfully")
 }
 
 func TestUserRegisterParamInputLengthExceededFail(t *testing.T) {
@@ -97,5 +93,4 @@ func TestUserRegisterParamInputLengthExceededFail(t *testing.T) {
 		*body.Token != constants.DefaultString {
 		t.Fatalf("Test results are not as expected: %v", body)
 	}
-	log.Printf("Test register input length exceeded error passed successfully")
 }
