@@ -9,7 +9,6 @@ import (
 	"douyin/service/UserService"
 	"douyin/service/VideoService"
 	"github.com/gin-gonic/gin"
-	"log"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -60,7 +59,7 @@ func checkPublishActionParams(c *gin.Context, pToken, pTitle *string, pFile **mu
 	token, title := c.PostForm("token"), c.PostForm("title")
 	file, err := c.FormFile("file")
 	if token == "" || title == "" || err == http.ErrMissingFile {
-		log.Printf("token: %v, title: %v, err: %v", token, title, err)
+		//log.Printf("token: %v, title: %v, err: %v", token, title, err)
 		return dyerror.ParamEmptyError
 	}
 	if err != nil {

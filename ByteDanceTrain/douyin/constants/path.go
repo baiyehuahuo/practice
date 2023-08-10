@@ -31,9 +31,11 @@ const (
 )
 
 const (
+	ProjectPath = "/Users/weifengfan/Documents/Practice/ByteDanceTrain/douyin/" // 测试文件中需要加入该路径
+
 	UploadFileDir = "uploadfiles"
 
-	Assets       = "/Users/weifengfan/Documents/Practice/ByteDanceTrain/douyin/assets"
+	Assets       = "assets"
 	UserSQLPath  = "/user.sql"
 	VideoSQLPath = "/video.sql"
 )
