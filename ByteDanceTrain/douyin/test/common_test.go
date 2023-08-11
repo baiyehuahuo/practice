@@ -101,13 +101,13 @@ func execSQLFile(filePath string) (err error) {
 }
 
 func userRebuild(t *testing.T) {
-	if err = execSQLFile(path.Join("../", constants.Assets, constants.UserSQLPath)); err != nil {
+	if err = execSQLFile(path.Join("../", constants.Assets, constants.UserSQLFileName)); err != nil {
 		t.Fatal(err)
 	}
 }
 
 func videoRebuild(t *testing.T) {
-	if err = execSQLFile(path.Join("../", constants.Assets, constants.VideoSQLPath)); err != nil {
+	if err = execSQLFile(path.Join("../", constants.Assets, constants.VideoSQLFileName)); err != nil {
 		t.Fatal(err)
 	}
 }
