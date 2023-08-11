@@ -158,3 +158,13 @@ func postResponse(t *testing.T, payload *bytes.Buffer, writer *multipart.Writer,
 	}
 	return
 }
+
+/*
+func TestSuccess(t *testing.T) {}
+
+func TestParamsEmptyFail(t *testing.T) {}
+
+func TestParamsInputTypeFail(t *testing.T) {}
+
+func TestAuthTokenFail(t *testing.T) {}
+*/
