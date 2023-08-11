@@ -21,8 +21,10 @@ var (
 
 var (
 	// DBError 3xx
-	DBCreateUserError  = &DouyinError{ErrCode: 301, ErrMessage: "create user fail"}
-	DBCreateVideoError = &DouyinError{ErrCode: 302, ErrMessage: "create video fail"}
+	DBCreateUserError          = &DouyinError{ErrCode: 301, ErrMessage: "create user fail"}
+	DBCreateVideoError         = &DouyinError{ErrCode: 302, ErrMessage: "create video fail"}
+	DBCreateFavoriteEventError = &DouyinError{ErrCode: 303, ErrMessage: "create favorite event fail"}
+	DBDeleteFavoriteEventError = &DouyinError{ErrCode: 313, ErrMessage: "delete favorite event fail"}
 )
 
 var (

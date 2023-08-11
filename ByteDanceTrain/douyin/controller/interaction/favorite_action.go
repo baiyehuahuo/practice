@@ -3,7 +3,11 @@ package interaction
 import (
 	"douyin/constants"
 	"douyin/model/dyerror"
+	"douyin/model/entity"
 	"douyin/pb"
+	"douyin/service/FavoriteService"
+	"douyin/service/TokenService"
+	"douyin/service/VideoService"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
@@ -12,14 +16,29 @@ import (
 // 登录用户对视频的点赞和取消点赞操作
 // Method is POST
 // token, video_id, action_type is required
-func ServeFavoriteAction(c *gin.Context) (res *pb.DouyinFavoriteActionResponse, err *dyerror.DouyinError) {
+func ServeFavoriteAction(c *gin.Context) (res *pb.DouyinFavoriteActionResponse, dyerr *dyerror.DouyinError) {
 	var (
 		token      string
 		videoID    int64
 		actionType int
 	)
-	if err = checkFavoriteActionParams(c, &token, &videoID, &actionType); err != nil {
-		return nil, err
+	if dyerr = checkFavoriteActionParams(c, &token, &videoID, &actionType); dyerr != nil {
+		return nil, dyerr
+	}
+	userID, dyerr := TokenService.GetUserIDFromToken(token)
+	if dyerr != nil {
+		return nil, dyerr
+	}
+	video := VideoService.QueryVideoByVideoID(videoID)
+	if actionType == 1 {
+		if dyerr = FavoriteService.CreateFavoriteEvent(&entity.Favorite{UserID: userID, VideoID: videoID, AuthorID: video.AuthorID}); dyerr != nil {
+			return nil, dyerr
+		}
+	}
+	if actionType == 2 {
+		if dyerr = FavoriteService.DeleteFavoriteEvent(&entity.Favorite{UserID: userID, VideoID: videoID}); dyerr != nil {
+			return nil, dyerr
+		}
 	}
 	return &pb.DouyinFavoriteActionResponse{
 		StatusCode: &constants.DefaultInt32,

@@ -1,19 +1,30 @@
 package VideoService
 
 import (
+	"douyin/model/dyerror"
 	"douyin/model/entity"
 	"douyin/service/DBService"
-	"log"
 	"time"
 )
 
 // CreateVideo create a new record in table videos
-func CreateVideo(video *entity.Video) error {
-	err := DBService.GetDB().Create(video).Error
-	if err != nil {
-		log.Println(err)
+func CreateVideo(video *entity.Video) *dyerror.DouyinError {
+	if err := DBService.GetDB().Create(video).Error; err != nil {
+		return dyerror.DBCreateVideoError
 	}
-	return err
+	return nil
+}
+
+// QueryWorkCountByAuthorID search video count published by author
+func QueryWorkCountByAuthorID(authorID int64) (workCount int64) {
+	DBService.GetDB().Where("author_id = ?", authorID).Count(&workCount)
+	return workCount
+}
+
+// QueryVideoByVideoID search video where id = videoID
+func QueryVideoByVideoID(videoID int64) (video *entity.Video) {
+	DBService.GetDB().Where("id = ?", videoID).Find(&video)
+	return video
 }
 
 // QueryVideosByAuthorID query publish videos where author_id == authorID

@@ -1,17 +1,17 @@
 package UserService
 
 import (
+	"douyin/model/dyerror"
 	"douyin/model/entity"
 	"douyin/service/DBService"
 )
 
 // CreateUser create a new record in the mysql database
-func CreateUser(user *entity.User) error {
-	err := DBService.GetDB().Create(user).Error
-	//if err != nil {
-	//	log.Println(err)
-	//}
-	return err
+func CreateUser(user *entity.User) *dyerror.DouyinError {
+	if err := DBService.GetDB().Create(user).Error; err != nil {
+		return dyerror.DBCreateUserError
+	}
+	return nil
 }
 
 // QueryUserByID query user information from mysql by id

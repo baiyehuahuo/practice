@@ -42,12 +42,12 @@ func ServePublishAction(c *gin.Context) (res *pb.DouyinPublishActionResponse, dy
 		dyerr.ErrMessage = err.Error()
 		return nil, dyerr
 	}
-	if err := VideoService.CreateVideo(&entity.Video{
+	if dyerr = VideoService.CreateVideo(&entity.Video{
 		AuthorID: author.ID,
 		PlayURL:  filePath,
 		Title:    title,
-	}); err != nil {
-		return nil, dyerror.DBCreateVideoError
+	}); dyerr != nil {
+		return nil, dyerr
 	}
 	return &pb.DouyinPublishActionResponse{
 		StatusCode: &constants.DefaultInt32,
