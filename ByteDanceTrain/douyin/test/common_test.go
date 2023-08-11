@@ -1,9 +1,10 @@
-package router
+package test
 
 import (
 	"bytes"
 	"douyin/constants"
 	"douyin/pb"
+	"douyin/router"
 	"douyin/service/DBService"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
@@ -26,7 +27,7 @@ var (
 )
 
 func TestMain(m *testing.M) {
-	SetupRouter(r)
+	router.SetupRouter(r)
 	userRebuild(nil)
 	log.Print("users rebuild")
 	videoRebuild(nil)
@@ -100,16 +101,15 @@ func execSQLFile(filePath string) (err error) {
 }
 
 func userRebuild(t *testing.T) {
-	if err := execSQLFile(path.Join(constants.ProjectPath, constants.Assets, constants.UserSQLPath)); err != nil {
+	if err = execSQLFile(path.Join("../", constants.Assets, constants.UserSQLPath)); err != nil {
 		t.Fatal(err)
 	}
 }
 
 func videoRebuild(t *testing.T) {
-	if err = execSQLFile(path.Join(constants.ProjectPath, constants.Assets, constants.VideoSQLPath)); err != nil {
+	if err = execSQLFile(path.Join("../", constants.Assets, constants.VideoSQLPath)); err != nil {
 		t.Fatal(err)
 	}
-	//cleanTestFiles() go test 似乎自带文件清楚功能
 }
 
 func getResponse(t *testing.T, data url.Values, routePath string, body interface{}) {

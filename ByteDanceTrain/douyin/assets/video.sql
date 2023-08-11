@@ -14,7 +14,6 @@ CREATE TABLE Videos
     KEY (`author_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-# timestamp
 INSERT INTO Videos  (`author_id`, `play_url`, `publish_time`)
 VALUES (1, 'uploadfiles/root/animal.mp4', '2200-01-04 12:00:00');
 

@@ -1,5 +1,5 @@
 // GET METHOD
-package router
+package test
 
 import (
 	"douyin/constants"

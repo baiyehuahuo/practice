@@ -1,5 +1,5 @@
 // POST METHOD
-package router
+package test
 
 import (
 	"bytes"
