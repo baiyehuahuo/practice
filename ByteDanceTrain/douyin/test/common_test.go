@@ -32,6 +32,8 @@ func TestMain(m *testing.M) {
 	log.Print("users rebuild")
 	videoRebuild(nil)
 	log.Print("videos rebuild")
+	favoriteRebuild(nil)
+	log.Print("favorite events rebuild")
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)
 	_ = writer.WriteField("username", constants.TestUsername)
@@ -44,6 +46,8 @@ func TestMain(m *testing.M) {
 	log.Print("users rebuild")
 	videoRebuild(nil)
 	log.Print("videos rebuild")
+	favoriteRebuild(nil)
+	log.Print("favorite events rebuild")
 }
 
 // if response user1 equals to user2 return true
@@ -112,6 +116,12 @@ func videoRebuild(t *testing.T) {
 	}
 }
 
+func favoriteRebuild(t *testing.T) {
+	if err = execSQLFile(path.Join("../", constants.Assets, constants.FavoriteSQLFileName)); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func getResponse(t *testing.T, data url.Values, routePath string, body interface{}) {
 	req, err := http.NewRequest(http.MethodGet, path.Join(constants.ProjectGroup, routePath), nil)
 	if err != nil {
@@ -165,6 +175,8 @@ func TestSuccess(t *testing.T) {}
 func TestParamsEmptyFail(t *testing.T) {}
 
 func TestParamsInputTypeFail(t *testing.T) {}
+
+func TestUnknownActionTypeFail(t *testing.T) {}
 
 func TestAuthTokenFail(t *testing.T) {}
 */

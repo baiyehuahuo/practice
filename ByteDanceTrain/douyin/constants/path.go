@@ -33,9 +33,10 @@ const (
 const (
 	UploadFileDir = "uploadfiles"
 
-	Assets           = "assets"
-	UserSQLFileName  = "user.sql"
-	VideoSQLFileName = "video.sql"
+	Assets              = "assets"
+	UserSQLFileName     = "user.sql"
+	VideoSQLFileName    = "video.sql"
+	FavoriteSQLFileName = "favorite_event.sql"
 )
 
 const (
