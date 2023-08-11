@@ -34,3 +34,24 @@ func ConvertToPBUser(user *entity.User) *pb.User {
 	*pbUser.FavoriteCount = FavoriteService.QueryFavoriteCountByUserID(user.ID)
 	return pbUser
 }
+
+func ConvertToPBVideo(video *entity.Video, author *pb.User) *pb.Video {
+	pbVideo := &pb.Video{
+		Id:            new(int64),
+		Author:        author,
+		PlayUrl:       new(string),
+		CoverUrl:      new(string),
+		FavoriteCount: new(int64),
+		CommentCount:  new(int64),
+		IsFavorite:    new(bool),
+		Title:         new(string),
+	}
+	*pbVideo.Id = video.ID
+	*pbVideo.PlayUrl = video.PlayURL
+	*pbVideo.CoverUrl = video.CoverURL
+	*pbVideo.FavoriteCount = FavoriteService.QueryFavoriteCountByVideoID(video.ID)
+	*pbVideo.CommentCount = video.CommentCount
+	*pbVideo.IsFavorite = video.IsFavorite
+	*pbVideo.Title = video.Title
+	return pbVideo
+}

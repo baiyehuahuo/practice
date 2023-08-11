@@ -33,7 +33,7 @@ func ServeFeed(c *gin.Context) (res *pb.DouyinFeedResponse, dyerr *dyerror.Douyi
 	for i := range videos {
 		//log.Printf("video title: %s, timestamp: %d", videos[i].Title, videos[i].PublishTime.Unix())
 		pbAuthor := common.ConvertToPBUser(UserService.QueryUserByID(videos[i].AuthorID))
-		pbVideoList = append(pbVideoList, videos[i].GetPBVideo(pbAuthor))
+		pbVideoList = append(pbVideoList, common.ConvertToPBVideo(videos[i], pbAuthor))
 	}
 	nextTime := videos[len(videos)-1].PublishTime.Unix()
 	feedRes := pb.DouyinFeedResponse{

@@ -30,7 +30,7 @@ const (
 	TestVideo2ID               = int64(3)
 	TestVideo2PlayURL          = "uploadfiles/fwf/抉择之战.mp4"
 	TestVideo2CoverURL         = "uploadfiles/fwf/抉择之战.jpg"
-	TestVideo2FavoriteCount    = 3
+	TestVideo2FavoriteCount    = 2
 	TestVideo2CommentCount     = 4
 	TestVideo2IsFavorite       = false
 	TestVideo2Title            = "抉择之战 游戏视频"

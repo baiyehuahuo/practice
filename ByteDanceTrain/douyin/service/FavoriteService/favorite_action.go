@@ -33,3 +33,9 @@ func QueryFavoriteCountByUserID(userID int64) (favoriteCount int64) {
 	DBService.GetDB().Model(&entity.Favorite{}).Where("user_id = ?", userID).Count(&favoriteCount)
 	return favoriteCount
 }
+
+// QueryFavoriteCountByVideoID query favorited count by video id
+func QueryFavoriteCountByVideoID(videoID int64) (favoriteCount int64) {
+	DBService.GetDB().Model(&entity.Favorite{}).Where("video_id = ?", videoID).Count(&favoriteCount)
+	return favoriteCount
+}

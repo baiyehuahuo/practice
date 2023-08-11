@@ -32,7 +32,7 @@ func ServePublishList(c *gin.Context) (res *pb.DouyinPublishListResponse, err *d
 	videos := VideoService.QueryVideosByAuthorID(*author.Id)
 	pbVideos := make([]*pb.Video, 0, len(videos))
 	for i := range videos {
-		pbVideos = append(pbVideos, videos[i].GetPBVideo(author))
+		pbVideos = append(pbVideos, common.ConvertToPBVideo(videos[i], author))
 	}
 	return &pb.DouyinPublishListResponse{
 		StatusCode: &constants.DefaultInt32,
