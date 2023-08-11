@@ -30,6 +30,7 @@ func ServeFeed(c *gin.Context) (res *pb.DouyinFeedResponse, dyerr *dyerror.Douyi
 	videos := VideoService.QueryVideosByTimestamp(latestTime)
 	pbVideoList := make([]*pb.Video, 0, len(videos))
 	for i := range videos {
+		//log.Printf("video title: %s, timestamp: %d", videos[i].Title, videos[i].PublishTime.Unix())
 		pbAuthor := UserService.QueryUserByID(videos[i].AuthorID).GetPBUser()
 		pbVideoList = append(pbVideoList, videos[i].GetPBVideo(pbAuthor))
 	}
@@ -49,7 +50,6 @@ func checkFeedParams(c *gin.Context, pLatestTime *time.Time, pToken *string) *dy
 	if latestTime != "" {
 		t, err := strconv.Atoi(latestTime)
 		if err != nil {
-			//log.Printf("latestTimeStr: %v, token: %v", latestTime, token)
 			return dyerror.ParamInputTypeError
 		}
 		*pLatestTime = time.Unix(int64(t), 0)

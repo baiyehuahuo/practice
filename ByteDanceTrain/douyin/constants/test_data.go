@@ -18,21 +18,24 @@ const (
 )
 
 const (
-	TestVideo1ID            = int64(2)
-	TestVideo1PlayURL       = "uploadfiles/fwf/抉择之战.war3"
-	TestVideo1CoverURL      = "uploadfiles/fwf/抉择之战.png"
-	TestVideo1FavoriteCount = 1
-	TestVideo1CommentCount  = 2
-	TestVideo1IsFavorite    = true
-	TestVideo1Title         = "抉择之战 记录视频"
+	TestVideo1ID               = int64(2)
+	TestVideo1PlayURL          = "uploadfiles/fwf/抉择之战.war3"
+	TestVideo1CoverURL         = "uploadfiles/fwf/抉择之战.png"
+	TestVideo1FavoriteCount    = 1
+	TestVideo1CommentCount     = 2
+	TestVideo1IsFavorite       = true
+	TestVideo1Title            = "抉择之战 记录视频"
+	TestVideo1PublishTimestamp = 1691686968
 
-	TestVideo2ID            = int64(3)
-	TestVideo2PlayURL       = "uploadfiles/fwf/抉择之战.mp4"
-	TestVideo2CoverURL      = "uploadfiles/fwf/抉择之战.jpg"
-	TestVideo2FavoriteCount = 3
-	TestVideo2CommentCount  = 4
-	TestVideo2IsFavorite    = false
-	TestVideo2Title         = "抉择之战 游戏视频"
+	TestVideo2ID               = int64(3)
+	TestVideo2PlayURL          = "uploadfiles/fwf/抉择之战.mp4"
+	TestVideo2CoverURL         = "uploadfiles/fwf/抉择之战.jpg"
+	TestVideo2FavoriteCount    = 3
+	TestVideo2CommentCount     = 4
+	TestVideo2IsFavorite       = false
+	TestVideo2Title            = "抉择之战 游戏视频"
+	TestVideo2PublishTimestamp = 1399548023
+
 	//INSERT INTO Videos  (`id`, `author_id`, `play_url`, `cover_url`, `favorite_count`, `comment_count`, `is_favorite`, `title`)
 	//VALUES (3, 2, 'uploadfiles/fwf/抉择之战.mp4', 'uploadfiles/fwf/抉择之战.jpg', 3, 4, False, '抉择之战 游戏视频');
 )

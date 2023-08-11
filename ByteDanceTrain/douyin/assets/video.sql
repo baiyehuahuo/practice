@@ -14,11 +14,14 @@ CREATE TABLE Videos
     KEY (`author_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+# timestamp
 INSERT INTO Videos  (`author_id`, `play_url`, `publish_time`)
-VALUES (1, 'uploadfiles/root/animal.mp4', '2000-01-04 12:00:00');
+VALUES (1, 'uploadfiles/root/animal.mp4', '2200-01-04 12:00:00');
 
+# timestamp 1691686968
 INSERT INTO Videos  (`id`, `author_id`, `play_url`, `cover_url`, `favorite_count`, `comment_count`, `is_favorite`, `title`, `publish_time`)
 VALUES (2, 2, 'uploadfiles/fwf/抉择之战.war3', 'uploadfiles/fwf/抉择之战.png', 1, 2, TRUE, '抉择之战 记录视频', '2023-08-11 01:02:48');
 
+# timestamp 1399548023
 INSERT INTO Videos  (`id`, `author_id`, `play_url`, `cover_url`, `favorite_count`, `comment_count`, `is_favorite`, `title`, `publish_time`)
 VALUES (3, 2, 'uploadfiles/fwf/抉择之战.mp4', 'uploadfiles/fwf/抉择之战.jpg', 3, 4, False, '抉择之战 游戏视频', '2014-05-08 19:20:23');
