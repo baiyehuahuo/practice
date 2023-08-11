@@ -8,8 +8,10 @@ CREATE TABLE FavoriteEvents
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO FavoriteEvents  (`user_id`, `video_id`, `author_id`)
-VALUES (2, 2, 2);
+VALUES (1, 2, 2);
 
 INSERT INTO FavoriteEvents  (`user_id`, `video_id`, `author_id`)
-VALUES (2, 3,2);
+VALUES (1, 3, 2);
 
+INSERT INTO FavoriteEvents  (`user_id`, `video_id`, `author_id`)
+VALUES (2, 3, 2);

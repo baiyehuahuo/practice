@@ -1,6 +1,7 @@
 package basis
 
 import (
+	"douyin/common"
 	"douyin/constants"
 	"douyin/model/dyerror"
 	"douyin/pb"
@@ -29,7 +30,7 @@ func ServeUserInfo(c *gin.Context) (res *pb.DouyinUserResponse, dyerr *dyerror.D
 	return &pb.DouyinUserResponse{
 		StatusCode: &constants.DefaultInt32,
 		StatusMsg:  &constants.DefaultString,
-		User:       user.GetPBUser(),
+		User:       common.ConvertToPBUser(user),
 	}, nil
 }
 

@@ -24,12 +24,12 @@ func DeleteFavoriteEvent(favorite *entity.Favorite) *dyerror.DouyinError {
 
 // QueryTotalFavoritedByAuthorID query favorited count by author id
 func QueryTotalFavoritedByAuthorID(authorID int64) (totalFavorited int64) {
-	DBService.GetDB().Where("author_id = ?", authorID).Count(&totalFavorited)
+	DBService.GetDB().Model(&entity.Favorite{}).Where("author_id = ?", authorID).Count(&totalFavorited)
 	return totalFavorited
 }
 
 // QueryFavoriteCountByUserID query favorited count by user id
 func QueryFavoriteCountByUserID(userID int64) (favoriteCount int64) {
-	DBService.GetDB().Where("user_id = ?", userID).Count(&favoriteCount)
+	DBService.GetDB().Model(&entity.Favorite{}).Where("user_id = ?", userID).Count(&favoriteCount)
 	return favoriteCount
 }

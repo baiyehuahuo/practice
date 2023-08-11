@@ -1,6 +1,7 @@
 package basis
 
 import (
+	"douyin/common"
 	"douyin/constants"
 	"douyin/model/dyerror"
 	"douyin/pb"
@@ -31,7 +32,7 @@ func ServeFeed(c *gin.Context) (res *pb.DouyinFeedResponse, dyerr *dyerror.Douyi
 	pbVideoList := make([]*pb.Video, 0, len(videos))
 	for i := range videos {
 		//log.Printf("video title: %s, timestamp: %d", videos[i].Title, videos[i].PublishTime.Unix())
-		pbAuthor := UserService.QueryUserByID(videos[i].AuthorID).GetPBUser()
+		pbAuthor := common.ConvertToPBUser(UserService.QueryUserByID(videos[i].AuthorID))
 		pbVideoList = append(pbVideoList, videos[i].GetPBVideo(pbAuthor))
 	}
 	nextTime := videos[len(videos)-1].PublishTime.Unix()

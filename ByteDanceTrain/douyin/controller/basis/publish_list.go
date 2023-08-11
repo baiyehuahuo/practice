@@ -1,6 +1,7 @@
 package basis
 
 import (
+	"douyin/common"
 	"douyin/constants"
 	"douyin/model/dyerror"
 	"douyin/pb"
@@ -27,7 +28,7 @@ func ServePublishList(c *gin.Context) (res *pb.DouyinPublishListResponse, err *d
 		return nil, err
 	}
 
-	author := UserService.QueryUserByID(userID).GetPBUser()
+	author := common.ConvertToPBUser(UserService.QueryUserByID(userID))
 	videos := VideoService.QueryVideosByAuthorID(*author.Id)
 	pbVideos := make([]*pb.Video, 0, len(videos))
 	for i := range videos {

@@ -13,8 +13,8 @@ const (
 	TestUserBackgroundImage = "/uploadfiles/fwf/background.png"
 	TestUserSignature       = "hello world"
 	TestUserTotalFavorited  = 3
-	TestUserWorkCount       = 4
-	TestUserFavoriteCount   = 5
+	TestUserWorkCount       = 2
+	TestUserFavoriteCount   = 1
 )
 
 const (

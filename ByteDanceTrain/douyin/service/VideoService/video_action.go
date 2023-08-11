@@ -17,7 +17,7 @@ func CreateVideo(video *entity.Video) *dyerror.DouyinError {
 
 // QueryWorkCountByAuthorID search video count published by author
 func QueryWorkCountByAuthorID(authorID int64) (workCount int64) {
-	DBService.GetDB().Where("author_id = ?", authorID).Count(&workCount)
+	DBService.GetDB().Model(&entity.Video{}).Where("author_id = ?", authorID).Count(&workCount)
 	return workCount
 }
 
