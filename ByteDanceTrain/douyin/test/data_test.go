@@ -3,18 +3,31 @@ package test
 import "douyin/pb"
 
 const (
-	TestUserID              = int64(2) // 1 是 root
-	TestUsername            = "fwf"
-	TestUserPassword        = "fwf233"
-	TestUserFollowCount     = 1
-	TestUserFollowerCount   = 2
-	TestUserIsFollow        = false
-	TestUserAvatar          = "/uploadfiles/fwf/avatar.png"
-	TestUserBackgroundImage = "/uploadfiles/fwf/background.png"
-	TestUserSignature       = "hello world"
-	TestUserTotalFavorited  = 3
-	TestUserWorkCount       = 2
-	TestUserFavoriteCount   = 1
+	TestUserID1              = int64(2) // 1 是 root
+	TestUsername1            = "fwf"
+	TestUserPassword1        = "fwf233"
+	TestUserFollowCount1     = 1
+	TestUserFollowerCount1   = 2
+	TestUserIsFollow1        = false
+	TestUserAvatar1          = "/uploadfiles/fwf/avatar.png"
+	TestUserBackgroundImage1 = "/uploadfiles/fwf/background.png"
+	TestUserSignature1       = "hello world"
+	TestUserTotalFavorited1  = 3
+	TestUserWorkCount1       = 2
+	TestUserFavoriteCount1   = 1
+
+	TestUserID2              = int64(2) // 1 是 root
+	TestUsername2            = "范伟锋"
+	TestUserPassword2        = "baiyehuahuo"
+	TestUserFollowCount2     = 3
+	TestUserFollowerCount2   = 4
+	TestUserIsFollow2        = false
+	TestUserAvatar2          = "/uploadfiles/范伟锋/avatar.png"
+	TestUserBackgroundImage2 = "/uploadfiles/范伟锋/background.png"
+	TestUserSignature2       = "fail world"
+	TestUserTotalFavorited2  = 0
+	TestUserWorkCount2       = 0
+	TestUserFavoriteCount2   = 0
 )
 
 const (
@@ -49,12 +62,14 @@ const (
 
 var (
 	TestUser              *pb.User
-	TestVideos            []*pb.Video
+	TestUsers             []*pb.User
 	TestUserFavoriteVideo *pb.Video
+	TestVideos            []*pb.Video
 	TestComments          []*pb.Comment
 )
 
 func init() {
+	// users
 	TestUser = &pb.User{
 		Id:              new(int64),
 		Name:            new(string),
@@ -68,18 +83,46 @@ func init() {
 		WorkCount:       new(int64),
 		FavoriteCount:   new(int64),
 	}
-	*TestUser.Id = TestUserID // 1 是 root
-	*TestUser.Name = TestUsername
-	*TestUser.FollowCount = TestUserFollowCount
-	*TestUser.FollowerCount = TestUserFollowerCount
-	*TestUser.IsFollow = TestUserIsFollow
-	*TestUser.Avatar = TestUserAvatar
-	*TestUser.BackgroundImage = TestUserBackgroundImage
-	*TestUser.Signature = TestUserSignature
-	*TestUser.TotalFavorited = TestUserTotalFavorited
-	*TestUser.WorkCount = TestUserWorkCount
-	*TestUser.FavoriteCount = TestUserFavoriteCount
+	*TestUser.Id = TestUserID1 // 1 是 root
+	*TestUser.Name = TestUsername1
+	*TestUser.FollowCount = TestUserFollowCount1
+	*TestUser.FollowerCount = TestUserFollowerCount1
+	*TestUser.IsFollow = TestUserIsFollow1
+	*TestUser.Avatar = TestUserAvatar1
+	*TestUser.BackgroundImage = TestUserBackgroundImage1
+	*TestUser.Signature = TestUserSignature1
+	*TestUser.TotalFavorited = TestUserTotalFavorited1
+	*TestUser.WorkCount = TestUserWorkCount1
+	*TestUser.FavoriteCount = TestUserFavoriteCount1
 
+	TestUser2 := &pb.User{
+		Id:              new(int64),
+		Name:            new(string),
+		FollowCount:     new(int64),
+		FollowerCount:   new(int64),
+		IsFollow:        new(bool),
+		Avatar:          new(string),
+		BackgroundImage: new(string),
+		Signature:       new(string),
+		TotalFavorited:  new(int64),
+		WorkCount:       new(int64),
+		FavoriteCount:   new(int64),
+	}
+	*TestUser2.Id = TestUserID2 // 1 是 root
+	*TestUser2.Name = TestUsername2
+	*TestUser2.FollowCount = TestUserFollowCount2
+	*TestUser2.FollowerCount = TestUserFollowerCount2
+	*TestUser2.IsFollow = TestUserIsFollow2
+	*TestUser2.Avatar = TestUserAvatar2
+	*TestUser2.BackgroundImage = TestUserBackgroundImage2
+	*TestUser2.Signature = TestUserSignature2
+	*TestUser2.TotalFavorited = TestUserTotalFavorited2
+	*TestUser2.WorkCount = TestUserWorkCount2
+	*TestUser2.FavoriteCount = TestUserFavoriteCount2
+
+	TestUsers = append(TestUsers, TestUser2)
+
+	// videos
 	video := &pb.Video{
 		Id:            new(int64),
 		Author:        TestUser,
@@ -116,9 +159,9 @@ func init() {
 	*video.IsFavorite = TestVideo2IsFavorite
 	*video.Title = TestVideo2Title
 	TestVideos = append(TestVideos, video)
-
 	TestUserFavoriteVideo = TestVideos[1]
 
+	// comments
 	TestComment := &pb.Comment{
 		Id:         new(int64),
 		User:       TestUser,

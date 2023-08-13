@@ -11,7 +11,7 @@ import (
 
 func TestFavoriteListSuccess(t *testing.T) {
 	data := url.Values{}
-	data.Add("user_id", strconv.Itoa(int(TestUserID)))
+	data.Add("user_id", strconv.Itoa(int(TestUserID1)))
 	data.Add("token", token)
 	body := &pb.DouyinFavoriteListResponse{}
 	getResponse(t, data, constants.RouteFavoriteList, body)
@@ -25,7 +25,7 @@ func TestFavoriteListSuccess(t *testing.T) {
 
 func TestFavoriteListParamsEmptyFail(t *testing.T) {
 	data := url.Values{}
-	data.Add("user_id", strconv.Itoa(int(TestUserID)))
+	data.Add("user_id", strconv.Itoa(int(TestUserID1)))
 	//data.Add("token", token)
 	body := &pb.DouyinFavoriteListResponse{}
 	getResponse(t, data, constants.RouteFavoriteList, body)
@@ -53,7 +53,7 @@ func TestFavoriteListParamsInputTypeFail(t *testing.T) {
 
 func TestFavoriteListAuthTokenFail(t *testing.T) {
 	data := url.Values{}
-	data.Add("user_id", strconv.Itoa(int(TestUserID)))
+	data.Add("user_id", strconv.Itoa(int(TestUserID1)))
 	data.Add("token", token[1:])
 	body := &pb.DouyinFavoriteListResponse{}
 	getResponse(t, data, constants.RouteFavoriteList, body)

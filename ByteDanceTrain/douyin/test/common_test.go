@@ -36,8 +36,8 @@ func TestMain(m *testing.M) {
 	log.Print("favorite events rebuild")
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)
-	_ = writer.WriteField("username", TestUsername)
-	_ = writer.WriteField("password", TestUserPassword)
+	_ = writer.WriteField("username", TestUsername1)
+	_ = writer.WriteField("password", TestUserPassword1)
 	body := &pb.DouyinUserLoginResponse{}
 	postResponse(nil, payload, writer, constants.RouteUserLogin, body)
 	token = *body.Token

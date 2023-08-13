@@ -12,7 +12,7 @@ import (
 
 func TestUserInfoSuccess(t *testing.T) {
 	data := url.Values{}
-	data.Add("user_id", strconv.Itoa(int(TestUserID)))
+	data.Add("user_id", strconv.Itoa(int(TestUserID1)))
 	data.Add("token", token)
 	body := &pb.DouyinUserResponse{}
 	getResponse(t, data, constants.RouteUserInfo, body)
@@ -25,7 +25,7 @@ func TestUserInfoSuccess(t *testing.T) {
 
 func TestUserInfoParamsEmptyFail(t *testing.T) {
 	data := url.Values{}
-	data.Add("user_id", strconv.Itoa(int(TestUserID)))
+	data.Add("user_id", strconv.Itoa(int(TestUserID1)))
 	//data.Add("token", token)
 	body := &pb.DouyinUserResponse{}
 	getResponse(t, data, constants.RouteUserInfo, body)
@@ -51,7 +51,7 @@ func TestUserInfoInputTypeFail(t *testing.T) {
 
 func TestUserInfoTokenAuthFail(t *testing.T) {
 	data := url.Values{}
-	data.Add("user_id", strconv.Itoa(int(TestUserID)))
+	data.Add("user_id", strconv.Itoa(int(TestUserID1)))
 	data.Add("token", token[1:])
 	body := &pb.DouyinUserResponse{}
 	getResponse(t, data, constants.RouteUserInfo, body)

@@ -12,7 +12,7 @@ import (
 func TestPublishListSuccess(t *testing.T) {
 	videoRebuild(t)
 	data := url.Values{}
-	data.Add("user_id", strconv.Itoa(int(TestUserID)))
+	data.Add("user_id", strconv.Itoa(int(TestUserID1)))
 	data.Add("token", token)
 	body := &pb.DouyinPublishListResponse{}
 	getResponse(t, data, constants.RoutePublishList, body)
@@ -31,7 +31,7 @@ func TestPublishListSuccess(t *testing.T) {
 func TestPublishListParamsEmptyFail(t *testing.T) {
 	videoRebuild(t)
 	data := url.Values{}
-	data.Add("user_id", strconv.Itoa(int(TestUserID)))
+	data.Add("user_id", strconv.Itoa(int(TestUserID1)))
 	//data.Add("token", token)
 	body := &pb.DouyinPublishListResponse{}
 	getResponse(t, data, constants.RoutePublishList, body)
@@ -61,7 +61,7 @@ func TestPublishListParamsInputTypeFail(t *testing.T) {
 func TestPublishListAuthTokenFail(t *testing.T) {
 	videoRebuild(t)
 	data := url.Values{}
-	data.Add("user_id", strconv.Itoa(int(TestUserID)))
+	data.Add("user_id", strconv.Itoa(int(TestUserID1)))
 	data.Add("token", token[1:])
 	body := &pb.DouyinPublishListResponse{}
 	getResponse(t, data, constants.RoutePublishList, body)

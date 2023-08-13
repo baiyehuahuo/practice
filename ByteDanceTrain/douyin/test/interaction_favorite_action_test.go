@@ -27,7 +27,7 @@ func TestFavoriteAction1Success(t *testing.T) {
 	}
 
 	data := url.Values{}
-	data.Add("user_id", strconv.Itoa(int(TestUserID)))
+	data.Add("user_id", strconv.Itoa(int(TestUserID1)))
 	data.Add("token", token)
 	userBody := &pb.DouyinUserResponse{}
 	getResponse(t, data, constants.RouteUserInfo, userBody)
@@ -65,7 +65,7 @@ func TestFavoriteAction2Success(t *testing.T) {
 	}
 
 	data := url.Values{}
-	data.Add("user_id", strconv.Itoa(int(TestUserID)))
+	data.Add("user_id", strconv.Itoa(int(TestUserID1)))
 	data.Add("token", token)
 	userBody := &pb.DouyinUserResponse{}
 	getResponse(t, data, constants.RouteUserInfo, userBody)
