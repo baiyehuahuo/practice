@@ -7,16 +7,15 @@ import (
 	"douyin/model/dyerror"
 	"douyin/pb"
 	"mime/multipart"
+	"net/url"
 	"strconv"
 	"testing"
 	"time"
 )
 
-// todo 检测越权可能性
-
 func TestCommentAction1Success(t *testing.T) {
 	commentRebuild(t)
-	videoID, actionType := 3, 1
+	videoID, actionType := 2, 1
 	commentText, commentDate := "抉择之战 傻逼游戏", time.Now().Format("01-02")
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)
@@ -28,25 +27,24 @@ func TestCommentAction1Success(t *testing.T) {
 	postResponse(t, payload, writer, constants.RouteCommentAction, body)
 	if *body.StatusCode != constants.DefaultInt32 ||
 		*body.StatusMsg != constants.DefaultString ||
-		*body.Comment.Id != *TestComment.Id+1 ||
+		*body.Comment.Id != *TestComments[1].Id+1 ||
 		!checkUserEqual(body.Comment.User, TestUser) ||
 		*body.Comment.Content != commentText ||
 		*body.Comment.CreateDate != commentDate {
 		t.Fatalf("Test results are not as expected: %v", body)
 	}
 
-	// todo 检测评论个数
-	//data := url.Values{}
-	//data.Add("user_id", strconv.Itoa(int(TestUserID)))
-	//data.Add("token", token)
-	//userBody := &pb.DouyinUserResponse{}
-	//getResponse(t, data, constants.RouteUserInfo, userBody)
-	//if *body.StatusCode != constants.DefaultInt32 ||
-	//	*body.StatusMsg != constants.DefaultString ||
-	//	*userBody.User.TotalFavorited != *TestUser.TotalFavorited+1 ||
-	//	*userBody.User.FavoriteCount != *TestUser.FavoriteCount+1 {
-	//	t.Fatalf("Test results are not as expected: %v", userBody)
-	//}
+	// 检测评论个数
+	data := url.Values{}
+	data.Add("token", token)
+	data.Add("video_id", strconv.Itoa(int(*TestVideos[0].Id)))
+	commentListBody := &pb.DouyinCommentListResponse{}
+	getResponse(t, data, constants.RouteCommentList, commentListBody)
+	if *commentListBody.StatusCode != constants.DefaultInt32 ||
+		*commentListBody.StatusMsg != constants.DefaultString ||
+		len(commentListBody.CommentList) != len(TestComments)+1 {
+		t.Fatalf("Test results are not as expected: %v", body)
+	}
 
 	// 可重复评论
 	payload = &bytes.Buffer{}
@@ -58,7 +56,7 @@ func TestCommentAction1Success(t *testing.T) {
 	postResponse(t, payload, writer, constants.RouteCommentAction, body)
 	if *body.StatusCode != constants.DefaultInt32 ||
 		*body.StatusMsg != constants.DefaultString ||
-		*body.Comment.Id != *TestComment.Id+2 ||
+		*body.Comment.Id != *TestComments[1].Id+2 ||
 		!checkUserEqual(body.Comment.User, TestUser) ||
 		*body.Comment.Content != commentText ||
 		*body.Comment.CreateDate != commentDate {
@@ -74,34 +72,33 @@ func TestCommentAction2Success(t *testing.T) {
 	_ = writer.WriteField("token", token)
 	_ = writer.WriteField("video_id", strconv.Itoa(videoID))
 	_ = writer.WriteField("action_type", strconv.Itoa(actionType))
-	_ = writer.WriteField("comment_id", strconv.Itoa(int(*TestComment.Id)))
+	_ = writer.WriteField("comment_id", strconv.Itoa(int(*TestComments[1].Id)))
 	body := &pb.DouyinCommentActionResponse{}
 	postResponse(t, payload, writer, constants.RouteCommentAction, body)
 	if *body.StatusCode != constants.DefaultInt32 ||
 		*body.StatusMsg != constants.DefaultString ||
-		!checkCommentEqual(body.Comment, TestComment) {
+		!checkCommentEqual(body.Comment, TestComments[1]) {
 		t.Fatalf("Test results are not as expected: %v", body)
 	}
 
-	// todo 检测评论个数
-	//data := url.Values{}
-	//data.Add("user_id", strconv.Itoa(int(TestUserID)))
-	//data.Add("token", token)
-	//userBody := &pb.DouyinUserResponse{}
-	//getResponse(t, data, constants.RouteUserInfo, userBody)
-	//if *body.StatusCode != constants.DefaultInt32 ||
-	//	*body.StatusMsg != constants.DefaultString ||
-	//	*userBody.User.TotalFavorited != *TestUser.TotalFavorited-1 ||
-	//	*userBody.User.FavoriteCount != *TestUser.FavoriteCount-1 {
-	//	t.Fatalf("Test results are not as expected: %v", userBody)
-	//}
+	// 检测评论个数
+	data := url.Values{}
+	data.Add("token", token)
+	data.Add("video_id", strconv.Itoa(int(*TestVideos[0].Id)))
+	commentListBody := &pb.DouyinCommentListResponse{}
+	getResponse(t, data, constants.RouteCommentList, commentListBody)
+	if *commentListBody.StatusCode != constants.DefaultInt32 ||
+		*commentListBody.StatusMsg != constants.DefaultString ||
+		len(commentListBody.CommentList) != len(TestComments)-1 {
+		t.Fatalf("Test results are not as expected: %v", body)
+	}
 
 	payload = &bytes.Buffer{}
 	writer = multipart.NewWriter(payload)
 	_ = writer.WriteField("token", token)
 	_ = writer.WriteField("video_id", strconv.Itoa(videoID))
 	_ = writer.WriteField("action_type", strconv.Itoa(actionType))
-	_ = writer.WriteField("comment_id", strconv.Itoa(int(*TestComment.Id)))
+	_ = writer.WriteField("comment_id", strconv.Itoa(int(*TestComments[1].Id)))
 	postResponse(t, payload, writer, constants.RouteCommentAction, body)
 	if *body.StatusCode != dyerror.DBDeleteCommentEventError.ErrCode ||
 		*body.StatusMsg != dyerror.DBDeleteCommentEventError.ErrMessage {
@@ -109,6 +106,7 @@ func TestCommentAction2Success(t *testing.T) {
 	}
 }
 
+// 检测越权可能性
 func TestCommentAction2SafeSuccess(t *testing.T) {
 	commentRebuild(t)
 	videoID, actionType := 2, 2

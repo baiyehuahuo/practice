@@ -38,16 +38,20 @@ const (
 )
 
 const (
-	TestCommentID         = int64(2)
-	TestCommentContent    = "抉择之战真垃圾"
-	TestCommentCreateDate = "08-12"
+	TestCommentID1         = int64(2)
+	TestCommentContent1    = "抉择之战真不行"
+	TestCommentCreateDate1 = "08-11"
+
+	TestCommentID2         = int64(3)
+	TestCommentContent2    = "抉择之战真垃圾"
+	TestCommentCreateDate2 = "08-12"
 )
 
 var (
 	TestUser              *pb.User
 	TestVideos            []*pb.Video
 	TestUserFavoriteVideo *pb.Video
-	TestComment           *pb.Comment
+	TestComments          []*pb.Comment
 )
 
 func init() {
@@ -115,13 +119,24 @@ func init() {
 
 	TestUserFavoriteVideo = TestVideos[1]
 
+	TestComment := &pb.Comment{
+		Id:         new(int64),
+		User:       TestUser,
+		Content:    new(string),
+		CreateDate: new(string),
+	}
+	*TestComment.Id = TestCommentID1
+	*TestComment.Content = TestCommentContent1
+	*TestComment.CreateDate = TestCommentCreateDate1
+	TestComments = append(TestComments, TestComment)
 	TestComment = &pb.Comment{
 		Id:         new(int64),
 		User:       TestUser,
 		Content:    new(string),
 		CreateDate: new(string),
 	}
-	*TestComment.Id = TestCommentID
-	*TestComment.Content = TestCommentContent
-	*TestComment.CreateDate = TestCommentCreateDate
+	*TestComment.Id = TestCommentID2
+	*TestComment.Content = TestCommentContent2
+	*TestComment.CreateDate = TestCommentCreateDate2
+	TestComments = append(TestComments, TestComment)
 }

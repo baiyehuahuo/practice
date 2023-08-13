@@ -31,8 +31,8 @@ func TestFavoriteAction1Success(t *testing.T) {
 	data.Add("token", token)
 	userBody := &pb.DouyinUserResponse{}
 	getResponse(t, data, constants.RouteUserInfo, userBody)
-	if *body.StatusCode != constants.DefaultInt32 ||
-		*body.StatusMsg != constants.DefaultString ||
+	if *userBody.StatusCode != constants.DefaultInt32 ||
+		*userBody.StatusMsg != constants.DefaultString ||
 		*userBody.User.TotalFavorited != *TestUser.TotalFavorited+1 ||
 		*userBody.User.FavoriteCount != *TestUser.FavoriteCount+1 {
 		t.Fatalf("Test results are not as expected: %v", userBody)
@@ -69,8 +69,8 @@ func TestFavoriteAction2Success(t *testing.T) {
 	data.Add("token", token)
 	userBody := &pb.DouyinUserResponse{}
 	getResponse(t, data, constants.RouteUserInfo, userBody)
-	if *body.StatusCode != constants.DefaultInt32 ||
-		*body.StatusMsg != constants.DefaultString ||
+	if *userBody.StatusCode != constants.DefaultInt32 ||
+		*userBody.StatusMsg != constants.DefaultString ||
 		*userBody.User.TotalFavorited != *TestUser.TotalFavorited-1 ||
 		*userBody.User.FavoriteCount != *TestUser.FavoriteCount-1 {
 		t.Fatalf("Test results are not as expected: %v", userBody)
