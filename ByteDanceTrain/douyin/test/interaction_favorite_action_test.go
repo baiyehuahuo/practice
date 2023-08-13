@@ -42,14 +42,14 @@ func TestFavoriteAction2Success(t *testing.T) {
 	}
 
 	data := url.Values{}
-	data.Add("user_id", strconv.Itoa(int(constants.TestUserID)))
+	data.Add("user_id", strconv.Itoa(int(TestUserID)))
 	data.Add("token", token)
 	userBody := &pb.DouyinUserResponse{}
 	getResponse(t, data, constants.RouteUserInfo, userBody)
 	if *body.StatusCode != constants.DefaultInt32 ||
 		*body.StatusMsg != constants.DefaultString ||
-		*userBody.User.TotalFavorited != *constants.TestUser.TotalFavorited-1 ||
-		*userBody.User.FavoriteCount != *constants.TestUser.FavoriteCount-1 {
+		*userBody.User.TotalFavorited != *TestUser.TotalFavorited-1 ||
+		*userBody.User.FavoriteCount != *TestUser.FavoriteCount-1 {
 		t.Fatalf("Test results are not as expected: %v", userBody)
 	}
 }

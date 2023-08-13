@@ -12,17 +12,17 @@ import (
 func TestPublishListSuccess(t *testing.T) {
 	videoRebuild(t)
 	data := url.Values{}
-	data.Add("user_id", strconv.Itoa(int(constants.TestUserID)))
+	data.Add("user_id", strconv.Itoa(int(TestUserID)))
 	data.Add("token", token)
 	body := &pb.DouyinPublishListResponse{}
 	getResponse(t, data, constants.RoutePublishList, body)
 	if *body.StatusCode != constants.DefaultInt32 ||
 		*body.StatusMsg != constants.DefaultString ||
-		len(body.VideoList) != len(constants.TestVideos) {
+		len(body.VideoList) != len(TestVideos) {
 		t.Fatalf("Test results are not as expected: %v", body)
 	}
 	for i := range body.VideoList {
-		if !checkVideoEqual(body.VideoList[i], constants.TestVideos[i]) {
+		if !checkVideoEqual(body.VideoList[i], TestVideos[i]) {
 			t.Fatalf("Test result video %d are not as expected: %v", i, body.VideoList[i])
 		}
 	}
@@ -31,7 +31,7 @@ func TestPublishListSuccess(t *testing.T) {
 func TestPublishListParamsEmptyFail(t *testing.T) {
 	videoRebuild(t)
 	data := url.Values{}
-	data.Add("user_id", strconv.Itoa(int(constants.TestUserID)))
+	data.Add("user_id", strconv.Itoa(int(TestUserID)))
 	//data.Add("token", token)
 	body := &pb.DouyinPublishListResponse{}
 	getResponse(t, data, constants.RoutePublishList, body)
@@ -61,7 +61,7 @@ func TestPublishListParamsInputTypeFail(t *testing.T) {
 func TestPublishListAuthTokenFail(t *testing.T) {
 	videoRebuild(t)
 	data := url.Values{}
-	data.Add("user_id", strconv.Itoa(int(constants.TestUserID)))
+	data.Add("user_id", strconv.Itoa(int(TestUserID)))
 	data.Add("token", token[1:])
 	body := &pb.DouyinPublishListResponse{}
 	getResponse(t, data, constants.RoutePublishList, body)

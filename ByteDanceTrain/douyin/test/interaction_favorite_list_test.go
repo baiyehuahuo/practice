@@ -11,21 +11,21 @@ import (
 
 func TestFavoriteListSuccess(t *testing.T) {
 	data := url.Values{}
-	data.Add("user_id", strconv.Itoa(int(constants.TestUserID)))
+	data.Add("user_id", strconv.Itoa(int(TestUserID)))
 	data.Add("token", token)
 	body := &pb.DouyinFavoriteListResponse{}
 	getResponse(t, data, constants.RouteFavoriteList, body)
 	if *body.StatusCode != constants.DefaultInt32 ||
 		*body.StatusMsg != constants.DefaultString ||
 		len(body.VideoList) != 1 ||
-		!checkVideoEqual(body.VideoList[0], constants.TestUserFavoriteVideo) {
+		!checkVideoEqual(body.VideoList[0], TestUserFavoriteVideo) {
 		t.Fatalf("Test results are not as expected: %v", body)
 	}
 }
 
 func TestFavoriteListParamsEmptyFail(t *testing.T) {
 	data := url.Values{}
-	data.Add("user_id", strconv.Itoa(int(constants.TestUserID)))
+	data.Add("user_id", strconv.Itoa(int(TestUserID)))
 	//data.Add("token", token)
 	body := &pb.DouyinFavoriteListResponse{}
 	getResponse(t, data, constants.RouteFavoriteList, body)
@@ -53,7 +53,7 @@ func TestFavoriteListParamsInputTypeFail(t *testing.T) {
 
 func TestFavoriteListAuthTokenFail(t *testing.T) {
 	data := url.Values{}
-	data.Add("user_id", strconv.Itoa(int(constants.TestUserID)))
+	data.Add("user_id", strconv.Itoa(int(TestUserID)))
 	data.Add("token", token[1:])
 	body := &pb.DouyinFavoriteListResponse{}
 	getResponse(t, data, constants.RouteFavoriteList, body)

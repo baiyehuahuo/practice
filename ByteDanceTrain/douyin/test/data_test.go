@@ -1,4 +1,4 @@
-package constants
+package test
 
 import "douyin/pb"
 

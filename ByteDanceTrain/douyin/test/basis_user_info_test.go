@@ -12,20 +12,20 @@ import (
 
 func TestUserInfoSuccess(t *testing.T) {
 	data := url.Values{}
-	data.Add("user_id", strconv.Itoa(int(constants.TestUserID)))
+	data.Add("user_id", strconv.Itoa(int(TestUserID)))
 	data.Add("token", token)
 	body := &pb.DouyinUserResponse{}
 	getResponse(t, data, constants.RouteUserInfo, body)
 	if *body.StatusCode != constants.DefaultInt32 ||
 		*body.StatusMsg != constants.DefaultString ||
-		!checkUserEqual(body.User, constants.TestUser) {
+		!checkUserEqual(body.User, TestUser) {
 		t.Fatalf("Test results are not as expected: %v", body)
 	}
 }
 
 func TestUserInfoParamsEmptyFail(t *testing.T) {
 	data := url.Values{}
-	data.Add("user_id", strconv.Itoa(int(constants.TestUserID)))
+	data.Add("user_id", strconv.Itoa(int(TestUserID)))
 	//data.Add("token", token)
 	body := &pb.DouyinUserResponse{}
 	getResponse(t, data, constants.RouteUserInfo, body)
@@ -51,7 +51,7 @@ func TestUserInfoInputTypeFail(t *testing.T) {
 
 func TestUserInfoTokenAuthFail(t *testing.T) {
 	data := url.Values{}
-	data.Add("user_id", strconv.Itoa(int(constants.TestUserID)))
+	data.Add("user_id", strconv.Itoa(int(TestUserID)))
 	data.Add("token", token[1:])
 	body := &pb.DouyinUserResponse{}
 	getResponse(t, data, constants.RouteUserInfo, body)

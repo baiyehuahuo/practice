@@ -12,14 +12,14 @@ import (
 
 func TestFeedSuccessWithAllParams(t *testing.T) {
 	data := url.Values{}
-	data.Add("latest_time", strconv.Itoa(constants.TestVideo2PublishTimestamp))
+	data.Add("latest_time", strconv.Itoa(TestVideo2PublishTimestamp))
 	data.Add("token", token)
 	body := &pb.DouyinFeedResponse{}
 	getResponse(t, data, constants.RouteFeed, body)
 	if *body.StatusCode != constants.DefaultInt32 ||
 		*body.StatusMsg != constants.DefaultString ||
 		len(body.VideoList) != 1 ||
-		!checkVideoEqual(body.VideoList[0], constants.TestVideos[1]) { // reverse timestamp
+		!checkVideoEqual(body.VideoList[0], TestVideos[1]) { // reverse timestamp
 		t.Fatalf("Test results are not as expected: %v", body)
 	}
 }
@@ -32,11 +32,11 @@ func TestFeedSuccessWithoutParams(t *testing.T) {
 	getResponse(t, data, constants.RouteFeed, body)
 	if *body.StatusCode != constants.DefaultInt32 ||
 		*body.StatusMsg != constants.DefaultString ||
-		len(body.VideoList) != len(constants.TestVideos) { // reverse timestamp
+		len(body.VideoList) != len(TestVideos) { // reverse timestamp
 		t.Fatalf("Test results are not as expected: %v", body)
 	}
 	for i := range body.VideoList {
-		if !checkVideoEqual(body.VideoList[i], constants.TestVideos[i]) {
+		if !checkVideoEqual(body.VideoList[i], TestVideos[i]) {
 			t.Fatalf("Test results are not as expected: %d %v", i, body)
 		}
 	}
@@ -58,7 +58,7 @@ func TestFeedParamsInputTypeFail(t *testing.T) {
 
 func TestFeedAuthTokenFail(t *testing.T) {
 	data := url.Values{}
-	data.Add("latest_time", strconv.Itoa(constants.TestVideo2PublishTimestamp))
+	data.Add("latest_time", strconv.Itoa(TestVideo2PublishTimestamp))
 	data.Add("token", token[1:])
 	body := &pb.DouyinFeedResponse{}
 	getResponse(t, data, constants.RouteFeed, body)

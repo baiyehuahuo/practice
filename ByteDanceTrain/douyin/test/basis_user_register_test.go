@@ -15,13 +15,13 @@ func TestUserRegisterSuccess(t *testing.T) {
 	userRebuild(t)
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)
-	_ = writer.WriteField("username", constants.TestUsername+"2")
-	_ = writer.WriteField("password", constants.TestUserPassword+"3")
+	_ = writer.WriteField("username", TestUsername+"2")
+	_ = writer.WriteField("password", TestUserPassword+"3")
 	body := &pb.DouyinUserRegisterResponse{}
 	postResponse(t, payload, writer, constants.RouteUserRegister, body)
 	if *body.StatusCode != constants.DefaultInt32 ||
 		*body.StatusMsg != constants.DefaultString ||
-		*body.UserId != constants.TestUserID+1 ||
+		*body.UserId != TestUserID+1 ||
 		len(*body.Token) != constants.TokenLength {
 		t.Fatalf("Test results are not as expected: %v", body)
 	}
@@ -31,7 +31,7 @@ func TestUserRegisterParamsEmptyFail(t *testing.T) {
 	userRebuild(t)
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)
-	_ = writer.WriteField("username", constants.TestUsername)
+	_ = writer.WriteField("username", TestUsername)
 	body := &pb.DouyinUserRegisterResponse{}
 	postResponse(t, payload, writer, constants.RouteUserRegister, body)
 	if *body.StatusCode != dyerror.ParamEmptyError.ErrCode ||
@@ -46,8 +46,8 @@ func TestUserRegisterCreateUserFail(t *testing.T) {
 	userRebuild(t)
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)
-	_ = writer.WriteField("username", constants.TestUsername)
-	_ = writer.WriteField("password", constants.TestUserPassword)
+	_ = writer.WriteField("username", TestUsername)
+	_ = writer.WriteField("password", TestUserPassword)
 	body := &pb.DouyinUserRegisterResponse{}
 	postResponse(t, payload, writer, constants.RouteUserRegister, body)
 	if *body.StatusCode != dyerror.DBCreateUserError.ErrCode ||
@@ -62,8 +62,8 @@ func TestUserRegisterParamInputLengthExceededFail(t *testing.T) {
 	userRebuild(t)
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)
-	_ = writer.WriteField("username", strings.Repeat(constants.TestUsername, 15))
-	_ = writer.WriteField("password", constants.TestUserPassword)
+	_ = writer.WriteField("username", strings.Repeat(TestUsername, 15))
+	_ = writer.WriteField("password", TestUserPassword)
 	body := &pb.DouyinUserRegisterResponse{}
 	postResponse(t, payload, writer, constants.RouteUserRegister, body)
 	if *body.StatusCode != dyerror.ParamInputLengthExceededError.ErrCode ||
