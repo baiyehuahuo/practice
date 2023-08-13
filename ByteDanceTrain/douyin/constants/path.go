@@ -37,6 +37,7 @@ const (
 	UserSQLFileName     = "user.sql"
 	VideoSQLFileName    = "video.sql"
 	FavoriteSQLFileName = "favorite_event.sql"
+	CommentSQLFileName  = "comment_event.sql"
 )
 
 const (

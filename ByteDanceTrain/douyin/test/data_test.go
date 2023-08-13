@@ -35,15 +35,19 @@ const (
 	TestVideo2IsFavorite       = false
 	TestVideo2Title            = "抉择之战 游戏视频"
 	TestVideo2PublishTimestamp = 1399548023
+)
 
-	//INSERT INTO Videos  (`id`, `author_id`, `play_url`, `cover_url`, `favorite_count`, `comment_count`, `is_favorite`, `title`)
-	//VALUES (3, 2, 'uploadfiles/fwf/抉择之战.mp4', 'uploadfiles/fwf/抉择之战.jpg', 3, 4, False, '抉择之战 游戏视频');
+const (
+	TestCommentID         = int64(2)
+	TestCommentContent    = "抉择之战真垃圾"
+	TestCommentCreateDate = "08-12"
 )
 
 var (
 	TestUser              *pb.User
 	TestVideos            []*pb.Video
 	TestUserFavoriteVideo *pb.Video
+	TestComment           *pb.Comment
 )
 
 func init() {
@@ -110,4 +114,14 @@ func init() {
 	TestVideos = append(TestVideos, video)
 
 	TestUserFavoriteVideo = TestVideos[1]
+
+	TestComment = &pb.Comment{
+		Id:         new(int64),
+		User:       TestUser,
+		Content:    new(string),
+		CreateDate: new(string),
+	}
+	*TestComment.Id = TestCommentID
+	*TestComment.Content = TestCommentContent
+	*TestComment.CreateDate = TestCommentCreateDate
 }

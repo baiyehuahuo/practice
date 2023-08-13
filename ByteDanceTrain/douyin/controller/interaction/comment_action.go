@@ -1,12 +1,18 @@
 package interaction
 
 import (
+	"douyin/common"
 	"douyin/constants"
 	"douyin/model/dyerror"
+	"douyin/model/entity"
 	"douyin/pb"
+	"douyin/service/CommentService"
+	"douyin/service/TokenService"
+	"douyin/service/UserService"
 	"github.com/gin-gonic/gin"
 	"log"
 	"strconv"
+	"time"
 )
 
 // ServeCommentAction handle comment action request
@@ -14,20 +20,45 @@ import (
 // Method is POST
 // token, video_id, action_type is required
 // comment_text comment_id is optional
-func ServeCommentAction(c *gin.Context) (res *pb.DouyinCommentActionResponse, err *dyerror.DouyinError) {
+func ServeCommentAction(c *gin.Context) (res *pb.DouyinCommentActionResponse, dyerr *dyerror.DouyinError) {
 	var (
 		token, commentText string
 		videoID, commentID int64
 		actionType         int
 	)
-	if err = checkCommentActionParams(c, &token, &videoID, &actionType, &commentText, &commentID); err != nil {
-		return nil, err
+	if dyerr = checkCommentActionParams(c, &token, &videoID, &actionType, &commentText, &commentID); dyerr != nil {
+		return nil, dyerr
+	}
+	userID, dyerr := TokenService.GetUserIDFromToken(token)
+	if dyerr != nil {
+		return nil, dyerr
 	}
 
+	var comment = &entity.Comment{VideoID: videoID}
+	switch actionType {
+	case 1:
+		// 发表评论
+		comment.UserID = userID
+		comment.Content = commentText
+		comment.CreateDate = time.Now().Format("01-02")
+		if dyerr = CommentService.CreateCommentEvent(comment); dyerr != nil {
+			return nil, dyerr
+		}
+	case 2:
+		// 删除评论
+		comment = CommentService.QueryCommentByIDLimitByIDs(commentID, userID, videoID)
+		//if comment.ID == 0 {
+		//	return nil, dyerror.DBDeleteCommentEventError
+		//} todo 是不是加个错误未找到类型比较好？
+		if dyerr = CommentService.DeleteCommentEvent(comment); dyerr != nil {
+			return nil, dyerr
+		}
+	}
+	user := common.ConvertToPBUser(UserService.QueryUserByID(comment.UserID))
 	return &pb.DouyinCommentActionResponse{
 		StatusCode: &constants.DefaultInt32,
 		StatusMsg:  &constants.DefaultString,
-		Comment:    constants.DefaultComment,
+		Comment:    common.ConvertToPBComment(comment, user),
 	}, nil
 }
 
@@ -47,7 +78,7 @@ func checkCommentActionParams(c *gin.Context, pToken *string, pVideoID *int64, p
 	}
 	vid, err1 := strconv.Atoi(videoID)
 	cid, err2 := strconv.Atoi(commentID)
-	if err1 != nil || err2 != nil {
+	if err1 != nil || action == 2 && err2 != nil {
 		return dyerror.ParamInputTypeError
 	}
 

@@ -55,3 +55,16 @@ func ConvertToPBVideo(video *entity.Video, author *pb.User) *pb.Video {
 	*pbVideo.Title = video.Title
 	return pbVideo
 }
+
+func ConvertToPBComment(comment *entity.Comment, user *pb.User) *pb.Comment {
+	pbComment := &pb.Comment{
+		Id:         new(int64),
+		User:       user,
+		Content:    new(string),
+		CreateDate: new(string),
+	}
+	*pbComment.Id = comment.ID
+	*pbComment.Content = comment.Content
+	*pbComment.CreateDate = comment.CreateDate
+	return pbComment
+}

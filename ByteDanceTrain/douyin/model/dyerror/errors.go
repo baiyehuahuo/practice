@@ -24,7 +24,9 @@ var (
 	DBCreateUserError          = &DouyinError{ErrCode: 301, ErrMessage: "create user fail"}
 	DBCreateVideoError         = &DouyinError{ErrCode: 302, ErrMessage: "create video fail"}
 	DBCreateFavoriteEventError = &DouyinError{ErrCode: 303, ErrMessage: "create favorite event fail"}
+	DBCreateCommentEventError  = &DouyinError{ErrCode: 304, ErrMessage: "create comment event fail"}
 	DBDeleteFavoriteEventError = &DouyinError{ErrCode: 313, ErrMessage: "delete favorite event fail"}
+	DBDeleteCommentEventError  = &DouyinError{ErrCode: 314, ErrMessage: "delete comment event fail"}
 )
 
 var (

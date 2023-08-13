@@ -25,6 +25,29 @@ func TestFavoriteAction1Success(t *testing.T) {
 		*body.StatusMsg != constants.DefaultString {
 		t.Fatalf("Test results are not as expected: %v", body)
 	}
+
+	data := url.Values{}
+	data.Add("user_id", strconv.Itoa(int(TestUserID)))
+	data.Add("token", token)
+	userBody := &pb.DouyinUserResponse{}
+	getResponse(t, data, constants.RouteUserInfo, userBody)
+	if *body.StatusCode != constants.DefaultInt32 ||
+		*body.StatusMsg != constants.DefaultString ||
+		*userBody.User.TotalFavorited != *TestUser.TotalFavorited+1 ||
+		*userBody.User.FavoriteCount != *TestUser.FavoriteCount+1 {
+		t.Fatalf("Test results are not as expected: %v", userBody)
+	}
+
+	payload = &bytes.Buffer{}
+	writer = multipart.NewWriter(payload)
+	_ = writer.WriteField("token", token)
+	_ = writer.WriteField("video_id", strconv.Itoa(2))
+	_ = writer.WriteField("action_type", strconv.Itoa(1))
+	postResponse(t, payload, writer, constants.RouteFavoriteAction, body)
+	if *body.StatusCode != dyerror.DBCreateFavoriteEventError.ErrCode ||
+		*body.StatusMsg != dyerror.DBCreateFavoriteEventError.ErrMessage {
+		t.Fatalf("Test results are not as expected: %v", body)
+	}
 }
 
 func TestFavoriteAction2Success(t *testing.T) {
@@ -51,6 +74,18 @@ func TestFavoriteAction2Success(t *testing.T) {
 		*userBody.User.TotalFavorited != *TestUser.TotalFavorited-1 ||
 		*userBody.User.FavoriteCount != *TestUser.FavoriteCount-1 {
 		t.Fatalf("Test results are not as expected: %v", userBody)
+	}
+
+	payload = &bytes.Buffer{}
+	writer = multipart.NewWriter(payload)
+	_ = writer.WriteField("token", token)
+	_ = writer.WriteField("video_id", strconv.Itoa(3))
+	_ = writer.WriteField("action_type", strconv.Itoa(2))
+	body = &pb.DouyinFavoriteActionResponse{}
+	postResponse(t, payload, writer, constants.RouteFavoriteAction, body)
+	if *body.StatusCode != dyerror.DBDeleteFavoriteEventError.ErrCode ||
+		*body.StatusMsg != dyerror.DBDeleteFavoriteEventError.ErrMessage {
+		t.Fatalf("Test results are not as expected: %v", body)
 	}
 }
 

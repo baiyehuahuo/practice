@@ -16,8 +16,9 @@ func CreateFavoriteEvent(favorite *entity.Favorite) *dyerror.DouyinError {
 
 // DeleteFavoriteEvent delete a favorite record in mysql
 func DeleteFavoriteEvent(favorite *entity.Favorite) *dyerror.DouyinError {
-	if err := DBService.GetDB().Delete(favorite).Error; err != nil {
-		return dyerror.DBDeleteFavoriteEventError // todo maybe not succeed forever (delete returns ok whether the data exist or not)
+	// 小心越权取消
+	if affect := DBService.GetDB().Where("user_id = ? and video_id = ?", favorite.UserID, favorite.VideoID).Delete(favorite).RowsAffected; affect != 1 {
+		return dyerror.DBDeleteFavoriteEventError
 	}
 	return nil
 }

@@ -30,12 +30,12 @@ func ServeFavoriteAction(c *gin.Context) (res *pb.DouyinFavoriteActionResponse, 
 		return nil, dyerr
 	}
 	video := VideoService.QueryVideoByVideoID(videoID)
-	if actionType == 1 {
+	switch actionType {
+	case 1:
 		if dyerr = FavoriteService.CreateFavoriteEvent(&entity.Favorite{UserID: userID, VideoID: videoID, AuthorID: video.AuthorID}); dyerr != nil {
 			return nil, dyerr
 		}
-	}
-	if actionType == 2 {
+	case 2:
 		if dyerr = FavoriteService.DeleteFavoriteEvent(&entity.Favorite{UserID: userID, VideoID: videoID}); dyerr != nil {
 			return nil, dyerr
 		}

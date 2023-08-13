@@ -76,6 +76,13 @@ func checkVideoEqual(video1, video2 *pb.Video) bool {
 		*video1.Title == *video2.Title
 }
 
+func checkCommentEqual(comment1, comment2 *pb.Comment) bool {
+	return *comment1.Id == *comment2.Id &&
+		checkUserEqual(comment1.User, comment2.User) &&
+		*comment1.Content == *comment2.Content &&
+		*comment1.CreateDate == *comment2.CreateDate
+}
+
 func execSQLFile(filePath string) (err error) {
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -118,6 +125,12 @@ func videoRebuild(t *testing.T) {
 
 func favoriteRebuild(t *testing.T) {
 	if err = execSQLFile(path.Join("../", constants.Assets, constants.FavoriteSQLFileName)); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func commentRebuild(t *testing.T) {
+	if err = execSQLFile(path.Join("../", constants.Assets, constants.CommentSQLFileName)); err != nil {
 		t.Fatal(err)
 	}
 }

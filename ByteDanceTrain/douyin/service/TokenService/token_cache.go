@@ -12,7 +12,7 @@ var c *cache.Cache
 
 func init() {
 	c = cache.New(constants.CacheTokenExpiration, constants.CacheCleanInterval)
-	c.Set("gyo7VknhMe5oQf28rVJm6mXoNzsdgVMa", 2, cache.DefaultExpiration) // use for test, 2 is test.TestUserID
+	c.Set("gyo7VknhMe5oQf28rVJm6mXoNzsdgVMa", int64(2), cache.DefaultExpiration) // use for test, 2 is test.TestUserID
 }
 
 func SetToken(token string, userID int64) {
