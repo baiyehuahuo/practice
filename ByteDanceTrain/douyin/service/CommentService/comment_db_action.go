@@ -29,3 +29,9 @@ func QueryCommentByIDLimitByIDs(commentID, userID, videoID int64) (comment *enti
 	DBService.GetDB().Where("id = ? and user_id = ? and video_id = ?", commentID, userID, videoID).First(comment)
 	return comment
 }
+
+// QueryVideoCommentsByVideoID query comments by videoID
+func QueryVideoCommentsByVideoID(videoID int64) (comments []*entity.Comment) {
+	DBService.GetDB().Where("video_id = ?", videoID).Find(&comments)
+	return comments
+}

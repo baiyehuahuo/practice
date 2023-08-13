@@ -13,4 +13,7 @@ INSERT INTO CommentEvents (user_id, video_id, content, create_date)
 VALUES (1, 1, 'root 测试', '01-01');
 
 INSERT INTO CommentEvents  (`user_id`,  video_id, `content`, `create_date`)
+VALUES (2, 2,'抉择之战真不行', '08-11');
+
+INSERT INTO CommentEvents  (`user_id`,  video_id, `content`, `create_date`)
 VALUES (2, 2,'抉择之战真垃圾', '08-12');
