@@ -84,7 +84,7 @@ func TestFavoriteActionParamsInputTypeFail(t *testing.T) {
 	}
 }
 
-func TestUnknownActionTypeFail(t *testing.T) {
+func TestFavoriteActionUnknownActionTypeFail(t *testing.T) {
 	favoriteRebuild(t)
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)

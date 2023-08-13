@@ -133,7 +133,7 @@ func getResponse(t *testing.T, data url.Values, routePath string, body interface
 	r.ServeHTTP(record, req)
 	res := record.Result()
 	if res.StatusCode != 200 {
-		t.Fatalf("Request status code is not as expected")
+		t.Fatalf("Request status code is not as expected, code: %v", res.StatusCode)
 	}
 	n, err := res.Body.Read(buf)
 	if err != nil {

@@ -41,8 +41,9 @@ const (
 )
 
 var (
-	TestUser   *pb.User
-	TestVideos []*pb.Video
+	TestUser              *pb.User
+	TestVideos            []*pb.Video
+	TestUserFavoriteVideo *pb.Video
 )
 
 func init() {
@@ -108,4 +109,5 @@ func init() {
 	*video.Title = TestVideo2Title
 	TestVideos = append(TestVideos, video)
 
+	TestUserFavoriteVideo = TestVideos[1]
 }

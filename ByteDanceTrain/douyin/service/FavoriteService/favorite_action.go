@@ -22,6 +22,12 @@ func DeleteFavoriteEvent(favorite *entity.Favorite) *dyerror.DouyinError {
 	return nil
 }
 
+// QueryFavoritesByUserID query publish videos where user_id == userID
+func QueryFavoritesByUserID(userID int64) (favorites []*entity.Favorite) {
+	DBService.GetDB().Where("user_id = ?", userID).Find(&favorites)
+	return favorites
+}
+
 // QueryTotalFavoritedByAuthorID query favorited count by author id
 func QueryTotalFavoritedByAuthorID(authorID int64) (totalFavorited int64) {
 	DBService.GetDB().Model(&entity.Favorite{}).Where("author_id = ?", authorID).Count(&totalFavorited)
