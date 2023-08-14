@@ -135,6 +135,12 @@ func commentRebuild(t *testing.T) {
 	}
 }
 
+func relationRebuild(t *testing.T) {
+	if err = execSQLFile(path.Join("../", constants.Assets, constants.RelationSQLFileName)); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func getResponse(t *testing.T, data url.Values, routePath string, body interface{}) {
 	req, err := http.NewRequest(http.MethodGet, path.Join(constants.ProjectGroup, routePath), nil)
 	if err != nil {

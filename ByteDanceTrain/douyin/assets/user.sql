@@ -17,7 +17,9 @@ CREATE TABLE Users
 INSERT INTO Users  (`name`, `password`)
 VALUES ('root', 'rootpwd');
 
-INSERT INTO Users  (`id`, `name`, `password`, `follow_count`, `follower_count`, `is_follow`, `avatar`, `background_image`, `signature`)
-VALUES (2, 'fwf', 'fwf233', 1, 2, false, '/uploadfiles/fwf/avatar.png', '/uploadfiles/fwf/background.png', 'hello world');
+INSERT INTO Users  (`name`, `password`, `follow_count`, `follower_count`, `is_follow`, `avatar`, `background_image`, `signature`)
+VALUES ('fwf', 'fwf233', 1, 2, false, '/uploadfiles/fwf/avatar.png', '/uploadfiles/fwf/background.png', 'hello world');
 
+INSERT INTO Users  (`name`, `password`, `follow_count`, `follower_count`, `is_follow`, `avatar`, `background_image`, `signature`)
+VALUES ('范伟锋', 'baiyehuahuo', 3, 4, false, '/uploadfiles/范伟锋/avatar.png', '/uploadfiles/范伟锋/background.png', 'fail world');
 

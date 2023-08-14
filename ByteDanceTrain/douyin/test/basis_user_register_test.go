@@ -28,7 +28,6 @@ func TestUserRegisterSuccess(t *testing.T) {
 }
 
 func TestUserRegisterParamsEmptyFail(t *testing.T) {
-	userRebuild(t)
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)
 	_ = writer.WriteField("username", TestUsername1)
@@ -59,7 +58,6 @@ func TestUserRegisterCreateUserFail(t *testing.T) {
 }
 
 func TestUserRegisterParamInputLengthExceededFail(t *testing.T) {
-	userRebuild(t)
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)
 	_ = writer.WriteField("username", strings.Repeat(TestUsername1, 15))

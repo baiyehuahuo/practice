@@ -49,7 +49,6 @@ func TestPublishActionSuccess(t *testing.T) {
 }
 
 func TestPublishActionTokenAuthFail(t *testing.T) {
-	videoRebuild(t)
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)
 	_ = writer.WriteField("token", token[1:])
@@ -81,7 +80,6 @@ func TestPublishActionTokenAuthFail(t *testing.T) {
 }
 
 func TestPublishActionFileExistFail(t *testing.T) {
-	videoRebuild(t)
 	body := &pb.DouyinPublishActionResponse{}
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)

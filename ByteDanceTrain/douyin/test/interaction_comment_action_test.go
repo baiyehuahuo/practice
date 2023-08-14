@@ -126,7 +126,6 @@ func TestCommentAction2SafeSuccess(t *testing.T) {
 }
 
 func TestCommentActionParamsEmptyFail(t *testing.T) {
-	commentRebuild(t)
 	videoID := 2
 	//commentText, commentDate := "抉择之战 傻逼游戏", time.Now().Format("01-02")
 	payload := &bytes.Buffer{}
@@ -158,7 +157,6 @@ func TestCommentActionParamsEmptyFail(t *testing.T) {
 }
 
 func TestCommentActionParamsInputTypeFail(t *testing.T) {
-	commentRebuild(t)
 	actionType := 1
 	commentText := "抉择之战 傻逼游戏"
 	payload := &bytes.Buffer{}
@@ -177,7 +175,6 @@ func TestCommentActionParamsInputTypeFail(t *testing.T) {
 }
 
 func TestCommentActionUnknownActionTypeFail(t *testing.T) {
-	commentRebuild(t)
 	videoID, actionType := 3, 3
 	commentText := "抉择之战 傻逼游戏"
 	payload := &bytes.Buffer{}
@@ -196,7 +193,6 @@ func TestCommentActionUnknownActionTypeFail(t *testing.T) {
 }
 
 func TestCommentActionAuthTokenFail(t *testing.T) {
-	commentRebuild(t)
 	videoID, actionType := 3, 1
 	commentText := "抉择之战 傻逼游戏"
 	payload := &bytes.Buffer{}

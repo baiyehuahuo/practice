@@ -9,7 +9,7 @@ import (
 // CreateCommentEvent create a new record in the mysql database
 func CreateCommentEvent(comment *entity.Comment) *dyerror.DouyinError {
 	if err := DBService.GetDB().Create(comment).Error; err != nil {
-		return dyerror.DBCreateFavoriteEventError
+		return dyerror.DBCreateCommentEventError
 	}
 	return nil
 }

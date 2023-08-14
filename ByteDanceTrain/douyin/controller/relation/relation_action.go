@@ -3,7 +3,10 @@ package relation
 import (
 	"douyin/constants"
 	"douyin/model/dyerror"
+	"douyin/model/entity"
 	"douyin/pb"
+	"douyin/service/RelationService"
+	"douyin/service/TokenService"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
@@ -11,14 +14,29 @@ import (
 // ServeRelationAction handle relation action request
 // Method is POST
 // token, to_user_id, action_type is required
-func ServeRelationAction(c *gin.Context) (res *pb.DouyinRelationActionResponse, err *dyerror.DouyinError) {
+func ServeRelationAction(c *gin.Context) (res *pb.DouyinRelationActionResponse, dyerr *dyerror.DouyinError) {
 	var (
 		token      string
 		toUserID   int64
 		actionType int
 	)
-	if err = checkRelationActionParams(c, &token, &toUserID, &actionType); err != nil {
-		return nil, err
+	if dyerr = checkRelationActionParams(c, &token, &toUserID, &actionType); dyerr != nil {
+		return nil, dyerr
+	}
+	userID, dyerr := TokenService.GetUserIDFromToken(token)
+	if dyerr != nil {
+		return nil, dyerr
+	}
+	relation := &entity.Relation{UserID: userID, ToUserID: toUserID}
+	switch actionType {
+	case 1:
+		if dyerr = RelationService.CreateRelationEvent(relation); dyerr != nil {
+			return nil, dyerr
+		}
+	case 2:
+		if dyerr = RelationService.DeleteRelationEvent(relation); dyerr != nil {
+			return nil, dyerr
+		}
 	}
 	return &pb.DouyinRelationActionResponse{
 		StatusCode: &constants.DefaultInt32,

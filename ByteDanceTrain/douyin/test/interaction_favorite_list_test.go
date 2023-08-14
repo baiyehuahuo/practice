@@ -10,6 +10,7 @@ import (
 )
 
 func TestFavoriteListSuccess(t *testing.T) {
+	favoriteRebuild(t)
 	data := url.Values{}
 	data.Add("user_id", strconv.Itoa(int(TestUserID1)))
 	data.Add("token", token)

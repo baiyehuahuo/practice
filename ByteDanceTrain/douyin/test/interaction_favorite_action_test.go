@@ -90,7 +90,6 @@ func TestFavoriteAction2Success(t *testing.T) {
 }
 
 func TestFavoriteActionParamsEmptyFail(t *testing.T) {
-	favoriteRebuild(t)
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)
 	_ = writer.WriteField("token", token)
@@ -105,7 +104,6 @@ func TestFavoriteActionParamsEmptyFail(t *testing.T) {
 }
 
 func TestFavoriteActionParamsInputTypeFail(t *testing.T) {
-	favoriteRebuild(t)
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)
 	_ = writer.WriteField("token", token)
@@ -120,7 +118,6 @@ func TestFavoriteActionParamsInputTypeFail(t *testing.T) {
 }
 
 func TestFavoriteActionUnknownActionTypeFail(t *testing.T) {
-	favoriteRebuild(t)
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)
 	_ = writer.WriteField("token", token)
@@ -135,7 +132,6 @@ func TestFavoriteActionUnknownActionTypeFail(t *testing.T) {
 }
 
 func TestFavoriteActionAuthTokenFail(t *testing.T) {
-	favoriteRebuild(t)
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)
 	_ = writer.WriteField("token", token[1:])
