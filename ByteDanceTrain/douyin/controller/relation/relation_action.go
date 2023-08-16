@@ -12,6 +12,7 @@ import (
 )
 
 // ServeRelationAction handle relation action request
+// 在Feed首页点击头像上的+号 和个人页点击关注，都会调用该接口执行关注和取消关注的逻辑
 // Method is POST
 // token, to_user_id, action_type is required
 func ServeRelationAction(c *gin.Context) (res *pb.DouyinRelationActionResponse, dyerr *dyerror.DouyinError) {

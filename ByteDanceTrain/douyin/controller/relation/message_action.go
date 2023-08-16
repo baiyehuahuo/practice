@@ -9,6 +9,7 @@ import (
 )
 
 // ServeMessageAction handle message action request
+// 点击发送，会通过消息发送接口发送该消息。
 // Method is POST
 // token, to_user_id, action_type, content is required
 func ServeMessageAction(c *gin.Context) (res *pb.DouyinMessageActionResponse, err *dyerror.DouyinError) {

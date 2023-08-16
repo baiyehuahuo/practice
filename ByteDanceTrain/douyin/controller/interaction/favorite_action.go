@@ -14,6 +14,7 @@ import (
 
 // ServeFavoriteAction handle comment list request
 // 登录用户对视频的点赞和取消点赞操作
+// 点击点赞按钮调用接口douyin/favorite/action/
 // Method is POST
 // token, video_id, action_type is required
 func ServeFavoriteAction(c *gin.Context) (res *pb.DouyinFavoriteActionResponse, dyerr *dyerror.DouyinError) {

@@ -15,6 +15,7 @@ import (
 
 // ServeFavoriteList handle favorite action request
 // 用户的所有点赞视频
+// 打开个人页，会立即调用这两个接口，分别将内容显示在“作品”和“喜欢”两个栏目下
 // Method is GET
 // user_id, token is required
 func ServeFavoriteList(c *gin.Context) (res *pb.DouyinFavoriteListResponse, dyerr *dyerror.DouyinError) {

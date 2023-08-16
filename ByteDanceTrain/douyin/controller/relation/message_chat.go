@@ -9,6 +9,7 @@ import (
 )
 
 // ServeMessageChat handle message chat request
+// 点击上面任意用户，进入详细聊天页面。在该页面下会定时轮询消息查询接口，获取最新消息列表。
 // Method is GET
 // token, to_user_id is required
 func ServeMessageChat(c *gin.Context) (res *pb.DouyinMessageChatResponse, err *dyerror.DouyinError) {

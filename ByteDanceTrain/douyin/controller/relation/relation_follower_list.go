@@ -9,6 +9,7 @@ import (
 )
 
 // ServeRelationFollowerList handle relation follower list request
+// 在个人页点击 粉丝/关注，能够打开该页面，会立即调用接口拉取关注用户和粉丝用户列表
 // Method is GET
 // user_id, token is required
 func ServeRelationFollowerList(c *gin.Context) (res *pb.DouyinRelationFollowerListResponse, err *dyerror.DouyinError) {

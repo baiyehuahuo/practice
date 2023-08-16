@@ -16,6 +16,7 @@ import (
 
 // ServeFeed handle feed request
 // 不限制登录状态，返回按投稿时间倒序的视频列表，视频数由服务端控制，单次最多30个
+// 打开App会立即调用接口/douyin/feed/获取视频列表信息
 // Method is GET
 func ServeFeed(c *gin.Context) (res *pb.DouyinFeedResponse, dyerr *dyerror.DouyinError) {
 	var (

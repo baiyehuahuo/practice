@@ -14,6 +14,7 @@ import (
 
 // ServeCommentList handle comment list request
 // 查看视频的所有评论，按发布时间倒序
+// 打开评论列表，立即调用douyin/comment/list/获取所有评论信息
 // Method is GET
 // token, video_id is required
 func ServeCommentList(c *gin.Context) (res *pb.DouyinCommentListResponse, dyerr *dyerror.DouyinError) {

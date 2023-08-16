@@ -12,6 +12,7 @@ import (
 
 // ServeUserRegister handle user register request
 // 新用户注册时提供用户名，密码即可，用户名需要保证唯一。创建成功后返回用户 id 和权限token
+// 注册账号和登录账号的页面，该页面可以切换登录和注册两种模式，分别验证两个接口
 // Method is POST
 // username, password is required
 func ServeUserRegister(c *gin.Context) (res *pb.DouyinUserRegisterResponse, dyerr *dyerror.DouyinError) {

@@ -9,6 +9,7 @@ import (
 )
 
 // ServeRelationFriendList handle relation friend list request
+// 注册登录后，点击消息页面，会立即请求该接口，获取可聊天朋友列表，并且会带着和该用户的最新的一条消息
 // Method is GET
 // user_id, token is required
 func ServeRelationFriendList(c *gin.Context) (res *pb.DouyinRelationFriendListResponse, err *dyerror.DouyinError) {

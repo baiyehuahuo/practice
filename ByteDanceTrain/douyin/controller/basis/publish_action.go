@@ -17,6 +17,7 @@ import (
 
 // ServePublishAction handle publish action request
 // 登录用户选择视频上传
+// 发布视频，在本页完成信息填充后，点击发布就会调用该接口，发布完成会弹出发布完成提示信息并自动关闭本页面
 // Method is POST
 // token, title and file is required.
 func ServePublishAction(c *gin.Context) (res *pb.DouyinPublishActionResponse, dyerr *dyerror.DouyinError) {

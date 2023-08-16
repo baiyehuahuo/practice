@@ -14,6 +14,7 @@ import (
 
 // ServePublishList handle publish list request
 // 用户的视频发布列表，直接列出用户所有投稿过的视频
+// 打开个人页，会立即调用这两个接口，分别将内容显示在“作品”和“喜欢”两个栏目下
 // Method is GET
 // user_id, token is required
 func ServePublishList(c *gin.Context) (res *pb.DouyinPublishListResponse, err *dyerror.DouyinError) {

@@ -17,6 +17,7 @@ import (
 
 // ServeCommentAction handle comment action request
 // 登录用户对视频进行评论
+// 提交评论会调用接口 /douyin/comment/action/
 // Method is POST
 // token, video_id, action_type is required
 // comment_text comment_id is optional

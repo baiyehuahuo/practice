@@ -13,6 +13,7 @@ import (
 
 // ServeUserInfo handle user request
 // 获取用户的 id、昵称，如果实现社交部分的功能，还会返回关注数和粉丝数
+// 在注册成功后会调用/douyin/user/接口拉取当前登录用户的全部信息，并存储到本地。
 // Method is GET
 // user_id, token is required
 func ServeUserInfo(c *gin.Context) (res *pb.DouyinUserResponse, dyerr *dyerror.DouyinError) {
