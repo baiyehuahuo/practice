@@ -68,3 +68,19 @@ func ConvertToPBComment(comment *entity.Comment, user *pb.User) *pb.Comment {
 	*pbComment.CreateDate = comment.CreateDate
 	return pbComment
 }
+
+func ConvertToPBMessage(msg *entity.Message) *pb.Message {
+	pbMessage := &pb.Message{
+		Id:         new(int64),
+		ToUserId:   new(int64),
+		FromUserId: new(int64),
+		Content:    new(string),
+		CreateTime: new(string),
+	}
+	*pbMessage.Id = msg.ID
+	*pbMessage.ToUserId = msg.ToUserID
+	*pbMessage.FromUserId = msg.FromUserID
+	*pbMessage.Content = msg.Content
+	*pbMessage.CreateTime = msg.CreateTime
+	return pbMessage
+}
