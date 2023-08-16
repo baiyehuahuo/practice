@@ -5,7 +5,7 @@ import (
 )
 
 // Video in mysql
-// todo CommentCount, FavoriteCount should be count by other table
+// todo CommentCount, IsFavorite should be count by other table
 type Video struct {
 	ID           int64     `gorm:"column:id;type:int(11) unsigned;primary_key;AUTO_INCREMENT;comment:视频唯一标识" json:"id"`
 	AuthorID     int64     `gorm:"column:author_id;type:int(11) unsigned;comment:视频作者id;NOT NULL" json:"author_id"`

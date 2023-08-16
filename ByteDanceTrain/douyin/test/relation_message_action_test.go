@@ -7,6 +7,7 @@ import (
 	"douyin/model/dyerror"
 	"douyin/pb"
 	"mime/multipart"
+	"net/url"
 	"strconv"
 	"testing"
 )
@@ -29,6 +30,16 @@ func TestMessageActionSuccess(t *testing.T) {
 	}
 
 	// TODO 查看消息个数
+	data := url.Values{}
+	data.Add("token", token)
+	data.Add("to_user_id", strconv.Itoa(int(toUserID)))
+	messageChatBody := &pb.DouyinMessageChatResponse{}
+	getResponse(t, data, constants.RouteMessageChat, messageChatBody)
+	if *messageChatBody.StatusCode != constants.DefaultInt32 ||
+		*messageChatBody.StatusMsg != constants.DefaultString ||
+		len(messageChatBody.MessageList) != len(TestMessages)+1 {
+		t.Fatalf("Test results are not as expected: %v", body)
+	}
 
 	// 可以重复发送相同消息
 	payload = &bytes.Buffer{}
