@@ -73,6 +73,26 @@ const (
 	TestCommentCreateDate2 = "08-12"
 )
 
+const (
+	TestMessageID1         = int64(2)
+	TestMessageToUserID1   = int64(2)
+	TestMessageFromUserID1 = int64(3)
+	TestMessageContent1    = "开学不快乐"
+	TestMessageCreateTime1 = "08-15"
+
+	TestMessageID2         = int64(3)
+	TestMessageToUserID2   = int64(3)
+	TestMessageFromUserID2 = int64(2)
+	TestMessageContent2    = "早安"
+	TestMessageCreateTime2 = "08-15"
+
+	TestMessageID3         = int64(4)
+	TestMessageToUserID3   = int64(2)
+	TestMessageFromUserID3 = int64(3)
+	TestMessageContent3    = "午安"
+	TestMessageCreateTime3 = "08-15"
+)
+
 var (
 	RootUser              *pb.User
 	TestUser              *pb.User
@@ -80,6 +100,7 @@ var (
 	TestUserFavoriteVideo *pb.Video
 	TestVideos            []*pb.Video
 	TestComments          []*pb.Comment
+	TestMessages          []*pb.Message
 )
 
 func init() {
@@ -221,4 +242,47 @@ func init() {
 	*TestComment.Content = TestCommentContent2
 	*TestComment.CreateDate = TestCommentCreateDate2
 	TestComments = append(TestComments, TestComment)
+
+	// messages
+	TestMessage := &pb.Message{
+		Id:         new(int64),
+		ToUserId:   new(int64),
+		FromUserId: new(int64),
+		Content:    new(string),
+		CreateTime: new(string),
+	}
+	*TestMessage.Id = TestMessageID1
+	*TestMessage.ToUserId = TestMessageToUserID1
+	*TestMessage.FromUserId = TestMessageFromUserID1
+	*TestMessage.Content = TestMessageContent1
+	*TestMessage.CreateTime = TestMessageCreateTime1
+	TestMessages = append(TestMessages, TestMessage)
+
+	TestMessage = &pb.Message{
+		Id:         new(int64),
+		ToUserId:   new(int64),
+		FromUserId: new(int64),
+		Content:    new(string),
+		CreateTime: new(string),
+	}
+	*TestMessage.Id = TestMessageID2
+	*TestMessage.ToUserId = TestMessageToUserID2
+	*TestMessage.FromUserId = TestMessageFromUserID2
+	*TestMessage.Content = TestMessageContent2
+	*TestMessage.CreateTime = TestMessageCreateTime2
+	TestMessages = append(TestMessages, TestMessage)
+
+	TestMessage = &pb.Message{
+		Id:         new(int64),
+		ToUserId:   new(int64),
+		FromUserId: new(int64),
+		Content:    new(string),
+		CreateTime: new(string),
+	}
+	*TestMessage.Id = TestMessageID3
+	*TestMessage.ToUserId = TestMessageToUserID3
+	*TestMessage.FromUserId = TestMessageFromUserID3
+	*TestMessage.Content = TestMessageContent3
+	*TestMessage.CreateTime = TestMessageCreateTime3
+	TestMessages = append(TestMessages, TestMessage)
 }

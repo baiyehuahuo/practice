@@ -83,6 +83,14 @@ func checkCommentEqual(comment1, comment2 *pb.Comment) bool {
 		*comment1.CreateDate == *comment2.CreateDate
 }
 
+func checkMessageEqual(msg1, msg2 *pb.Message) bool {
+	return *msg1.Id == *msg2.Id &&
+		*msg1.ToUserId == *msg2.ToUserId &&
+		*msg1.FromUserId == *msg2.FromUserId &&
+		*msg1.Content == *msg2.Content &&
+		*msg1.CreateTime == *msg2.CreateTime
+}
+
 func execSQLFile(filePath string) (err error) {
 	file, err := os.Open(filePath)
 	if err != nil {
