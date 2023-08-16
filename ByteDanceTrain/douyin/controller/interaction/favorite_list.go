@@ -6,6 +6,7 @@ import (
 	"douyin/model/dyerror"
 	"douyin/pb"
 	"douyin/service/FavoriteService"
+	"douyin/service/RelationService"
 	"douyin/service/TokenService"
 	"douyin/service/UserService"
 	"douyin/service/VideoService"
@@ -34,6 +35,7 @@ func ServeFavoriteList(c *gin.Context) (res *pb.DouyinFavoriteListResponse, dyer
 	for i := range favorites {
 		video := VideoService.QueryVideoByVideoID(favorites[i].VideoID)
 		author := common.ConvertToPBUser(UserService.QueryUserByID(video.AuthorID)) // more precision
+		*author.IsFollow = RelationService.QueryFollowByIDs(userID, *author.Id)
 		pbVideo := common.ConvertToPBVideo(video, author)
 		*pbVideo.IsFavorite = true // 本来就是查 favorite 的
 		pbVideoList = append(pbVideoList, pbVideo)

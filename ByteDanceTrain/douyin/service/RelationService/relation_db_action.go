@@ -45,3 +45,10 @@ func QueryFollowerCountByUserID(userID int64) (followCount int64) {
 	DBService.GetDB().Model(&entity.Relation{}).Where("to_user_id = ?", userID).Count(&followCount)
 	return followCount
 }
+
+// QueryFollowByIDs query follow exist between user_id and to_user_id
+func QueryFollowByIDs(userID, toUserID int64) bool {
+	relation := &entity.Relation{}
+	DBService.GetDB().Where("user_id = ? and to_user_id = ?", userID, toUserID).First(relation)
+	return relation.UserID != 0 // 非零表示找到了
+}

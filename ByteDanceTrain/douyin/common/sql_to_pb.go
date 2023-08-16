@@ -27,7 +27,7 @@ func ConvertToPBUser(user *entity.User) *pb.User {
 	*pbUser.Name = user.Name
 	*pbUser.FollowCount = RelationService.QueryFollowCountByUserID(user.ID)
 	*pbUser.FollowerCount = RelationService.QueryFollowerCountByUserID(user.ID)
-	*pbUser.IsFollow = user.IsFollow // todo handle isFollow (remove from entity.User)
+	//*pbUser.IsFollow = user.IsFollow // todo handle isFollow (remove from entity.User)
 	*pbUser.Avatar = user.Avatar
 	*pbUser.BackgroundImage = user.BackgroundImage
 	*pbUser.Signature = user.Signature

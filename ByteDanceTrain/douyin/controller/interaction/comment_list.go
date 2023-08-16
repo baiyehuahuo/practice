@@ -6,6 +6,7 @@ import (
 	"douyin/model/dyerror"
 	"douyin/pb"
 	"douyin/service/CommentService"
+	"douyin/service/RelationService"
 	"douyin/service/TokenService"
 	"douyin/service/UserService"
 	"github.com/gin-gonic/gin"
@@ -25,13 +26,15 @@ func ServeCommentList(c *gin.Context) (res *pb.DouyinCommentListResponse, dyerr 
 	if dyerr = checkCommentListParams(c, &token, &videoID); dyerr != nil {
 		return nil, dyerr
 	}
-	if _, dyerr = TokenService.GetUserIDFromToken(token); dyerr != nil {
+	userID, dyerr := TokenService.GetUserIDFromToken(token)
+	if dyerr != nil {
 		return nil, dyerr
 	}
 	commentLists := CommentService.QueryVideoCommentsByVideoID(videoID)
 	pbCommentLists := make([]*pb.Comment, 0, len(commentLists))
 	for i := range commentLists {
 		user := common.ConvertToPBUser(UserService.QueryUserByID(commentLists[i].UserID))
+		*user.IsFollow = RelationService.QueryFollowByIDs(userID, *user.Id)
 		pbCommentLists = append(pbCommentLists, common.ConvertToPBComment(commentLists[i], user))
 	}
 	return &pb.DouyinCommentListResponse{

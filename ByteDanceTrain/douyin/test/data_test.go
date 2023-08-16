@@ -34,7 +34,7 @@ const (
 	TestUserPassword2        = "baiyehuahuo"
 	TestUserFollowCount2     = 1
 	TestUserFollowerCount2   = 1
-	TestUserIsFollow2        = false
+	TestUserIsFollow2        = true
 	TestUserAvatar2          = "/uploadfiles/范伟锋/avatar.png"
 	TestUserBackgroundImage2 = "/uploadfiles/范伟锋/background.png"
 	TestUserSignature2       = "fail world"
@@ -49,7 +49,7 @@ const (
 	TestVideo1CoverURL         = "uploadfiles/fwf/抉择之战.png"
 	TestVideo1FavoriteCount    = 1
 	TestVideo1CommentCount     = 2
-	TestVideo1IsFavorite       = true
+	TestVideo1IsFavorite       = false
 	TestVideo1Title            = "抉择之战 记录视频"
 	TestVideo1PublishTimestamp = 1691686968
 
@@ -58,7 +58,7 @@ const (
 	TestVideo2CoverURL         = "uploadfiles/fwf/抉择之战.jpg"
 	TestVideo2FavoriteCount    = 2
 	TestVideo2CommentCount     = 0
-	TestVideo2IsFavorite       = false
+	TestVideo2IsFavorite       = true
 	TestVideo2Title            = "抉择之战 游戏视频"
 	TestVideo2PublishTimestamp = 1399548023
 )

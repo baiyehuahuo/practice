@@ -30,7 +30,9 @@ func ServeRelationFollowerList(c *gin.Context) (res *pb.DouyinRelationFollowerLi
 	relations := RelationService.QueryRelationEventByToUserID(userID)
 	pbUsers := make([]*pb.User, 0, len(relations))
 	for i := range relations {
-		pbUsers = append(pbUsers, common.ConvertToPBUser(UserService.QueryUserByID(relations[i].UserID)))
+		user := common.ConvertToPBUser(UserService.QueryUserByID(relations[i].UserID))
+		*user.IsFollow = RelationService.QueryFollowByIDs(userID, *user.Id)
+		pbUsers = append(pbUsers, user)
 	}
 	return &pb.DouyinRelationFollowerListResponse{
 		StatusCode: &constants.DefaultInt32,

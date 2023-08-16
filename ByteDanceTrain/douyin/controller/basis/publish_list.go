@@ -6,6 +6,7 @@ import (
 	"douyin/model/dyerror"
 	"douyin/pb"
 	"douyin/service/FavoriteService"
+	"douyin/service/RelationService"
 	"douyin/service/TokenService"
 	"douyin/service/UserService"
 	"douyin/service/VideoService"
@@ -31,6 +32,7 @@ func ServePublishList(c *gin.Context) (res *pb.DouyinPublishListResponse, err *d
 	}
 
 	author := common.ConvertToPBUser(UserService.QueryUserByID(userID))
+	*author.IsFollow = RelationService.QueryFollowByIDs(userID, *author.Id)
 	videos := VideoService.QueryVideosByAuthorID(*author.Id)
 	pbVideos := make([]*pb.Video, 0, len(videos))
 	for i := range videos {

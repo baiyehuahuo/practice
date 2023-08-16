@@ -5,6 +5,7 @@ import (
 	"douyin/constants"
 	"douyin/model/dyerror"
 	"douyin/pb"
+	"douyin/service/RelationService"
 	"douyin/service/TokenService"
 	"douyin/service/UserService"
 	"github.com/gin-gonic/gin"
@@ -27,11 +28,12 @@ func ServeUserInfo(c *gin.Context) (res *pb.DouyinUserResponse, dyerr *dyerror.D
 	if dyerr = TokenService.CheckToken(token, userID); dyerr != nil {
 		return nil, dyerr
 	}
-	user := UserService.QueryUserByID(userID) // fwf 假设可能存在查询不到的情况？
+	user := common.ConvertToPBUser(UserService.QueryUserByID(userID)) // fwf 假设可能存在查询不到的情况？
+	*user.IsFollow = RelationService.QueryFollowByIDs(userID, *user.Id)
 	return &pb.DouyinUserResponse{
 		StatusCode: &constants.DefaultInt32,
 		StatusMsg:  &constants.DefaultString,
-		User:       common.ConvertToPBUser(user),
+		User:       user,
 	}, nil
 }
 

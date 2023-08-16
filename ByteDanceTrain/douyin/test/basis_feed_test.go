@@ -36,7 +36,7 @@ func TestFeedSuccessWithoutParams(t *testing.T) {
 		t.Fatalf("Test results are not as expected: %v", body)
 	}
 	for i := range body.VideoList {
-		if !checkVideoEqual(body.VideoList[i], TestVideos[i]) {
+		if !checkVideoEqualWithoutFavorite(body.VideoList[i], TestVideos[i]) {
 			t.Fatalf("Test results are not as expected: %d %v", i, body)
 		}
 	}

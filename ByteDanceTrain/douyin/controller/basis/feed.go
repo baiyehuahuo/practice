@@ -6,6 +6,7 @@ import (
 	"douyin/model/dyerror"
 	"douyin/pb"
 	"douyin/service/FavoriteService"
+	"douyin/service/RelationService"
 	"douyin/service/TokenService"
 	"douyin/service/UserService"
 	"douyin/service/VideoService"
@@ -36,6 +37,7 @@ func ServeFeed(c *gin.Context) (res *pb.DouyinFeedResponse, dyerr *dyerror.Douyi
 	for i := range videos {
 		//log.Printf("video title: %s, timestamp: %d", videos[i].Title, videos[i].PublishTime.Unix())
 		pbAuthor := common.ConvertToPBUser(UserService.QueryUserByID(videos[i].AuthorID))
+		*pbAuthor.IsFollow = RelationService.QueryFollowByIDs(userID, *pbAuthor.Id)
 		pbVideo := common.ConvertToPBVideo(videos[i], pbAuthor)
 		if userID != 0 {
 			*pbVideo.IsFavorite = FavoriteService.QueryFavoriteByIDs(userID, *pbVideo.Id)

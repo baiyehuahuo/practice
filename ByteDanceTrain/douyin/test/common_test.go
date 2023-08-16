@@ -72,7 +72,17 @@ func checkVideoEqual(video1, video2 *pb.Video) bool {
 		*video1.CoverUrl == *video2.CoverUrl &&
 		*video1.FavoriteCount == *video2.FavoriteCount &&
 		*video1.CommentCount == *video2.CommentCount &&
-		//*video1.IsFavorite == *video2.IsFavorite && TODO  how to check it？
+		*video1.IsFavorite == *video2.IsFavorite && // TODO  how to check it？
+		*video1.Title == *video2.Title
+}
+
+func checkVideoEqualWithoutFavorite(video1, video2 *pb.Video) bool {
+	return *video1.Id == *video2.Id &&
+		checkUserEqual(video1.Author, video2.Author) &&
+		*video1.PlayUrl == *video2.PlayUrl &&
+		*video1.CoverUrl == *video2.CoverUrl &&
+		*video1.FavoriteCount == *video2.FavoriteCount &&
+		*video1.CommentCount == *video2.CommentCount &&
 		*video1.Title == *video2.Title
 }
 

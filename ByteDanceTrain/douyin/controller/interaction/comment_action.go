@@ -7,6 +7,7 @@ import (
 	"douyin/model/entity"
 	"douyin/pb"
 	"douyin/service/CommentService"
+	"douyin/service/RelationService"
 	"douyin/service/TokenService"
 	"douyin/service/UserService"
 	"github.com/gin-gonic/gin"
@@ -56,6 +57,7 @@ func ServeCommentAction(c *gin.Context) (res *pb.DouyinCommentActionResponse, dy
 		}
 	}
 	user := common.ConvertToPBUser(UserService.QueryUserByID(comment.UserID))
+	*user.IsFollow = RelationService.QueryFollowByIDs(userID, *user.Id)
 	return &pb.DouyinCommentActionResponse{
 		StatusCode: &constants.DefaultInt32,
 		StatusMsg:  &constants.DefaultString,

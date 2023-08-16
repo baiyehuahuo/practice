@@ -39,7 +39,9 @@ func ServeRelationFriendList(c *gin.Context) (res *pb.DouyinRelationFriendListRe
 	relation = RelationService.QueryRelationEventByToUserID(userID)
 	for i := range relation {
 		if _, ok := followSet[relation[i].UserID]; ok {
-			pbUsers = append(pbUsers, common.ConvertToPBUser(UserService.QueryUserByID(relation[i].UserID)))
+			user := common.ConvertToPBUser(UserService.QueryUserByID(relation[i].UserID))
+			*user.IsFollow = true // RelationService.QueryFollowByIDs(userID, *user.Id) // 互相关注才是好友
+			pbUsers = append(pbUsers, user)
 		}
 	}
 	return &pb.DouyinRelationFriendListResponse{
