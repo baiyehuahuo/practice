@@ -35,3 +35,9 @@ func QueryVideoCommentsByVideoID(videoID int64) (comments []*entity.Comment) {
 	DBService.GetDB().Where("video_id = ?", videoID).Find(&comments)
 	return comments
 }
+
+// QueryCommentCountByVideoID query comment count by video id
+func QueryCommentCountByVideoID(videoID int64) (commentCount int64) {
+	DBService.GetDB().Model(&entity.Comment{}).Where("video_id = ?", videoID).Count(&commentCount)
+	return commentCount
+}

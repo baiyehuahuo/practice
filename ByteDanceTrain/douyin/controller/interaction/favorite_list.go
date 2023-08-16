@@ -34,7 +34,9 @@ func ServeFavoriteList(c *gin.Context) (res *pb.DouyinFavoriteListResponse, dyer
 	for i := range favorites {
 		video := VideoService.QueryVideoByVideoID(favorites[i].VideoID)
 		author := common.ConvertToPBUser(UserService.QueryUserByID(video.AuthorID)) // more precision
-		pbVideoList = append(pbVideoList, common.ConvertToPBVideo(video, author))
+		pbVideo := common.ConvertToPBVideo(video, author)
+		*pbVideo.IsFavorite = true // 本来就是查 favorite 的
+		pbVideoList = append(pbVideoList, pbVideo)
 	}
 	return &pb.DouyinFavoriteListResponse{
 		StatusCode: &constants.DefaultInt32,

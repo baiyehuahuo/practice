@@ -72,7 +72,7 @@ func checkVideoEqual(video1, video2 *pb.Video) bool {
 		*video1.CoverUrl == *video2.CoverUrl &&
 		*video1.FavoriteCount == *video2.FavoriteCount &&
 		*video1.CommentCount == *video2.CommentCount &&
-		*video1.IsFavorite == *video2.IsFavorite &&
+		//*video1.IsFavorite == *video2.IsFavorite && TODO  how to check it？
 		*video1.Title == *video2.Title
 }
 

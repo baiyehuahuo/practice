@@ -46,3 +46,10 @@ func QueryFavoriteCountByVideoID(videoID int64) (favoriteCount int64) {
 	DBService.GetDB().Model(&entity.Favorite{}).Where("video_id = ?", videoID).Count(&favoriteCount)
 	return favoriteCount
 }
+
+// QueryFavoriteByIDs query favorited exist between user_id and video_id
+func QueryFavoriteByIDs(userID, videoID int64) bool {
+	favorite := &entity.Favorite{}
+	DBService.GetDB().Where("user_id = ? and video_id = ?", userID, videoID).First(favorite)
+	return favorite.AuthorID != 0 // 非零表示找到了
+}

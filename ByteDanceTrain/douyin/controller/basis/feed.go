@@ -5,6 +5,7 @@ import (
 	"douyin/constants"
 	"douyin/model/dyerror"
 	"douyin/pb"
+	"douyin/service/FavoriteService"
 	"douyin/service/TokenService"
 	"douyin/service/UserService"
 	"douyin/service/VideoService"
@@ -26,7 +27,8 @@ func ServeFeed(c *gin.Context) (res *pb.DouyinFeedResponse, dyerr *dyerror.Douyi
 	if dyerr = checkFeedParams(c, &latestTime, &token); dyerr != nil {
 		return nil, dyerr
 	}
-	if _, dyerr = TokenService.GetUserIDFromToken(token); token != "" && dyerr != nil { // 如果有 token 要验证
+	userID, dyerr := TokenService.GetUserIDFromToken(token)
+	if token != "" && dyerr != nil { // 如果有 token 要验证
 		return nil, dyerr
 	}
 	videos := VideoService.QueryVideosByTimestamp(latestTime)
@@ -34,17 +36,25 @@ func ServeFeed(c *gin.Context) (res *pb.DouyinFeedResponse, dyerr *dyerror.Douyi
 	for i := range videos {
 		//log.Printf("video title: %s, timestamp: %d", videos[i].Title, videos[i].PublishTime.Unix())
 		pbAuthor := common.ConvertToPBUser(UserService.QueryUserByID(videos[i].AuthorID))
-		pbVideoList = append(pbVideoList, common.ConvertToPBVideo(videos[i], pbAuthor))
+		pbVideo := common.ConvertToPBVideo(videos[i], pbAuthor)
+		if userID != 0 {
+			*pbVideo.IsFavorite = FavoriteService.QueryFavoriteByIDs(userID, *pbVideo.Id)
+		} else {
+			*pbVideo.IsFavorite = false
+		}
+		pbVideoList = append(pbVideoList, pbVideo)
 	}
-	nextTime := videos[len(videos)-1].PublishTime.Unix()
-	feedRes := pb.DouyinFeedResponse{
+	var nextTime int64
+	if len(videos) > 0 {
+		nextTime = videos[len(videos)-1].PublishTime.Unix()
+	}
+
+	return &pb.DouyinFeedResponse{
 		StatusCode: &constants.DefaultInt32,
 		StatusMsg:  &constants.DefaultString,
 		VideoList:  pbVideoList,
 		NextTime:   &nextTime,
-	}
-
-	return &feedRes, nil
+	}, nil
 }
 
 func checkFeedParams(c *gin.Context, pLatestTime *time.Time, pToken *string) *dyerror.DouyinError {

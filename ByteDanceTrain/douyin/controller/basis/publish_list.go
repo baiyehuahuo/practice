@@ -5,6 +5,7 @@ import (
 	"douyin/constants"
 	"douyin/model/dyerror"
 	"douyin/pb"
+	"douyin/service/FavoriteService"
 	"douyin/service/TokenService"
 	"douyin/service/UserService"
 	"douyin/service/VideoService"
@@ -33,7 +34,9 @@ func ServePublishList(c *gin.Context) (res *pb.DouyinPublishListResponse, err *d
 	videos := VideoService.QueryVideosByAuthorID(*author.Id)
 	pbVideos := make([]*pb.Video, 0, len(videos))
 	for i := range videos {
-		pbVideos = append(pbVideos, common.ConvertToPBVideo(videos[i], author))
+		pbVideo := common.ConvertToPBVideo(videos[i], author)
+		*pbVideo.IsFavorite = FavoriteService.QueryFavoriteByIDs(userID, *pbVideo.Id)
+		pbVideos = append(pbVideos, pbVideo)
 	}
 	return &pb.DouyinPublishListResponse{
 		StatusCode: &constants.DefaultInt32,

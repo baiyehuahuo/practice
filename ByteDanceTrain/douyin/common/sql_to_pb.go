@@ -3,6 +3,7 @@ package common
 import (
 	"douyin/model/entity"
 	"douyin/pb"
+	"douyin/service/CommentService"
 	"douyin/service/FavoriteService"
 	"douyin/service/VideoService"
 )
@@ -50,8 +51,7 @@ func ConvertToPBVideo(video *entity.Video, author *pb.User) *pb.Video {
 	*pbVideo.PlayUrl = video.PlayURL
 	*pbVideo.CoverUrl = video.CoverURL
 	*pbVideo.FavoriteCount = FavoriteService.QueryFavoriteCountByVideoID(video.ID)
-	*pbVideo.CommentCount = video.CommentCount
-	*pbVideo.IsFavorite = video.IsFavorite
+	*pbVideo.CommentCount = CommentService.QueryCommentCountByVideoID(video.ID)
 	*pbVideo.Title = video.Title
 	return pbVideo
 }
