@@ -5,6 +5,7 @@ import (
 	"douyin/pb"
 	"douyin/service/CommentService"
 	"douyin/service/FavoriteService"
+	"douyin/service/RelationService"
 	"douyin/service/VideoService"
 )
 
@@ -24,9 +25,9 @@ func ConvertToPBUser(user *entity.User) *pb.User {
 	}
 	*pbUser.Id = user.ID
 	*pbUser.Name = user.Name
-	*pbUser.FollowCount = user.FollowCount
-	*pbUser.FollowerCount = user.FollowerCount
-	*pbUser.IsFollow = user.IsFollow
+	*pbUser.FollowCount = RelationService.QueryFollowCountByUserID(user.ID)
+	*pbUser.FollowerCount = RelationService.QueryFollowerCountByUserID(user.ID)
+	*pbUser.IsFollow = user.IsFollow // todo handle isFollow (remove from entity.User)
 	*pbUser.Avatar = user.Avatar
 	*pbUser.BackgroundImage = user.BackgroundImage
 	*pbUser.Signature = user.Signature

@@ -6,7 +6,7 @@ const (
 	RootUserID              = int64(1) // 1 是 root
 	RootUsername            = "root"
 	RootUserPassword        = "rootpwd"
-	RootUserFollowCount     = 0
+	RootUserFollowCount     = 1
 	RootUserFollowerCount   = 0
 	RootUserIsFollow        = false
 	RootUserAvatar          = ""
@@ -32,8 +32,8 @@ const (
 	TestUserID2              = int64(3) // 1 是 root
 	TestUsername2            = "范伟锋"
 	TestUserPassword2        = "baiyehuahuo"
-	TestUserFollowCount2     = 3
-	TestUserFollowerCount2   = 4
+	TestUserFollowCount2     = 1
+	TestUserFollowerCount2   = 1
 	TestUserIsFollow2        = false
 	TestUserAvatar2          = "/uploadfiles/范伟锋/avatar.png"
 	TestUserBackgroundImage2 = "/uploadfiles/范伟锋/background.png"
