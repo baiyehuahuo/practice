@@ -21,3 +21,15 @@ func DeleteRelationEvent(relation *entity.Relation) *dyerror.DouyinError {
 	}
 	return nil
 }
+
+// QueryRelationEventByUserID query relations by user_id
+func QueryRelationEventByUserID(userID int64) (relations []*entity.Relation) {
+	DBService.GetDB().Where("user_id = ?", userID).Find(&relations)
+	return relations
+}
+
+// QueryRelationEventByToUserID query relations by to_user_id
+func QueryRelationEventByToUserID(toUserID int64) (relations []*entity.Relation) {
+	DBService.GetDB().Where("to_user_id = ?", toUserID).Find(&relations)
+	return relations
+}

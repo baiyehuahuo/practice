@@ -3,6 +3,19 @@ package test
 import "douyin/pb"
 
 const (
+	RootUserID              = int64(1) // 1 是 root
+	RootUsername            = "root"
+	RootUserPassword        = "rootpwd"
+	RootUserFollowCount     = 1
+	RootUserFollowerCount   = 1
+	RootUserIsFollow        = false
+	RootUserAvatar          = ""
+	RootUserBackgroundImage = ""
+	RootUserSignature       = ""
+	RootUserTotalFavorited  = 0
+	RootUserWorkCount       = 1
+	RootUserFavoriteCount   = 2
+
 	TestUserID1              = int64(2) // 1 是 root
 	TestUsername1            = "fwf"
 	TestUserPassword1        = "fwf233"
@@ -61,6 +74,7 @@ const (
 )
 
 var (
+	RootUser              *pb.User
 	TestUser              *pb.User
 	TestUsers             []*pb.User
 	TestUserFavoriteVideo *pb.Video
@@ -70,6 +84,31 @@ var (
 
 func init() {
 	// users
+	RootUser = &pb.User{
+		Id:              new(int64),
+		Name:            new(string),
+		FollowCount:     new(int64),
+		FollowerCount:   new(int64),
+		IsFollow:        new(bool),
+		Avatar:          new(string),
+		BackgroundImage: new(string),
+		Signature:       new(string),
+		TotalFavorited:  new(int64),
+		WorkCount:       new(int64),
+		FavoriteCount:   new(int64),
+	}
+	*RootUser.Id = RootUserID // 1 是 root
+	*RootUser.Name = RootUsername
+	*RootUser.FollowCount = RootUserFollowCount
+	*RootUser.FollowerCount = RootUserFollowerCount
+	*RootUser.IsFollow = RootUserIsFollow
+	*RootUser.Avatar = RootUserAvatar
+	*RootUser.BackgroundImage = RootUserBackgroundImage
+	*RootUser.Signature = RootUserSignature
+	*RootUser.TotalFavorited = RootUserTotalFavorited
+	*RootUser.WorkCount = RootUserWorkCount
+	*RootUser.FavoriteCount = RootUserFavoriteCount
+
 	TestUser = &pb.User{
 		Id:              new(int64),
 		Name:            new(string),
