@@ -3,25 +3,44 @@ package relation
 import (
 	"douyin/constants"
 	"douyin/model/dyerror"
+	"douyin/model/entity"
 	"douyin/pb"
+	"douyin/service/MessageService"
+	"douyin/service/TokenService"
 	"github.com/gin-gonic/gin"
 	"strconv"
+	"time"
 )
 
 // ServeMessageAction handle message action request
 // 点击发送，会通过消息发送接口发送该消息。
 // Method is POST
 // token, to_user_id, action_type, content is required
-func ServeMessageAction(c *gin.Context) (res *pb.DouyinMessageActionResponse, err *dyerror.DouyinError) {
+func ServeMessageAction(c *gin.Context) (res *pb.DouyinMessageActionResponse, dyerr *dyerror.DouyinError) {
 	var (
 		token, content string
 		toUserID       int64
 		actionType     int
 	)
-	if err = checkMessageActionParams(c, &token, &toUserID, &actionType, &content); err != nil {
-		return nil, err
+	if dyerr = checkMessageActionParams(c, &token, &toUserID, &actionType, &content); dyerr != nil {
+		return nil, dyerr
 	}
-
+	userID, dyerr := TokenService.GetUserIDFromToken(token)
+	if dyerr != nil {
+		return nil, dyerr
+	}
+	switch actionType {
+	case 1:
+		msg := entity.Message{
+			ToUserID:   toUserID,
+			FromUserID: userID,
+			Content:    content,
+			CreateTime: time.Now().Format("01-02"),
+		}
+		if dyerr = MessageService.CreateMessageEvent(&msg); dyerr != nil {
+			return nil, dyerr
+		}
+	}
 	return &pb.DouyinMessageActionResponse{
 		StatusCode: &constants.DefaultInt32,
 		StatusMsg:  &constants.DefaultString,

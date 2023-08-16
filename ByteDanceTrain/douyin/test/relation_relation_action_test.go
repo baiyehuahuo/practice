@@ -7,6 +7,7 @@ import (
 	"douyin/model/dyerror"
 	"douyin/pb"
 	"mime/multipart"
+	"net/url"
 	"strconv"
 	"testing"
 )
@@ -26,17 +27,16 @@ func TestRelationAction1Success(t *testing.T) {
 		t.Fatalf("Test results are not as expected: %v", body)
 	}
 
-	// todo 检测关注个数
-	//data := url.Values{}
-	//data.Add("token", token)
-	//data.Add("video_id", strconv.Itoa(int(*TestVideos[0].Id)))
-	//commentListBody := &pb.DouyinCommentListResponse{}
-	//getResponse(t, data, constants.RouteCommentList, commentListBody)
-	//if *commentListBody.StatusCode != constants.DefaultInt32 ||
-	//	*commentListBody.StatusMsg != constants.DefaultString ||
-	//	len(commentListBody.CommentList) != len(TestComments)+1 {
-	//	t.Fatalf("Test results are not as expected: %v", body)
-	//}
+	data := url.Values{}
+	data.Add("user_id", strconv.Itoa(int(TestUserID1)))
+	data.Add("token", token)
+	followBody := &pb.DouyinRelationFollowListResponse{}
+	getResponse(t, data, constants.RouteRelationFollowList, followBody)
+	if *followBody.StatusCode != constants.DefaultInt32 ||
+		*followBody.StatusMsg != constants.DefaultString ||
+		len(followBody.UserList) != 2 {
+		t.Fatalf("Test results are not as expected: %v", body)
+	}
 
 	// 不可重复关注
 	payload = &bytes.Buffer{}
@@ -66,17 +66,16 @@ func TestRelationAction2Success(t *testing.T) {
 		t.Fatalf("Test results are not as expected: %v", body)
 	}
 
-	// todo 检测关注个数
-	//data := url.Values{}
-	//data.Add("token", token)
-	//data.Add("video_id", strconv.Itoa(int(*TestVideos[0].Id)))
-	//commentListBody := &pb.DouyinCommentListResponse{}
-	//getResponse(t, data, constants.RouteCommentList, commentListBody)
-	//if *commentListBody.StatusCode != constants.DefaultInt32 ||
-	//	*commentListBody.StatusMsg != constants.DefaultString ||
-	//	len(commentListBody.CommentList) != len(TestComments)+1 {
-	//	t.Fatalf("Test results are not as expected: %v", body)
-	//}
+	data := url.Values{}
+	data.Add("user_id", strconv.Itoa(int(TestUserID1)))
+	data.Add("token", token)
+	followBody := &pb.DouyinRelationFollowListResponse{}
+	getResponse(t, data, constants.RouteRelationFollowList, followBody)
+	if *followBody.StatusCode != constants.DefaultInt32 ||
+		*followBody.StatusMsg != constants.DefaultString ||
+		len(followBody.UserList) != 0 {
+		t.Fatalf("Test results are not as expected: %v", body)
+	}
 
 	// 不可取消关注
 	payload = &bytes.Buffer{}

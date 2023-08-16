@@ -39,6 +39,7 @@ const (
 	FavoriteSQLFileName = "favorite_event.sql"
 	CommentSQLFileName  = "comment_event.sql"
 	RelationSQLFileName = "relation_event.sql"
+	MessageSQLFileName  = "message_event.sql"
 )
 
 const (
