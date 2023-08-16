@@ -1,29 +1,51 @@
 package relation
 
 import (
+	"douyin/common"
 	"douyin/constants"
 	"douyin/model/dyerror"
 	"douyin/pb"
+	"douyin/service/RelationService"
+	"douyin/service/TokenService"
+	"douyin/service/UserService"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
 
 // ServeRelationFriendList handle relation friend list request
 // 注册登录后，点击消息页面，会立即请求该接口，获取可聊天朋友列表，并且会带着和该用户的最新的一条消息
+// 互相关注就是朋友
 // Method is GET
 // user_id, token is required
-func ServeRelationFriendList(c *gin.Context) (res *pb.DouyinRelationFriendListResponse, err *dyerror.DouyinError) {
+func ServeRelationFriendList(c *gin.Context) (res *pb.DouyinRelationFriendListResponse, dyerr *dyerror.DouyinError) {
 	var (
 		userID int64
 		token  string
 	)
-	if err = checkRelationFriendListParams(c, &userID, &token); err != nil {
-		return nil, err
+	if dyerr = checkRelationFriendListParams(c, &userID, &token); dyerr != nil {
+		return nil, dyerr
+	}
+	if dyerr = TokenService.CheckToken(token, userID); dyerr != nil {
+		return nil, dyerr
+	}
+	var pbUsers []*pb.User
+	// follow relation
+	relation := RelationService.QueryRelationEventByUserID(userID)
+	followSet := make(map[int64]struct{}, len(relation))
+	for i := range relation {
+		followSet[relation[i].ToUserID] = struct{}{}
+	}
+	// follower relation
+	relation = RelationService.QueryRelationEventByToUserID(userID)
+	for i := range relation {
+		if _, ok := followSet[relation[i].UserID]; ok {
+			pbUsers = append(pbUsers, common.ConvertToPBUser(UserService.QueryUserByID(relation[i].UserID)))
+		}
 	}
 	return &pb.DouyinRelationFriendListResponse{
 		StatusCode: &constants.DefaultInt32,
 		StatusMsg:  &constants.DefaultString,
-		UserList:   []*pb.User{constants.DefaultUser},
+		UserList:   pbUsers,
 	}, nil
 }
 
