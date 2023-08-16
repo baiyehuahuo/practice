@@ -21,7 +21,7 @@ func TestUserRegisterSuccess(t *testing.T) {
 	postResponse(t, payload, writer, constants.RouteUserRegister, body)
 	if *body.StatusCode != constants.DefaultInt32 ||
 		*body.StatusMsg != constants.DefaultString ||
-		*body.UserId != TestUserID1+int64(len(TestUsers))+1 ||
+		*body.UserId != TestUserID1+int64(len(TestUsers)) ||
 		len(*body.Token) != constants.TokenLength {
 		t.Fatalf("Test results are not as expected: %v", body)
 	}

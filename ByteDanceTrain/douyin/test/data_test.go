@@ -6,8 +6,8 @@ const (
 	RootUserID              = int64(1) // 1 是 root
 	RootUsername            = "root"
 	RootUserPassword        = "rootpwd"
-	RootUserFollowCount     = 1
-	RootUserFollowerCount   = 1
+	RootUserFollowCount     = 0
+	RootUserFollowerCount   = 0
 	RootUserIsFollow        = false
 	RootUserAvatar          = ""
 	RootUserBackgroundImage = ""
@@ -29,7 +29,7 @@ const (
 	TestUserWorkCount1       = 2
 	TestUserFavoriteCount1   = 1
 
-	TestUserID2              = int64(2) // 1 是 root
+	TestUserID2              = int64(3) // 1 是 root
 	TestUsername2            = "范伟锋"
 	TestUserPassword2        = "baiyehuahuo"
 	TestUserFollowCount2     = 3
@@ -159,7 +159,7 @@ func init() {
 	*TestUser2.WorkCount = TestUserWorkCount2
 	*TestUser2.FavoriteCount = TestUserFavoriteCount2
 
-	TestUsers = append(TestUsers, TestUser2)
+	TestUsers = append(TestUsers, TestUser, TestUser2)
 
 	// videos
 	video := &pb.Video{
