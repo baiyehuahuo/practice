@@ -108,12 +108,42 @@ func TestPublishActionFileExistFail(t *testing.T) {
 	}
 }
 
-func TestPublishActionParamsEmptyFail(t *testing.T) {
+func TestPublishActionFileEmptyFail(t *testing.T) {
 	videoRebuild(t)
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)
 	_ = writer.WriteField("token", token)
 	_ = writer.WriteField("title", testUploadTitle)
+	body := &pb.DouyinPublishActionResponse{}
+	postResponse(t, payload, writer, constants.RoutePublishAction, body)
+	if *body.StatusCode != dyerror.ParamEmptyError.ErrCode ||
+		*body.StatusMsg != dyerror.ParamEmptyError.ErrMessage {
+		t.Fatalf("Test results are not as expected: %v", body)
+	}
+}
+
+func TestPublishActionParamsEmptyFail(t *testing.T) {
+	videoRebuild(t)
+	payload := &bytes.Buffer{}
+	writer := multipart.NewWriter(payload)
+	_ = writer.WriteField("token", token)
+	//_ = writer.WriteField("title", testUploadTitle)
+	var (
+		file *os.File
+		part io.Writer
+	)
+	if file, err = os.Open(testUploadFile); err != nil {
+		t.Fatalf("Test open file fail: %v", err)
+	}
+	defer file.Close()
+
+	if part, err = writer.CreateFormFile("file", filepath.Base(testUploadFile)+strconv.Itoa(rand.Int())); err != nil { // 似乎是并发请求，同文件名会返回文件已存在的错误
+		t.Fatalf("Test create form file fail: %v", err)
+	}
+
+	if _, err = io.Copy(part, file); err != nil {
+		t.Fatalf("Test copy file to post param fail: %v", err)
+	}
 	body := &pb.DouyinPublishActionResponse{}
 	postResponse(t, payload, writer, constants.RoutePublishAction, body)
 	if *body.StatusCode != dyerror.ParamEmptyError.ErrCode ||

@@ -29,12 +29,10 @@ var (
 
 func TestMain(m *testing.M) {
 	router.SetupRouter(r)
-	userRebuild(nil)
-	log.Print("users rebuild")
-	videoRebuild(nil)
-	log.Print("videos rebuild")
-	favoriteRebuild(nil)
-	log.Print("favorite events rebuild")
+	t := new(testing.T)
+	userRebuild(t)
+	videoRebuild(t)
+	favoriteRebuild(t)
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)
 	_ = writer.WriteField("username", TestUsername1)
@@ -43,12 +41,9 @@ func TestMain(m *testing.M) {
 	postResponse(new(testing.T), payload, writer, constants.RouteUserLogin, body)
 	token = *body.Token
 	m.Run()
-	userRebuild(nil)
-	log.Print("users rebuild")
-	videoRebuild(nil)
-	log.Print("videos rebuild")
-	favoriteRebuild(nil)
-	log.Print("favorite events rebuild")
+	userRebuild(t)
+	videoRebuild(t)
+	favoriteRebuild(t)
 }
 
 // if response user1 equals to user2 return true
