@@ -7,6 +7,7 @@ import (
 	"douyin/router"
 	"douyin/service/DBService"
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
 	"mime/multipart"
@@ -39,7 +40,7 @@ func TestMain(m *testing.M) {
 	_ = writer.WriteField("username", TestUsername1)
 	_ = writer.WriteField("password", TestUserPassword1)
 	body := &pb.DouyinUserLoginResponse{}
-	postResponse(nil, payload, writer, constants.RouteUserLogin, body)
+	postResponse(new(testing.T), payload, writer, constants.RouteUserLogin, body)
 	token = *body.Token
 	m.Run()
 	userRebuild(nil)
@@ -200,6 +201,7 @@ func postResponse(t *testing.T, payload *bytes.Buffer, writer *multipart.Writer,
 	r.ServeHTTP(record, req)
 	res := record.Result()
 	if res.StatusCode != 200 {
+		fmt.Println(res.StatusCode, path.Join(constants.ProjectGroup, routePath))
 		t.Fatalf("Request status code is not as expected")
 	}
 	n, err := res.Body.Read(buf)
