@@ -1,10 +1,10 @@
 package interaction
 
 import (
+	"douyin/common"
 	"douyin/constants"
 	"douyin/model/dyerror"
 	"douyin/model/entity"
-	"douyin/model/query"
 	"douyin/pb"
 	"douyin/service/FavoriteService"
 	"douyin/service/TokenService"
@@ -50,7 +50,11 @@ func ServeFavoriteAction(c *gin.Context) (res *pb.DouyinFavoriteActionResponse, 
 }
 
 func checkFavoriteActionParams(c *gin.Context, pToken *string, pVideoID *int64, pActionType *int) *dyerror.DouyinError {
-	body := query.ParamsBody{}
+	body := struct {
+		common.TokenAuthFields
+		common.VideoIDField
+		common.ActionTypeField
+	}{}
 	if err := c.ShouldBind(&body); err != nil {
 		fmt.Println(err)
 	}

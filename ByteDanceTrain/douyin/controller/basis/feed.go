@@ -4,7 +4,6 @@ import (
 	"douyin/common"
 	"douyin/constants"
 	"douyin/model/dyerror"
-	"douyin/model/query"
 	"douyin/pb"
 	"douyin/service/FavoriteService"
 	"douyin/service/RelationService"
@@ -62,7 +61,10 @@ func ServeFeed(c *gin.Context) (res *pb.DouyinFeedResponse, dyerr *dyerror.Douyi
 }
 
 func checkFeedParams(c *gin.Context, pLatestTime *time.Time, pToken *string) *dyerror.DouyinError {
-	body := query.ParamsBody{}
+	body := struct {
+		common.TokenAuthFields
+		LatestTime int `form:"latest_time" json:"latest_time"`
+	}{}
 	if err := c.ShouldBindQuery(&body); err != nil {
 		fmt.Println(err)
 	}

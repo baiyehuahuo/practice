@@ -5,7 +5,6 @@ import (
 	"douyin/constants"
 	"douyin/model/dyerror"
 	"douyin/model/entity"
-	"douyin/model/query"
 	"douyin/pb"
 	"douyin/service/CommentService"
 	"douyin/service/RelationService"
@@ -76,7 +75,12 @@ type queryCommentActionBody struct {
 }
 
 func checkCommentActionParams(c *gin.Context, pToken *string, pVideoID *int64, pAction *int, pCommentText *string, pCommentID *int64) *dyerror.DouyinError {
-	body := query.ParamsBody{}
+	body := struct {
+		common.TokenAuthFields
+		common.VideoIDField
+		common.ActionTypeField
+		common.ContentFields
+	}{}
 	if err := c.ShouldBind(&body); err != nil {
 		fmt.Println(err)
 	}

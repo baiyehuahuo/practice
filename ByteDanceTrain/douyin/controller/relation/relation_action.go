@@ -1,10 +1,10 @@
 package relation
 
 import (
+	"douyin/common"
 	"douyin/constants"
 	"douyin/model/dyerror"
 	"douyin/model/entity"
-	"douyin/model/query"
 	"douyin/pb"
 	"douyin/service/RelationService"
 	"douyin/service/TokenService"
@@ -48,7 +48,11 @@ func ServeRelationAction(c *gin.Context) (res *pb.DouyinRelationActionResponse, 
 }
 
 func checkRelationActionParams(c *gin.Context, pToken *string, pToUserID *int64, pActionType *int) *dyerror.DouyinError {
-	body := query.ParamsBody{}
+	body := struct {
+		common.TokenAuthFields
+		common.ToUserIDField
+		common.ActionTypeField
+	}{}
 	if err := c.ShouldBind(&body); err != nil {
 		fmt.Println(err)
 	}

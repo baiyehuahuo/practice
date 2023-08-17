@@ -4,7 +4,6 @@ import (
 	"douyin/common"
 	"douyin/constants"
 	"douyin/model/dyerror"
-	"douyin/model/query"
 	"douyin/pb"
 	"douyin/service/MessageService"
 	"douyin/service/TokenService"
@@ -42,7 +41,10 @@ func ServeMessageChat(c *gin.Context) (res *pb.DouyinMessageChatResponse, dyerr 
 }
 
 func checkMessageChatParams(c *gin.Context, pToken *string, pToUserID *int64) *dyerror.DouyinError {
-	body := query.ParamsBody{}
+	body := struct {
+		common.TokenAuthFields
+		common.ToUserIDField
+	}{}
 	if err := c.ShouldBindQuery(&body); err != nil {
 		fmt.Println(err)
 	}

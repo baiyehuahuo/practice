@@ -12,11 +12,10 @@ type ParamsBody struct {
 	VideoID    int64  `form:"video_id" json:"video_id"`
 	Title      string `form:"title" json:"title"`
 	LatestTime int    `form:"latest_time" json:"latest_time"`
+	Content    string `form:"content" json:"content"`
 
 	ToUserID int64 `form:"to_user_id" json:"to_user_id"`
 
 	CommentID   int64  `form:"comment_id" json:"comment_id"`
 	CommentText string `form:"comment_text" json:"comment_text"`
-
-	Content string `form:"content" json:"content"`
 }

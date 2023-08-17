@@ -4,7 +4,6 @@ import (
 	"douyin/common"
 	"douyin/constants"
 	"douyin/model/dyerror"
-	"douyin/model/query"
 	"douyin/pb"
 	"douyin/service/FavoriteService"
 	"douyin/service/RelationService"
@@ -50,7 +49,9 @@ func ServePublishList(c *gin.Context) (res *pb.DouyinPublishListResponse, err *d
 }
 
 func checkPublishListParams(c *gin.Context, pUserID *int64, pToken *string) *dyerror.DouyinError {
-	body := query.ParamsBody{}
+	body := struct {
+		common.TokenAuthFields
+	}{}
 	if err := c.ShouldBind(&body); err != nil {
 		fmt.Println(err)
 	}

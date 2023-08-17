@@ -4,7 +4,6 @@ import (
 	"douyin/common"
 	"douyin/constants"
 	"douyin/model/dyerror"
-	"douyin/model/query"
 	"douyin/pb"
 	"douyin/service/RelationService"
 	"douyin/service/TokenService"
@@ -44,7 +43,9 @@ func ServeRelationFollowerList(c *gin.Context) (res *pb.DouyinRelationFollowerLi
 }
 
 func checkRelationFollowerListParams(c *gin.Context, pUserID *int64, pToken *string) *dyerror.DouyinError {
-	body := query.ParamsBody{}
+	body := struct {
+		common.TokenAuthFields
+	}{}
 	if err := c.ShouldBindQuery(&body); err != nil {
 		fmt.Println(err)
 	}

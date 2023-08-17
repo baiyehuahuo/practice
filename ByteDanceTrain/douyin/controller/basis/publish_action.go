@@ -1,10 +1,10 @@
 package basis
 
 import (
+	"douyin/common"
 	"douyin/constants"
 	"douyin/model/dyerror"
 	"douyin/model/entity"
-	"douyin/model/query"
 	"douyin/pb"
 	"douyin/service/TokenService"
 	"douyin/service/UserService"
@@ -59,7 +59,10 @@ func ServePublishAction(c *gin.Context) (res *pb.DouyinPublishActionResponse, dy
 }
 
 func checkPublishActionParams(c *gin.Context, pToken, pTitle *string, pFile **multipart.FileHeader) *dyerror.DouyinError {
-	body := query.ParamsBody{}
+	body := struct {
+		common.TokenAuthFields
+		Title string `form:"title" json:"title"`
+	}{}
 	if err := c.ShouldBind(&body); err != nil {
 		fmt.Println(err)
 	}

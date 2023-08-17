@@ -1,9 +1,9 @@
 package basis
 
 import (
+	"douyin/common"
 	"douyin/constants"
 	"douyin/model/dyerror"
-	"douyin/model/query"
 	"douyin/pb"
 	"douyin/service/TokenService"
 	"douyin/service/UserService"
@@ -40,7 +40,9 @@ func ServeUserLogin(c *gin.Context) (res *pb.DouyinUserLoginResponse, dyerr *dye
 }
 
 func checkUserLoginParams(c *gin.Context, pUsername, pPassword *string) *dyerror.DouyinError {
-	body := query.ParamsBody{}
+	body := struct {
+		common.UserLoginFields
+	}{}
 	if err := c.ShouldBind(&body); err != nil {
 		fmt.Println(err)
 	}
