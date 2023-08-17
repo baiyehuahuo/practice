@@ -59,7 +59,7 @@ func checkMessageActionParams(c *gin.Context, pToken *string, pToUserID *int64, 
 	if err := c.ShouldBind(&body); err != nil {
 		fmt.Println(err)
 	}
-	fmt.Printf("%+v\n", body)
+	//fmt.Printf("%+v\n", body)
 	token, toUserID, actionType, content := c.PostForm("token"), c.PostForm("to_user_id"), c.PostForm("action_type"), c.PostForm("content")
 	if token == "" || toUserID == "" || actionType == "" || content == "" {
 		return dyerror.ParamEmptyError

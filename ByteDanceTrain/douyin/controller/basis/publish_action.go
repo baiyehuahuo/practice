@@ -66,7 +66,7 @@ func checkPublishActionParams(c *gin.Context, pToken, pTitle *string, pFile **mu
 	if err := c.ShouldBind(&body); err != nil {
 		fmt.Println(err)
 	}
-	fmt.Printf("%+v\n", body)
+	//fmt.Printf("%+v\n", body)
 	token, title := c.PostForm("token"), c.PostForm("title")
 	file, err := c.FormFile("file")
 	if token == "" || title == "" || err == http.ErrMissingFile {

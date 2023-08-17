@@ -58,7 +58,7 @@ func checkFavoriteActionParams(c *gin.Context, pToken *string, pVideoID *int64, 
 	if err := c.ShouldBind(&body); err != nil {
 		fmt.Println(err)
 	}
-	fmt.Printf("%+v\n", body)
+	//fmt.Printf("%+v\n", body)
 	token, videoID, actionType := c.PostForm("token"), c.PostForm("video_id"), c.PostForm("action_type")
 	if token == "" || videoID == "" || actionType == "" {
 		return dyerror.ParamEmptyError

@@ -58,7 +58,7 @@ func checkCommentListParams(c *gin.Context, pToken *string, pVideoID *int64) *dy
 	if err := c.ShouldBindQuery(&body); err != nil {
 		fmt.Println(err)
 	}
-	fmt.Printf("%+v\n", body)
+	//fmt.Printf("%+v\n", body)
 	token, videoID := c.Query("token"), c.Query("video_id")
 	if token == "" || videoID == "" {
 		return dyerror.ParamEmptyError

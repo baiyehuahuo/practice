@@ -84,7 +84,7 @@ func checkCommentActionParams(c *gin.Context, pToken *string, pVideoID *int64, p
 	if err := c.ShouldBind(&body); err != nil {
 		fmt.Println(err)
 	}
-	fmt.Printf("%+v\n", body)
+	//fmt.Printf("%+v\n", body)
 	token, videoID, actionType := c.PostForm("token"), c.PostForm("video_id"), c.PostForm("action_type")
 	commentText, commentID := c.PostForm("comment_text"), c.PostForm("comment_id")
 	if token == "" || videoID == "" || actionType == "" {

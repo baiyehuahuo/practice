@@ -28,7 +28,7 @@ func GenerateToken() string {
 	return buf.String()
 }
 
-func GetUserIDFromToken(token string) (userID int64, err *dyerror.DouyinError) {
+func GetUserIDFromToken(token string) (userID int64, dyerr *dyerror.DouyinError) {
 	inter, found := c.Get(token)
 	if !found {
 		return 0, dyerror.AuthTokenFailError // userID forever not zero
@@ -38,8 +38,8 @@ func GetUserIDFromToken(token string) (userID int64, err *dyerror.DouyinError) {
 }
 
 func CheckToken(token string, userID int64) *dyerror.DouyinError {
-	tokenID, err := GetUserIDFromToken(token)
-	if err != nil || userID != tokenID {
+	tokenID, dyerr := GetUserIDFromToken(token)
+	if dyerr != nil || userID != tokenID {
 		return dyerror.AuthTokenFailError
 	}
 	return nil

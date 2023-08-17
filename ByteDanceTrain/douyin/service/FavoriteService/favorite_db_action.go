@@ -4,6 +4,7 @@ import (
 	"douyin/model/dyerror"
 	"douyin/model/entity"
 	"douyin/service/DBService"
+	"gorm.io/gorm"
 )
 
 // CreateFavoriteEvent create a new record in the mysql database
@@ -49,7 +50,5 @@ func QueryFavoriteCountByVideoID(videoID int64) (favoriteCount int64) {
 
 // QueryFavoriteByIDs query favorited exist between user_id and video_id
 func QueryFavoriteByIDs(userID, videoID int64) bool {
-	favorite := &entity.Favorite{}
-	DBService.GetDB().Where("user_id = ? and video_id = ?", userID, videoID).First(favorite)
-	return favorite.AuthorID != 0 // 非零表示找到了
+	return DBService.GetDB().Where("user_id = ? and video_id = ?", userID, videoID).First(&entity.Favorite{}).Error != gorm.ErrRecordNotFound
 }

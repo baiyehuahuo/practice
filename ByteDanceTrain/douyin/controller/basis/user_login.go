@@ -46,7 +46,7 @@ func checkUserLoginParams(c *gin.Context, pUsername, pPassword *string) *dyerror
 	if err := c.ShouldBind(&body); err != nil {
 		fmt.Println(err)
 	}
-	fmt.Printf("%+v\n", body)
+	//fmt.Printf("%+v\n", body)
 	username, password := c.PostForm("username"), c.PostForm("password")
 	if username == "" || password == "" {
 		//log.Printf("username: %v, password: %v", username, password)

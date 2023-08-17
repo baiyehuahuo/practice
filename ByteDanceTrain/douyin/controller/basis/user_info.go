@@ -45,7 +45,7 @@ func checkUserInfoParams(c *gin.Context, pUserID *int64, pToken *string) *dyerro
 	if err := c.ShouldBindQuery(&body); err != nil {
 		fmt.Println(err)
 	}
-	fmt.Printf("%+v\n", body)
+	//fmt.Printf("%+v\n", body)
 	userID, token := c.Query("user_id"), c.Query("token")
 	if userID == "" || token == "" {
 		//log.Printf("userID: %v, token: %v", userID, token)

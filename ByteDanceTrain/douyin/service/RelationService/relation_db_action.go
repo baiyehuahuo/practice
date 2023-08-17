@@ -4,6 +4,7 @@ import (
 	"douyin/model/dyerror"
 	"douyin/model/entity"
 	"douyin/service/DBService"
+	"gorm.io/gorm"
 )
 
 // CreateRelationEvent create a new record in the mysql database
@@ -48,7 +49,5 @@ func QueryFollowerCountByUserID(userID int64) (followCount int64) {
 
 // QueryFollowByIDs query follow exist between user_id and to_user_id
 func QueryFollowByIDs(userID, toUserID int64) bool {
-	relation := &entity.Relation{}
-	DBService.GetDB().Where("user_id = ? and to_user_id = ?", userID, toUserID).First(relation)
-	return relation.UserID != 0 // 非零表示找到了
+	return DBService.GetDB().Where("user_id = ? and to_user_id = ?", userID, toUserID).First(&entity.Relation{}).Error != gorm.ErrRecordNotFound
 }

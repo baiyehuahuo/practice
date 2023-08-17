@@ -56,7 +56,7 @@ func checkRelationActionParams(c *gin.Context, pToken *string, pToUserID *int64,
 	if err := c.ShouldBind(&body); err != nil {
 		fmt.Println(err)
 	}
-	fmt.Printf("%+v\n", body)
+	//fmt.Printf("%+v\n", body)
 	token, toUserID, actionType := c.PostForm("token"), c.PostForm("to_user_id"), c.PostForm("action_type")
 	if token == "" || toUserID == "" || actionType == "" {
 		return dyerror.ParamEmptyError

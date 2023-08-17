@@ -55,7 +55,7 @@ func checkFavoriteListParams(c *gin.Context, pUserID *int64, pToken *string) *dy
 	if err := c.ShouldBindQuery(&body); err != nil {
 		fmt.Println(err)
 	}
-	fmt.Printf("%+v\n", body)
+	//fmt.Printf("%+v\n", body)
 	userID, token := c.Query("user_id"), c.Query("token")
 	if userID == "" || token == "" {
 		return dyerror.ParamEmptyError

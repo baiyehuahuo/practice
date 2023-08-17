@@ -48,7 +48,7 @@ func checkMessageChatParams(c *gin.Context, pToken *string, pToUserID *int64) *d
 	if err := c.ShouldBindQuery(&body); err != nil {
 		fmt.Println(err)
 	}
-	fmt.Printf("%+v\n", body)
+	//fmt.Printf("%+v\n", body)
 	token, toUserID := c.Query("token"), c.Query("to_user_id")
 	if token == "" || toUserID == "" {
 		return dyerror.ParamEmptyError

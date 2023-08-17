@@ -68,7 +68,7 @@ func checkFeedParams(c *gin.Context, pLatestTime *time.Time, pToken *string) *dy
 	if err := c.ShouldBindQuery(&body); err != nil {
 		fmt.Println(err)
 	}
-	fmt.Printf("%+v\n", body)
+	//fmt.Printf("%+v\n", body)
 	latestTime, token := c.Query("latest_time"), strings.Trim(c.Query("token"), " ")
 	if latestTime != "" {
 		t, err := strconv.Atoi(latestTime)
