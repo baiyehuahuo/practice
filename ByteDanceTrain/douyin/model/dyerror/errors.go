@@ -1,5 +1,11 @@
 package dyerror
 
+import (
+	"fmt"
+	"github.com/go-playground/validator/v10"
+	"strconv"
+)
+
 type DouyinError struct {
 	ErrCode    int32
 	ErrMessage string
@@ -39,3 +45,17 @@ var (
 var (
 	UnknownError = &DouyinError{ErrCode: 999}
 )
+
+func HandleBindError(err error) *DouyinError {
+	switch err.(type) {
+	case validator.ValidationErrors:
+		return ParamEmptyError
+	case *strconv.NumError:
+		return ParamInputTypeError
+	default:
+		fmt.Printf("%T\n", err)
+		dyerr := UnknownError
+		dyerr.ErrMessage = err.Error()
+		return dyerr
+	}
+}

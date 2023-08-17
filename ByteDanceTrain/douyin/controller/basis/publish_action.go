@@ -8,9 +8,7 @@ import (
 	"douyin/service/TokenService"
 	"douyin/service/UserService"
 	"douyin/service/VideoService"
-	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -64,15 +62,7 @@ func checkPublishActionParams(c *gin.Context, pToken, pTitle *string, pFile **mu
 		Title string `form:"title" json:"title" binding:"required"`
 	}{}
 	if err := c.ShouldBind(&body); err != nil {
-		switch err.(type) {
-		case validator.ValidationErrors:
-			return dyerror.ParamEmptyError
-		default:
-			fmt.Printf("%T\n", err)
-			dyerr := dyerror.UnknownError
-			dyerr.ErrMessage = err.Error()
-			return dyerr
-		}
+		return dyerror.HandleBindError(err)
 	}
 	file, err := c.FormFile("file")
 	if err == http.ErrMissingFile {

@@ -8,10 +8,7 @@ import (
 	"douyin/service/FavoriteService"
 	"douyin/service/TokenService"
 	"douyin/service/VideoService"
-	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
-	"strconv"
 )
 
 // ServeFavoriteAction handle comment list request
@@ -56,17 +53,7 @@ func checkFavoriteActionParams(c *gin.Context, pToken *string, pVideoID *int64, 
 		ActionType int    `form:"action_type" json:"action_type" binding:"required"` // todo limit range
 	}{}
 	if err := c.ShouldBind(&body); err != nil {
-		switch err.(type) {
-		case validator.ValidationErrors:
-			return dyerror.ParamEmptyError
-		case *strconv.NumError:
-			return dyerror.ParamInputTypeError
-		default:
-			fmt.Printf("%T\n", err)
-			dyerr := dyerror.UnknownError
-			dyerr.ErrMessage = err.Error()
-			return dyerr
-		}
+		return dyerror.HandleBindError(err)
 	}
 	actionType := body.ActionType
 

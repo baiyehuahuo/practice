@@ -6,9 +6,7 @@ import (
 	"douyin/pb"
 	"douyin/service/TokenService"
 	"douyin/service/UserService"
-	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 )
 
 // ServeUserLogin handle user login request
@@ -45,15 +43,7 @@ func checkUserLoginParams(c *gin.Context, pUsername, pPassword *string) *dyerror
 		Password string `form:"password" json:"password" binding:"required"`
 	}{}
 	if err := c.ShouldBind(&body); err != nil {
-		switch err.(type) {
-		case validator.ValidationErrors:
-			return dyerror.ParamEmptyError
-		default:
-			fmt.Printf("%T\n", err)
-			dyerr := dyerror.UnknownError
-			dyerr.ErrMessage = err.Error()
-			return dyerr
-		}
+		return dyerror.HandleBindError(err)
 	}
 
 	*pUsername = body.Username

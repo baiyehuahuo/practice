@@ -10,10 +10,7 @@ import (
 	"douyin/service/TokenService"
 	"douyin/service/UserService"
 	"douyin/service/VideoService"
-	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
-	"strconv"
 )
 
 // ServePublishList handle publish list request
@@ -55,17 +52,7 @@ func checkPublishListParams(c *gin.Context, pUserID *int64, pToken *string) *dye
 		Token  string `form:"token" json:"token" binding:"required"`
 	}{}
 	if err := c.ShouldBind(&body); err != nil {
-		switch err.(type) {
-		case validator.ValidationErrors:
-			return dyerror.ParamEmptyError
-		case *strconv.NumError:
-			return dyerror.ParamInputTypeError
-		default:
-			fmt.Printf("%T\n", err)
-			dyerr := dyerror.UnknownError
-			dyerr.ErrMessage = err.Error()
-			return dyerr
-		}
+		return dyerror.HandleBindError(err)
 	}
 	*pUserID = body.UserID
 	*pToken = body.Token

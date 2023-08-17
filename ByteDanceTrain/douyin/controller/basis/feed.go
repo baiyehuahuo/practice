@@ -10,9 +10,7 @@ import (
 	"douyin/service/TokenService"
 	"douyin/service/UserService"
 	"douyin/service/VideoService"
-	"fmt"
 	"github.com/gin-gonic/gin"
-	"strconv"
 	"time"
 )
 
@@ -66,15 +64,7 @@ func checkFeedParams(c *gin.Context, pLatestTime *time.Time, pToken *string) *dy
 	}{}
 
 	if err := c.ShouldBindQuery(&body); err != nil {
-		switch err.(type) {
-		case *strconv.NumError:
-			return dyerror.ParamInputTypeError
-		default:
-			fmt.Printf("%T", err)
-			dyerr := dyerror.UnknownError
-			dyerr.ErrMessage = err.Error()
-			return dyerr
-		}
+		return dyerror.HandleBindError(err)
 	}
 	latestTime := body.LatestTime
 	if latestTime != 0 {

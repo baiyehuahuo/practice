@@ -10,10 +10,7 @@ import (
 	"douyin/service/RelationService"
 	"douyin/service/TokenService"
 	"douyin/service/UserService"
-	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
-	"strconv"
 	"time"
 )
 
@@ -83,17 +80,7 @@ func checkCommentActionParams(c *gin.Context, pToken *string, pVideoID *int64, p
 		CommentText string `form:"comment_text" json:"comment_text"`
 	}{}
 	if err := c.ShouldBind(&body); err != nil {
-		switch err.(type) {
-		case validator.ValidationErrors:
-			return dyerror.ParamEmptyError
-		case *strconv.NumError:
-			return dyerror.ParamInputTypeError
-		default:
-			fmt.Printf("%T\n", err)
-			dyerr := dyerror.UnknownError
-			dyerr.ErrMessage = err.Error()
-			return dyerr
-		}
+		return dyerror.HandleBindError(err)
 	}
 
 	actionType, commentText, commentID := body.ActionType, body.CommentText, body.CommentID

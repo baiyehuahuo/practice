@@ -7,10 +7,7 @@ import (
 	"douyin/pb"
 	"douyin/service/RelationService"
 	"douyin/service/TokenService"
-	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
-	"strconv"
 )
 
 // ServeRelationAction handle relation action request
@@ -54,17 +51,7 @@ func checkRelationActionParams(c *gin.Context, pToken *string, pToUserID *int64,
 		ActionType int    `form:"action_type" json:"action_type" binding:"required"`
 	}{}
 	if err := c.ShouldBind(&body); err != nil {
-		switch err.(type) {
-		case validator.ValidationErrors:
-			return dyerror.ParamEmptyError
-		case *strconv.NumError:
-			return dyerror.ParamInputTypeError
-		default:
-			fmt.Printf("%T\n", err)
-			dyerr := dyerror.UnknownError
-			dyerr.ErrMessage = err.Error()
-			return dyerr
-		}
+		return dyerror.HandleBindError(err)
 	}
 	//fmt.Printf("%+v\n", body)
 	action := body.ActionType

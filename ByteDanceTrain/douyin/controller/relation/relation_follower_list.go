@@ -8,10 +8,7 @@ import (
 	"douyin/service/RelationService"
 	"douyin/service/TokenService"
 	"douyin/service/UserService"
-	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
-	"strconv"
 )
 
 // ServeRelationFollowerList handle relation follower list request
@@ -49,17 +46,7 @@ func checkRelationFollowerListParams(c *gin.Context, pUserID *int64, pToken *str
 		Token  string `form:"token" json:"token" binding:"required"`
 	}{}
 	if err := c.ShouldBindQuery(&body); err != nil {
-		switch err.(type) {
-		case validator.ValidationErrors:
-			return dyerror.ParamEmptyError
-		case *strconv.NumError:
-			return dyerror.ParamInputTypeError
-		default:
-			fmt.Printf("%T\n", err)
-			dyerr := dyerror.UnknownError
-			dyerr.ErrMessage = err.Error()
-			return dyerr
-		}
+		return dyerror.HandleBindError(err)
 	}
 
 	*pUserID = body.UserID

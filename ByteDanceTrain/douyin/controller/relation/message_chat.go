@@ -7,10 +7,7 @@ import (
 	"douyin/pb"
 	"douyin/service/MessageService"
 	"douyin/service/TokenService"
-	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
-	"strconv"
 )
 
 // ServeMessageChat handle message chat request
@@ -47,17 +44,7 @@ func checkMessageChatParams(c *gin.Context, pToken *string, pToUserID *int64) *d
 		ToUserID int64  `form:"to_user_id" json:"to_user_id" binding:"required"`
 	}{}
 	if err := c.ShouldBindQuery(&body); err != nil {
-		switch err.(type) {
-		case validator.ValidationErrors:
-			return dyerror.ParamEmptyError
-		case *strconv.NumError:
-			return dyerror.ParamInputTypeError
-		default:
-			fmt.Printf("%T\n", err)
-			dyerr := dyerror.UnknownError
-			dyerr.ErrMessage = err.Error()
-			return dyerr
-		}
+		return dyerror.HandleBindError(err)
 	}
 
 	*pToken = body.Token
