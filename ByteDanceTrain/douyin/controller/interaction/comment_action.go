@@ -75,7 +75,7 @@ func checkCommentActionParams(c *gin.Context, pToken *string, pVideoID *int64, p
 	body := struct {
 		Token       string `form:"token" json:"token" binding:"required"`
 		VideoID     int64  `form:"video_id" json:"video_id" binding:"required"`
-		ActionType  int    `form:"action_type" json:"action_type" binding:"required"`
+		ActionType  int    `form:"action_type" json:"action_type" binding:"required,oneof=1 2"`
 		CommentID   int64  `form:"comment_id" json:"comment_id"`
 		CommentText string `form:"comment_text" json:"comment_text"`
 	}{}
@@ -84,9 +84,6 @@ func checkCommentActionParams(c *gin.Context, pToken *string, pVideoID *int64, p
 	}
 
 	actionType, commentText, commentID := body.ActionType, body.CommentText, body.CommentID
-	if actionType != 1 && actionType != 2 {
-		return dyerror.ParamUnknownActionTypeError
-	}
 	if actionType == 1 && commentText == "" || actionType == 2 && commentID == 0 {
 		return dyerror.ParamEmptyError
 	}

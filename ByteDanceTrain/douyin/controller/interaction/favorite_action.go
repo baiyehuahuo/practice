@@ -50,18 +50,14 @@ func checkFavoriteActionParams(c *gin.Context, pToken *string, pVideoID *int64, 
 	body := struct {
 		Token      string `form:"token" json:"token" binding:"required"`
 		VideoID    int64  `form:"video_id" json:"video_id" binding:"required"`
-		ActionType int    `form:"action_type" json:"action_type" binding:"required"` // todo limit range
+		ActionType int    `form:"action_type" json:"action_type" binding:"required,oneof=1 2"`
 	}{}
 	if err := c.ShouldBind(&body); err != nil {
 		return dyerror.HandleBindError(err)
 	}
-	actionType := body.ActionType
 
-	if actionType != 1 && actionType != 2 {
-		return dyerror.ParamUnknownActionTypeError
-	}
 	*pToken = body.Token
 	*pVideoID = body.VideoID
-	*pActionType = actionType
+	*pActionType = body.ActionType
 	return nil
 }

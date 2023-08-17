@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/go-playground/validator/v10"
 	"strconv"
+	"strings"
 )
 
 type DouyinError struct {
@@ -49,7 +50,17 @@ var (
 func HandleBindError(err error) *DouyinError {
 	switch err.(type) {
 	case validator.ValidationErrors:
-		return ParamEmptyError
+		errMessage := err.(validator.ValidationErrors)[0].Error()
+		switch {
+		case strings.HasSuffix(errMessage, "'required' tag"):
+			return ParamEmptyError
+		case strings.HasSuffix(errMessage, "'oneof' tag"):
+			return ParamUnknownActionTypeError
+		default:
+			dyerr := UnknownError
+			dyerr.ErrMessage = errMessage
+			return dyerr
+		}
 	case *strconv.NumError:
 		return ParamInputTypeError
 	default:

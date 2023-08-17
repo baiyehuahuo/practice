@@ -50,20 +50,16 @@ func checkMessageActionParams(c *gin.Context, pToken *string, pToUserID *int64, 
 	body := struct {
 		Token      string `form:"token" json:"token" binding:"required"`
 		ToUserID   int64  `form:"to_user_id" json:"to_user_id" binding:"required"`
-		ActionType int    `form:"action_type" json:"action_type" binding:"required"` // todo limit range
+		ActionType int    `form:"action_type" json:"action_type" binding:"required,oneof=1"`
 		Content    string `form:"content" json:"content" binding:"required"`
 	}{}
 	if err := c.ShouldBind(&body); err != nil {
 		return dyerror.HandleBindError(err)
 	}
 
-	action := body.ActionType
-	if action != 1 {
-		return dyerror.ParamUnknownActionTypeError
-	}
 	*pToken = body.Token
 	*pToUserID = body.ToUserID
-	*pActionType = action
+	*pActionType = body.ActionType
 	*pContent = body.Content
 	return nil
 }
