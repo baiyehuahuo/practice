@@ -200,7 +200,6 @@ func SetupRouter(r *gin.Engine) {
 			c.JSON(http.StatusOK, res)
 		})
 	}
-
 	{
 		// POST METHOD DOUBLE
 		douyinGroup.POST(constants.RouteUserRegister+"/", func(c *gin.Context) {
@@ -280,7 +279,6 @@ func SetupRouter(r *gin.Engine) {
 			}
 			c.JSON(http.StatusOK, res)
 		})
-
 	}
 }
 

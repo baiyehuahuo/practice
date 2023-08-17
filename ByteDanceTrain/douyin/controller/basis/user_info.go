@@ -8,6 +8,7 @@ import (
 	"douyin/service/RelationService"
 	"douyin/service/TokenService"
 	"douyin/service/UserService"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
@@ -37,7 +38,17 @@ func ServeUserInfo(c *gin.Context) (res *pb.DouyinUserResponse, dyerr *dyerror.D
 	}, nil
 }
 
+type queryUserInfoBody struct {
+	UserID int64  `form:"user_id" json:"user_id"`
+	Token  string `form:"token" json:"token"`
+}
+
 func checkUserInfoParams(c *gin.Context, pUserID *int64, pToken *string) *dyerror.DouyinError {
+	body := queryUserInfoBody{}
+	if err := c.ShouldBindQuery(&body); err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(body)
 	userID, token := c.Query("user_id"), c.Query("token")
 	if userID == "" || token == "" {
 		//log.Printf("userID: %v, token: %v", userID, token)

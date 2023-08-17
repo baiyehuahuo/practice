@@ -10,6 +10,7 @@ import (
 	"douyin/service/TokenService"
 	"douyin/service/UserService"
 	"douyin/service/VideoService"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"strconv"
 	"strings"
@@ -59,7 +60,17 @@ func ServeFeed(c *gin.Context) (res *pb.DouyinFeedResponse, dyerr *dyerror.Douyi
 	}, nil
 }
 
+type queryFeedBody struct {
+	LatestTime int    `form:"latest_time" json:"latest_time"`
+	Token      string `form:"token" json:"token"`
+}
+
 func checkFeedParams(c *gin.Context, pLatestTime *time.Time, pToken *string) *dyerror.DouyinError {
+	body := queryFeedBody{}
+	if err := c.ShouldBindQuery(&body); err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(body)
 	latestTime, token := c.Query("latest_time"), strings.Trim(c.Query("token"), " ")
 	if latestTime != "" {
 		t, err := strconv.Atoi(latestTime)

@@ -7,6 +7,7 @@ import (
 	"douyin/pb"
 	"douyin/service/TokenService"
 	"douyin/service/UserService"
+	"fmt"
 	"github.com/gin-gonic/gin"
 )
 
@@ -40,7 +41,17 @@ func ServeUserRegister(c *gin.Context) (res *pb.DouyinUserRegisterResponse, dyer
 	}, nil
 }
 
+type queryUserRegisterBody struct {
+	Username string `form:"username" json:"username"`
+	Password string `form:"password" json:"password"`
+}
+
 func checkUserRegisterParams(c *gin.Context, pUsername, pPassword *string) *dyerror.DouyinError {
+	body := queryUserRegisterBody{}
+	if err := c.ShouldBind(&body); err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(body)
 	username, password := c.PostForm("username"), c.PostForm("password")
 	if username == "" || password == "" {
 		//log.Printf("username: %v, password: %v", username, password)

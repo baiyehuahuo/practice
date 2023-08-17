@@ -8,6 +8,7 @@ import (
 	"douyin/service/TokenService"
 	"douyin/service/UserService"
 	"douyin/service/VideoService"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"mime/multipart"
 	"net/http"
@@ -56,7 +57,17 @@ func ServePublishAction(c *gin.Context) (res *pb.DouyinPublishActionResponse, dy
 	}, nil
 }
 
+type queryPublishActionBody struct {
+	Token string `form:"token" json:"token"`
+	Title string `form:"title" json:"title"`
+}
+
 func checkPublishActionParams(c *gin.Context, pToken, pTitle *string, pFile **multipart.FileHeader) *dyerror.DouyinError {
+	body := queryPublishActionBody{}
+	if err := c.ShouldBind(&body); err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(body)
 	token, title := c.PostForm("token"), c.PostForm("title")
 	file, err := c.FormFile("file")
 	if token == "" || title == "" || err == http.ErrMissingFile {

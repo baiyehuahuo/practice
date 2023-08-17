@@ -10,6 +10,7 @@ import (
 	"douyin/service/TokenService"
 	"douyin/service/UserService"
 	"douyin/service/VideoService"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
@@ -47,7 +48,17 @@ func ServePublishList(c *gin.Context) (res *pb.DouyinPublishListResponse, err *d
 	}, nil
 }
 
+type queryPublishListBody struct {
+	UserID int64  `form:"user_id" json:"user_id"`
+	Token  string `form:"token" json:"token"`
+}
+
 func checkPublishListParams(c *gin.Context, pUserID *int64, pToken *string) *dyerror.DouyinError {
+	body := queryPublishListBody{}
+	if err := c.ShouldBind(&body); err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(body)
 	userID, token := c.Query("user_id"), c.Query("token")
 	if userID == "" || token == "" {
 		//log.Printf("userID: %v, token: %v", userID, token)
