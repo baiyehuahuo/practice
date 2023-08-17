@@ -9,6 +9,7 @@ import (
 	"douyin/service/TokenService"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"strconv"
 )
 
@@ -42,22 +43,24 @@ func ServeMessageChat(c *gin.Context) (res *pb.DouyinMessageChatResponse, dyerr 
 
 func checkMessageChatParams(c *gin.Context, pToken *string, pToUserID *int64) *dyerror.DouyinError {
 	body := struct {
-		common.TokenAuthFields
-		common.ToUserIDField
+		Token    string `form:"token" json:"token" binding:"required"`
+		ToUserID int64  `form:"to_user_id" json:"to_user_id" binding:"required"`
 	}{}
 	if err := c.ShouldBindQuery(&body); err != nil {
-		fmt.Println(err)
+		switch err.(type) {
+		case validator.ValidationErrors:
+			return dyerror.ParamEmptyError
+		case *strconv.NumError:
+			return dyerror.ParamInputTypeError
+		default:
+			fmt.Printf("%T\n", err)
+			dyerr := dyerror.UnknownError
+			dyerr.ErrMessage = err.Error()
+			return dyerr
+		}
 	}
-	//fmt.Printf("%+v\n", body)
-	token, toUserID := c.Query("token"), c.Query("to_user_id")
-	if token == "" || toUserID == "" {
-		return dyerror.ParamEmptyError
-	}
-	id, err := strconv.Atoi(toUserID)
-	if err != nil {
-		return dyerror.ParamInputTypeError
-	}
-	*pToken = token
-	*pToUserID = int64(id)
+
+	*pToken = body.Token
+	*pToUserID = body.ToUserID
 	return nil
 }

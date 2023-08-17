@@ -1,7 +1,6 @@
 package basis
 
 import (
-	"douyin/common"
 	"douyin/constants"
 	"douyin/model/dyerror"
 	"douyin/pb"
@@ -9,6 +8,7 @@ import (
 	"douyin/service/UserService"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 // ServeUserLogin handle user login request
@@ -41,18 +41,22 @@ func ServeUserLogin(c *gin.Context) (res *pb.DouyinUserLoginResponse, dyerr *dye
 
 func checkUserLoginParams(c *gin.Context, pUsername, pPassword *string) *dyerror.DouyinError {
 	body := struct {
-		common.UserLoginFields
+		Username string `form:"username" json:"username" binding:"required"`
+		Password string `form:"password" json:"password" binding:"required"`
 	}{}
 	if err := c.ShouldBind(&body); err != nil {
-		fmt.Println(err)
+		switch err.(type) {
+		case validator.ValidationErrors:
+			return dyerror.ParamEmptyError
+		default:
+			fmt.Printf("%T\n", err)
+			dyerr := dyerror.UnknownError
+			dyerr.ErrMessage = err.Error()
+			return dyerr
+		}
 	}
-	//fmt.Printf("%+v\n", body)
-	username, password := c.PostForm("username"), c.PostForm("password")
-	if username == "" || password == "" {
-		//log.Printf("username: %v, password: %v", username, password)
-		return dyerror.ParamEmptyError
-	}
-	*pUsername = username
-	*pPassword = password
+
+	*pUsername = body.Username
+	*pPassword = body.Password
 	return nil
 }

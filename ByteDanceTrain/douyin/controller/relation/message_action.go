@@ -1,7 +1,6 @@
 package relation
 
 import (
-	"douyin/common"
 	"douyin/constants"
 	"douyin/model/dyerror"
 	"douyin/model/entity"
@@ -10,6 +9,7 @@ import (
 	"douyin/service/TokenService"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"strconv"
 	"time"
 )
@@ -51,30 +51,32 @@ func ServeMessageAction(c *gin.Context) (res *pb.DouyinMessageActionResponse, dy
 
 func checkMessageActionParams(c *gin.Context, pToken *string, pToUserID *int64, pActionType *int, pContent *string) *dyerror.DouyinError {
 	body := struct {
-		common.TokenAuthFields
-		common.ToUserIDField
-		common.ActionTypeField
-		Content string `form:"content" json:"content"`
+		Token      string `form:"token" json:"token" binding:"required"`
+		ToUserID   int64  `form:"to_user_id" json:"to_user_id" binding:"required"`
+		ActionType int    `form:"action_type" json:"action_type" binding:"required"` // todo limit range
+		Content    string `form:"content" json:"content" binding:"required"`
 	}{}
 	if err := c.ShouldBind(&body); err != nil {
-		fmt.Println(err)
+		switch err.(type) {
+		case validator.ValidationErrors:
+			return dyerror.ParamEmptyError
+		case *strconv.NumError:
+			return dyerror.ParamInputTypeError
+		default:
+			fmt.Printf("%T\n", err)
+			dyerr := dyerror.UnknownError
+			dyerr.ErrMessage = err.Error()
+			return dyerr
+		}
 	}
-	//fmt.Printf("%+v\n", body)
-	token, toUserID, actionType, content := c.PostForm("token"), c.PostForm("to_user_id"), c.PostForm("action_type"), c.PostForm("content")
-	if token == "" || toUserID == "" || actionType == "" || content == "" {
-		return dyerror.ParamEmptyError
-	}
-	id, err1 := strconv.Atoi(toUserID)
-	action, err2 := strconv.Atoi(actionType)
-	if err1 != nil || err2 != nil {
-		return dyerror.ParamInputTypeError
-	}
+
+	action := body.ActionType
 	if action != 1 {
 		return dyerror.ParamUnknownActionTypeError
 	}
-	*pToken = token
-	*pToUserID = int64(id)
+	*pToken = body.Token
+	*pToUserID = body.ToUserID
 	*pActionType = action
-	*pContent = content
+	*pContent = body.Content
 	return nil
 }

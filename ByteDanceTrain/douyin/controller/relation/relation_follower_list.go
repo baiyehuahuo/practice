@@ -10,6 +10,7 @@ import (
 	"douyin/service/UserService"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"strconv"
 )
 
@@ -44,21 +45,24 @@ func ServeRelationFollowerList(c *gin.Context) (res *pb.DouyinRelationFollowerLi
 
 func checkRelationFollowerListParams(c *gin.Context, pUserID *int64, pToken *string) *dyerror.DouyinError {
 	body := struct {
-		common.TokenAuthFields
+		UserID int64  `form:"user_id" json:"user_id" binding:"required"`
+		Token  string `form:"token" json:"token" binding:"required"`
 	}{}
 	if err := c.ShouldBindQuery(&body); err != nil {
-		fmt.Println(err)
+		switch err.(type) {
+		case validator.ValidationErrors:
+			return dyerror.ParamEmptyError
+		case *strconv.NumError:
+			return dyerror.ParamInputTypeError
+		default:
+			fmt.Printf("%T\n", err)
+			dyerr := dyerror.UnknownError
+			dyerr.ErrMessage = err.Error()
+			return dyerr
+		}
 	}
-	//fmt.Printf("%+v\n", body)
-	userID, token := c.Query("user_id"), c.Query("token")
-	if userID == "" || token == "" {
-		return dyerror.ParamEmptyError
-	}
-	id, err := strconv.Atoi(userID)
-	if err != nil {
-		return dyerror.ParamInputTypeError
-	}
-	*pUserID = int64(id)
-	*pToken = token
+
+	*pUserID = body.UserID
+	*pToken = body.Token
 	return nil
 }

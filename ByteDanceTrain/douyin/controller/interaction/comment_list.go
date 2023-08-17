@@ -11,6 +11,7 @@ import (
 	"douyin/service/UserService"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"strconv"
 )
 
@@ -45,29 +46,26 @@ func ServeCommentList(c *gin.Context) (res *pb.DouyinCommentListResponse, dyerr 
 	}, nil
 }
 
-type queryCommentListBody struct {
-	Token   string `form:"token" json:"token"`
-	VideoID int64  `form:"video_id" json:"video_id"`
-}
-
 func checkCommentListParams(c *gin.Context, pToken *string, pVideoID *int64) *dyerror.DouyinError {
 	body := struct {
-		common.TokenAuthFields
-		common.VideoIDField
+		Token   string `form:"token" json:"token" binding:"required"`
+		VideoID int64  `form:"video_id" json:"video_id" binding:"required"`
 	}{}
 	if err := c.ShouldBindQuery(&body); err != nil {
-		fmt.Println(err)
+		switch err.(type) {
+		case validator.ValidationErrors:
+			return dyerror.ParamEmptyError
+		case *strconv.NumError:
+			return dyerror.ParamInputTypeError
+		default:
+			fmt.Printf("%T\n", err)
+			dyerr := dyerror.UnknownError
+			dyerr.ErrMessage = err.Error()
+			return dyerr
+		}
 	}
-	//fmt.Printf("%+v\n", body)
-	token, videoID := c.Query("token"), c.Query("video_id")
-	if token == "" || videoID == "" {
-		return dyerror.ParamEmptyError
-	}
-	id, err := strconv.Atoi(videoID)
-	if err != nil {
-		return dyerror.ParamInputTypeError
-	}
-	*pToken = token
-	*pVideoID = int64(id)
+
+	*pToken = body.Token
+	*pVideoID = body.VideoID
 	return nil
 }

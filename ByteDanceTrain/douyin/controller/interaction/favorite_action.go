@@ -1,7 +1,6 @@
 package interaction
 
 import (
-	"douyin/common"
 	"douyin/constants"
 	"douyin/model/dyerror"
 	"douyin/model/entity"
@@ -11,6 +10,7 @@ import (
 	"douyin/service/VideoService"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"strconv"
 )
 
@@ -51,28 +51,30 @@ func ServeFavoriteAction(c *gin.Context) (res *pb.DouyinFavoriteActionResponse, 
 
 func checkFavoriteActionParams(c *gin.Context, pToken *string, pVideoID *int64, pActionType *int) *dyerror.DouyinError {
 	body := struct {
-		common.TokenAuthFields
-		common.VideoIDField
-		common.ActionTypeField
+		Token      string `form:"token" json:"token" binding:"required"`
+		VideoID    int64  `form:"video_id" json:"video_id" binding:"required"`
+		ActionType int    `form:"action_type" json:"action_type" binding:"required"` // todo limit range
 	}{}
 	if err := c.ShouldBind(&body); err != nil {
-		fmt.Println(err)
+		switch err.(type) {
+		case validator.ValidationErrors:
+			return dyerror.ParamEmptyError
+		case *strconv.NumError:
+			return dyerror.ParamInputTypeError
+		default:
+			fmt.Printf("%T\n", err)
+			dyerr := dyerror.UnknownError
+			dyerr.ErrMessage = err.Error()
+			return dyerr
+		}
 	}
-	//fmt.Printf("%+v\n", body)
-	token, videoID, actionType := c.PostForm("token"), c.PostForm("video_id"), c.PostForm("action_type")
-	if token == "" || videoID == "" || actionType == "" {
-		return dyerror.ParamEmptyError
-	}
-	id, err1 := strconv.Atoi(videoID)
-	action, err2 := strconv.Atoi(actionType)
-	if err1 != nil || err2 != nil {
-		return dyerror.ParamInputTypeError
-	}
-	if action != 1 && action != 2 {
+	actionType := body.ActionType
+
+	if actionType != 1 && actionType != 2 {
 		return dyerror.ParamUnknownActionTypeError
 	}
-	*pToken = token
-	*pVideoID = int64(id)
-	*pActionType = action
+	*pToken = body.Token
+	*pVideoID = body.VideoID
+	*pActionType = actionType
 	return nil
 }

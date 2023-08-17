@@ -13,7 +13,6 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -62,23 +61,27 @@ func ServeFeed(c *gin.Context) (res *pb.DouyinFeedResponse, dyerr *dyerror.Douyi
 
 func checkFeedParams(c *gin.Context, pLatestTime *time.Time, pToken *string) *dyerror.DouyinError {
 	body := struct {
-		common.TokenAuthFields
-		LatestTime int `form:"latest_time" json:"latest_time"`
+		Token      string `form:"token" json:"token"`
+		LatestTime int64  `form:"latest_time" json:"latest_time"`
 	}{}
+
 	if err := c.ShouldBindQuery(&body); err != nil {
-		fmt.Println(err)
-	}
-	//fmt.Printf("%+v\n", body)
-	latestTime, token := c.Query("latest_time"), strings.Trim(c.Query("token"), " ")
-	if latestTime != "" {
-		t, err := strconv.Atoi(latestTime)
-		if err != nil {
+		switch err.(type) {
+		case *strconv.NumError:
 			return dyerror.ParamInputTypeError
+		default:
+			fmt.Printf("%T", err)
+			dyerr := dyerror.UnknownError
+			dyerr.ErrMessage = err.Error()
+			return dyerr
 		}
-		*pLatestTime = time.Unix(int64(t), 0)
+	}
+	latestTime := body.LatestTime
+	if latestTime != 0 {
+		*pLatestTime = time.Unix(latestTime, 0)
 	} else {
 		*pLatestTime = time.Now()
 	}
-	*pToken = token
+	*pToken = body.Token
 	return nil
 }

@@ -1,7 +1,6 @@
 package basis
 
 import (
-	"douyin/common"
 	"douyin/constants"
 	"douyin/model/dyerror"
 	"douyin/model/entity"
@@ -10,6 +9,7 @@ import (
 	"douyin/service/UserService"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 // ServeUserRegister handle user register request
@@ -44,17 +44,22 @@ func ServeUserRegister(c *gin.Context) (res *pb.DouyinUserRegisterResponse, dyer
 
 func checkUserRegisterParams(c *gin.Context, pUsername, pPassword *string) *dyerror.DouyinError {
 	body := struct {
-		common.UserLoginFields
+		Username string `form:"username" json:"username" binding:"required"` // todo limit length
+		Password string `form:"password" json:"password" binding:"required"`
 	}{}
 	if err := c.ShouldBind(&body); err != nil {
-		fmt.Println(err)
+		switch err.(type) {
+		case validator.ValidationErrors:
+			return dyerror.ParamEmptyError
+		default:
+			fmt.Printf("%T\n", err)
+			dyerr := dyerror.UnknownError
+			dyerr.ErrMessage = err.Error()
+			return dyerr
+		}
 	}
 	//fmt.Printf("%+v\n", body)
-	username, password := c.PostForm("username"), c.PostForm("password")
-	if username == "" || password == "" {
-		//log.Printf("username: %v, password: %v", username, password)
-		return dyerror.ParamEmptyError
-	}
+	username, password := body.Username, body.Password
 	if len(username) > 32 || len(password) > 32 {
 		//log.Printf("username: %v, password: %v", username, password)
 		return dyerror.ParamInputLengthExceededError

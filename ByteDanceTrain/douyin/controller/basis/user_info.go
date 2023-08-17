@@ -10,6 +10,7 @@ import (
 	"douyin/service/UserService"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"strconv"
 )
 
@@ -40,24 +41,24 @@ func ServeUserInfo(c *gin.Context) (res *pb.DouyinUserResponse, dyerr *dyerror.D
 
 func checkUserInfoParams(c *gin.Context, pUserID *int64, pToken *string) *dyerror.DouyinError {
 	body := struct {
-		common.TokenAuthFields
+		UserID int64  `form:"user_id" json:"user_id" binding:"required"`
+		Token  string `form:"token" json:"token" binding:"required"`
 	}{}
 	if err := c.ShouldBindQuery(&body); err != nil {
-		fmt.Println(err)
-	}
-	//fmt.Printf("%+v\n", body)
-	userID, token := c.Query("user_id"), c.Query("token")
-	if userID == "" || token == "" {
-		//log.Printf("userID: %v, token: %v", userID, token)
-		return dyerror.ParamEmptyError
+		switch err.(type) {
+		case validator.ValidationErrors:
+			return dyerror.ParamEmptyError
+		case *strconv.NumError:
+			return dyerror.ParamInputTypeError
+		default:
+			fmt.Printf("%T", err)
+			dyerr := dyerror.UnknownError
+			dyerr.ErrMessage = err.Error()
+			return dyerr
+		}
 	}
 
-	id, err := strconv.Atoi(userID)
-	if err != nil {
-		//log.Printf("userID: %v, token: %v", userID, token)
-		return dyerror.ParamInputTypeError
-	}
-	*pUserID = int64(id)
-	*pToken = token
+	*pUserID = body.UserID
+	*pToken = body.Token
 	return nil
 }

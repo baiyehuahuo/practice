@@ -1,7 +1,6 @@
 package basis
 
 import (
-	"douyin/common"
 	"douyin/constants"
 	"douyin/model/dyerror"
 	"douyin/model/entity"
@@ -11,6 +10,7 @@ import (
 	"douyin/service/VideoService"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -60,16 +60,22 @@ func ServePublishAction(c *gin.Context) (res *pb.DouyinPublishActionResponse, dy
 
 func checkPublishActionParams(c *gin.Context, pToken, pTitle *string, pFile **multipart.FileHeader) *dyerror.DouyinError {
 	body := struct {
-		common.TokenAuthFields
-		Title string `form:"title" json:"title"`
+		Token string `form:"token" json:"token" binding:"required"`
+		Title string `form:"title" json:"title" binding:"required"`
 	}{}
 	if err := c.ShouldBind(&body); err != nil {
-		fmt.Println(err)
+		switch err.(type) {
+		case validator.ValidationErrors:
+			return dyerror.ParamEmptyError
+		default:
+			fmt.Printf("%T\n", err)
+			dyerr := dyerror.UnknownError
+			dyerr.ErrMessage = err.Error()
+			return dyerr
+		}
 	}
-	//fmt.Printf("%+v\n", body)
-	token, title := c.PostForm("token"), c.PostForm("title")
 	file, err := c.FormFile("file")
-	if token == "" || title == "" || err == http.ErrMissingFile {
+	if err == http.ErrMissingFile {
 		//log.Printf("token: %v, title: %v, err: %v", token, title, err)
 		return dyerror.ParamEmptyError
 	}
@@ -78,8 +84,8 @@ func checkPublishActionParams(c *gin.Context, pToken, pTitle *string, pFile **mu
 		dyerr.ErrMessage = err.Error()
 		return dyerr
 	}
-	*pToken = token
-	*pTitle = title
+	*pToken = body.Token
+	*pTitle = body.Title
 	*pFile = file
 	return nil
 }

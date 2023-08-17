@@ -12,7 +12,7 @@ import (
 	"douyin/service/UserService"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"log"
+	"github.com/go-playground/validator/v10"
 	"strconv"
 	"time"
 )
@@ -76,38 +76,38 @@ type queryCommentActionBody struct {
 
 func checkCommentActionParams(c *gin.Context, pToken *string, pVideoID *int64, pAction *int, pCommentText *string, pCommentID *int64) *dyerror.DouyinError {
 	body := struct {
-		common.TokenAuthFields
-		common.VideoIDField
-		common.ActionTypeField
-		common.ContentFields
+		Token       string `form:"token" json:"token" binding:"required"`
+		VideoID     int64  `form:"video_id" json:"video_id" binding:"required"`
+		ActionType  int    `form:"action_type" json:"action_type" binding:"required"`
+		CommentID   int64  `form:"comment_id" json:"comment_id"`
+		CommentText string `form:"comment_text" json:"comment_text"`
 	}{}
 	if err := c.ShouldBind(&body); err != nil {
-		fmt.Println(err)
-	}
-	//fmt.Printf("%+v\n", body)
-	token, videoID, actionType := c.PostForm("token"), c.PostForm("video_id"), c.PostForm("action_type")
-	commentText, commentID := c.PostForm("comment_text"), c.PostForm("comment_id")
-	if token == "" || videoID == "" || actionType == "" {
-		log.Printf("token: %v, videoID: %v, actionType: %v", token, videoID, actionType)
-		return dyerror.ParamEmptyError
-	}
-	action, _ := strconv.Atoi(actionType)
-	if action != 1 && action != 2 {
-		return dyerror.ParamUnknownActionTypeError
-	}
-	if action == 1 && commentText == "" || action == 2 && commentID == "" {
-		return dyerror.ParamEmptyError
-	}
-	vid, err1 := strconv.Atoi(videoID)
-	cid, err2 := strconv.Atoi(commentID)
-	if err1 != nil || action == 2 && err2 != nil {
-		return dyerror.ParamInputTypeError
+		switch err.(type) {
+		case validator.ValidationErrors:
+			return dyerror.ParamEmptyError
+		case *strconv.NumError:
+			return dyerror.ParamInputTypeError
+		default:
+			fmt.Printf("%T\n", err)
+			dyerr := dyerror.UnknownError
+			dyerr.ErrMessage = err.Error()
+			return dyerr
+		}
 	}
 
-	*pToken = token
-	*pVideoID = int64(vid)
-	*pAction = action
+	actionType, commentText, commentID := body.ActionType, body.CommentText, body.CommentID
+	if actionType != 1 && actionType != 2 {
+		return dyerror.ParamUnknownActionTypeError
+	}
+	if actionType == 1 && commentText == "" || actionType == 2 && commentID == 0 {
+		return dyerror.ParamEmptyError
+	}
+
+	*pToken = body.Token
+	*pVideoID = body.VideoID
+	*pAction = actionType
 	*pCommentText = commentText
-	*pCommentID = int64(cid)
+	*pCommentID = commentID
 	return nil
 }
