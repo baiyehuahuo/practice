@@ -200,6 +200,88 @@ func SetupRouter(r *gin.Engine) {
 			c.JSON(http.StatusOK, res)
 		})
 	}
+
+	{
+		// POST METHOD DOUBLE
+		douyinGroup.POST(constants.RouteUserRegister+"/", func(c *gin.Context) {
+			res, err := basis.ServeUserRegister(c)
+			if err != nil {
+				res = empty_response.UserRegister()
+				*res.StatusCode = err.ErrCode
+				*res.StatusMsg = err.ErrMessage
+				c.JSON(http.StatusOK, res)
+				return
+			}
+			c.JSON(http.StatusOK, res)
+		})
+		douyinGroup.POST(constants.RouteUserLogin+"/", func(c *gin.Context) {
+			res, err := basis.ServeUserLogin(c)
+			if err != nil {
+				res = empty_response.UserLogin()
+				*res.StatusCode = err.ErrCode
+				*res.StatusMsg = err.ErrMessage
+				c.JSON(http.StatusOK, res)
+				return
+			}
+			c.JSON(http.StatusOK, res)
+		})
+		douyinGroup.POST(constants.RoutePublishAction+"/", func(c *gin.Context) {
+			res, err := basis.ServePublishAction(c)
+			if err != nil {
+				res = empty_response.PublishAction()
+				*res.StatusCode = err.ErrCode
+				*res.StatusMsg = err.ErrMessage
+				c.JSON(http.StatusOK, res)
+				return
+			}
+			c.JSON(http.StatusOK, res)
+		})
+		douyinGroup.POST(constants.RouteFavoriteAction+"/", func(c *gin.Context) {
+			res, err := interaction.ServeFavoriteAction(c)
+			if err != nil {
+				res = empty_response.FavoriteAction()
+				*res.StatusCode = err.ErrCode
+				*res.StatusMsg = err.ErrMessage
+				c.JSON(http.StatusOK, res)
+				return
+			}
+			c.JSON(http.StatusOK, res)
+		})
+		douyinGroup.POST(constants.RouteCommentAction+"/", func(c *gin.Context) {
+			res, err := interaction.ServeCommentAction(c)
+			if err != nil {
+				res = empty_response.CommentAction()
+				*res.StatusCode = err.ErrCode
+				*res.StatusMsg = err.ErrMessage
+				c.JSON(http.StatusOK, res)
+				return
+			}
+			c.JSON(http.StatusOK, res)
+		})
+		douyinGroup.POST(constants.RouteRelationAction+"/", func(c *gin.Context) {
+			res, err := relation.ServeRelationAction(c)
+			if err != nil {
+				res = empty_response.RelationAction()
+				*res.StatusCode = err.ErrCode
+				*res.StatusMsg = err.ErrMessage
+				c.JSON(http.StatusOK, res)
+				return
+			}
+			c.JSON(http.StatusOK, res)
+		})
+		douyinGroup.POST(constants.RouteMessageAction+"/", func(c *gin.Context) {
+			res, err := relation.ServeMessageAction(c)
+			if err != nil {
+				res = empty_response.MessageAction()
+				*res.StatusCode = err.ErrCode
+				*res.StatusMsg = err.ErrMessage
+				c.JSON(http.StatusOK, res)
+				return
+			}
+			c.JSON(http.StatusOK, res)
+		})
+
+	}
 }
 
 //func handleError(c *gin.Context, err *dyerror.DouyinError) {
