@@ -5,11 +5,13 @@ import (
 	"douyin/constants"
 	"douyin/model/dyerror"
 	"douyin/model/entity"
+	"douyin/model/query"
 	"douyin/pb"
 	"douyin/service/CommentService"
 	"douyin/service/RelationService"
 	"douyin/service/TokenService"
 	"douyin/service/UserService"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
 	"strconv"
@@ -65,7 +67,20 @@ func ServeCommentAction(c *gin.Context) (res *pb.DouyinCommentActionResponse, dy
 	}, nil
 }
 
+type queryCommentActionBody struct {
+	Token       string `form:"token" json:"token"`
+	VideoID     int64  `form:"video_id" json:"video_id"`
+	ActionType  int    `form:"action_type" json:"action_type"`
+	CommentText string `form:"comment_text" json:"comment_text"`
+	CommentID   int64  `form:"comment_id" json:"comment_id"`
+}
+
 func checkCommentActionParams(c *gin.Context, pToken *string, pVideoID *int64, pAction *int, pCommentText *string, pCommentID *int64) *dyerror.DouyinError {
+	body := query.ParamsBody{}
+	if err := c.ShouldBind(&body); err != nil {
+		fmt.Println(err)
+	}
+	fmt.Printf("%+v\n", body)
 	token, videoID, actionType := c.PostForm("token"), c.PostForm("video_id"), c.PostForm("action_type")
 	commentText, commentID := c.PostForm("comment_text"), c.PostForm("comment_id")
 	if token == "" || videoID == "" || actionType == "" {

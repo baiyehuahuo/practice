@@ -4,11 +4,13 @@ import (
 	"douyin/common"
 	"douyin/constants"
 	"douyin/model/dyerror"
+	"douyin/model/query"
 	"douyin/pb"
 	"douyin/service/CommentService"
 	"douyin/service/RelationService"
 	"douyin/service/TokenService"
 	"douyin/service/UserService"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
@@ -44,7 +46,17 @@ func ServeCommentList(c *gin.Context) (res *pb.DouyinCommentListResponse, dyerr 
 	}, nil
 }
 
+type queryCommentListBody struct {
+	Token   string `form:"token" json:"token"`
+	VideoID int64  `form:"video_id" json:"video_id"`
+}
+
 func checkCommentListParams(c *gin.Context, pToken *string, pVideoID *int64) *dyerror.DouyinError {
+	body := query.ParamsBody{}
+	if err := c.ShouldBindQuery(&body); err != nil {
+		fmt.Println(err)
+	}
+	fmt.Printf("%+v\n", body)
 	token, videoID := c.Query("token"), c.Query("video_id")
 	if token == "" || videoID == "" {
 		return dyerror.ParamEmptyError

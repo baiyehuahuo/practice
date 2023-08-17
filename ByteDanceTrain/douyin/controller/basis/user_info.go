@@ -4,6 +4,7 @@ import (
 	"douyin/common"
 	"douyin/constants"
 	"douyin/model/dyerror"
+	"douyin/model/query"
 	"douyin/pb"
 	"douyin/service/RelationService"
 	"douyin/service/TokenService"
@@ -38,17 +39,12 @@ func ServeUserInfo(c *gin.Context) (res *pb.DouyinUserResponse, dyerr *dyerror.D
 	}, nil
 }
 
-type queryUserInfoBody struct {
-	UserID int64  `form:"user_id" json:"user_id"`
-	Token  string `form:"token" json:"token"`
-}
-
 func checkUserInfoParams(c *gin.Context, pUserID *int64, pToken *string) *dyerror.DouyinError {
-	body := queryUserInfoBody{}
+	body := query.ParamsBody{}
 	if err := c.ShouldBindQuery(&body); err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(body)
+	fmt.Printf("%+v\n", body)
 	userID, token := c.Query("user_id"), c.Query("token")
 	if userID == "" || token == "" {
 		//log.Printf("userID: %v, token: %v", userID, token)

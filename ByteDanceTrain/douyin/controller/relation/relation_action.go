@@ -4,9 +4,11 @@ import (
 	"douyin/constants"
 	"douyin/model/dyerror"
 	"douyin/model/entity"
+	"douyin/model/query"
 	"douyin/pb"
 	"douyin/service/RelationService"
 	"douyin/service/TokenService"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
@@ -46,6 +48,11 @@ func ServeRelationAction(c *gin.Context) (res *pb.DouyinRelationActionResponse, 
 }
 
 func checkRelationActionParams(c *gin.Context, pToken *string, pToUserID *int64, pActionType *int) *dyerror.DouyinError {
+	body := query.ParamsBody{}
+	if err := c.ShouldBind(&body); err != nil {
+		fmt.Println(err)
+	}
+	fmt.Printf("%+v\n", body)
 	token, toUserID, actionType := c.PostForm("token"), c.PostForm("to_user_id"), c.PostForm("action_type")
 	if token == "" || toUserID == "" || actionType == "" {
 		return dyerror.ParamEmptyError

@@ -4,10 +4,12 @@ import (
 	"douyin/constants"
 	"douyin/model/dyerror"
 	"douyin/model/entity"
+	"douyin/model/query"
 	"douyin/pb"
 	"douyin/service/FavoriteService"
 	"douyin/service/TokenService"
 	"douyin/service/VideoService"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
@@ -48,6 +50,11 @@ func ServeFavoriteAction(c *gin.Context) (res *pb.DouyinFavoriteActionResponse, 
 }
 
 func checkFavoriteActionParams(c *gin.Context, pToken *string, pVideoID *int64, pActionType *int) *dyerror.DouyinError {
+	body := query.ParamsBody{}
+	if err := c.ShouldBind(&body); err != nil {
+		fmt.Println(err)
+	}
+	fmt.Printf("%+v\n", body)
 	token, videoID, actionType := c.PostForm("token"), c.PostForm("video_id"), c.PostForm("action_type")
 	if token == "" || videoID == "" || actionType == "" {
 		return dyerror.ParamEmptyError

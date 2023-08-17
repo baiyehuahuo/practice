@@ -4,12 +4,14 @@ import (
 	"douyin/common"
 	"douyin/constants"
 	"douyin/model/dyerror"
+	"douyin/model/query"
 	"douyin/pb"
 	"douyin/service/FavoriteService"
 	"douyin/service/RelationService"
 	"douyin/service/TokenService"
 	"douyin/service/UserService"
 	"douyin/service/VideoService"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
@@ -48,6 +50,11 @@ func ServeFavoriteList(c *gin.Context) (res *pb.DouyinFavoriteListResponse, dyer
 }
 
 func checkFavoriteListParams(c *gin.Context, pUserID *int64, pToken *string) *dyerror.DouyinError {
+	body := query.ParamsBody{}
+	if err := c.ShouldBindQuery(&body); err != nil {
+		fmt.Println(err)
+	}
+	fmt.Printf("%+v\n", body)
 	userID, token := c.Query("user_id"), c.Query("token")
 	if userID == "" || token == "" {
 		return dyerror.ParamEmptyError

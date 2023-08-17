@@ -4,9 +4,11 @@ import (
 	"douyin/common"
 	"douyin/constants"
 	"douyin/model/dyerror"
+	"douyin/model/query"
 	"douyin/pb"
 	"douyin/service/MessageService"
 	"douyin/service/TokenService"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
@@ -40,6 +42,11 @@ func ServeMessageChat(c *gin.Context) (res *pb.DouyinMessageChatResponse, dyerr 
 }
 
 func checkMessageChatParams(c *gin.Context, pToken *string, pToUserID *int64) *dyerror.DouyinError {
+	body := query.ParamsBody{}
+	if err := c.ShouldBindQuery(&body); err != nil {
+		fmt.Println(err)
+	}
+	fmt.Printf("%+v\n", body)
 	token, toUserID := c.Query("token"), c.Query("to_user_id")
 	if token == "" || toUserID == "" {
 		return dyerror.ParamEmptyError

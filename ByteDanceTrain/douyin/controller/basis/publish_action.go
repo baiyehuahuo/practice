@@ -4,6 +4,7 @@ import (
 	"douyin/constants"
 	"douyin/model/dyerror"
 	"douyin/model/entity"
+	"douyin/model/query"
 	"douyin/pb"
 	"douyin/service/TokenService"
 	"douyin/service/UserService"
@@ -57,17 +58,12 @@ func ServePublishAction(c *gin.Context) (res *pb.DouyinPublishActionResponse, dy
 	}, nil
 }
 
-type queryPublishActionBody struct {
-	Token string `form:"token" json:"token"`
-	Title string `form:"title" json:"title"`
-}
-
 func checkPublishActionParams(c *gin.Context, pToken, pTitle *string, pFile **multipart.FileHeader) *dyerror.DouyinError {
-	body := queryPublishActionBody{}
+	body := query.ParamsBody{}
 	if err := c.ShouldBind(&body); err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(body)
+	fmt.Printf("%+v\n", body)
 	token, title := c.PostForm("token"), c.PostForm("title")
 	file, err := c.FormFile("file")
 	if token == "" || title == "" || err == http.ErrMissingFile {

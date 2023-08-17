@@ -4,9 +4,11 @@ import (
 	"douyin/constants"
 	"douyin/model/dyerror"
 	"douyin/model/entity"
+	"douyin/model/query"
 	"douyin/pb"
 	"douyin/service/MessageService"
 	"douyin/service/TokenService"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"strconv"
 	"time"
@@ -48,6 +50,11 @@ func ServeMessageAction(c *gin.Context) (res *pb.DouyinMessageActionResponse, dy
 }
 
 func checkMessageActionParams(c *gin.Context, pToken *string, pToUserID *int64, pActionType *int, pContent *string) *dyerror.DouyinError {
+	body := query.ParamsBody{}
+	if err := c.ShouldBind(&body); err != nil {
+		fmt.Println(err)
+	}
+	fmt.Printf("%+v\n", body)
 	token, toUserID, actionType, content := c.PostForm("token"), c.PostForm("to_user_id"), c.PostForm("action_type"), c.PostForm("content")
 	if token == "" || toUserID == "" || actionType == "" || content == "" {
 		return dyerror.ParamEmptyError
