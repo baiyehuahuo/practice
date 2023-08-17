@@ -12,7 +12,7 @@ import (
 func main() {
 	r := gin.Default()
 	router.SetupRouter(r)
-	if err := r.Run("127.0.0.1:20000"); err != nil {
+	if err := r.Run(":20000"); err != nil {
 		log.Fatal(err)
 	}
 }

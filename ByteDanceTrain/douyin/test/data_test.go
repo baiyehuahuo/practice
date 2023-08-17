@@ -2,6 +2,8 @@ package test
 
 import "douyin/pb"
 
+// test user_id 2 search
+
 const (
 	RootUserID              = int64(1) // 1 是 root
 	RootUsername            = "root"

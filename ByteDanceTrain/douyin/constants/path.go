@@ -5,29 +5,29 @@ import (
 )
 
 const (
-	ProjectGroup = "/douyin"
+	ProjectGroup = "douyin"
 
 	// basis
 	RouteFeed          = "/feed"
-	RouteUserRegister  = "/user/register"
-	RouteUserLogin     = "/user/login"
+	RouteUserRegister  = "/user/register/"
+	RouteUserLogin     = "/user/login/"
 	RouteUserInfo      = "/user"
-	RoutePublishAction = "/publish/action"
+	RoutePublishAction = "/publish/action/"
 	RoutePublishList   = "/publish/list"
 
 	// interaction
-	RouteFavoriteAction = "/favorite/action"
+	RouteFavoriteAction = "/favorite/action/"
 	RouteFavoriteList   = "/favorite/list"
-	RouteCommentAction  = "/comment/action"
+	RouteCommentAction  = "/comment/action/"
 	RouteCommentList    = "/comment/list"
 
 	// relation
-	RouteRelationAction       = "/relation/action"
+	RouteRelationAction       = "/relation/action/"
 	RouteRelationFollowList   = "/relation/follow/list"
 	RouteRelationFollowerList = "/relation/follower/list"
 	RouteRelationFriendList   = "/relation/friend/list"
 	RouteMessageChat          = "/message/chat"
-	RouteMessageAction        = "/message/action"
+	RouteMessageAction        = "/message/action/"
 )
 
 const (
