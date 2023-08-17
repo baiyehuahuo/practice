@@ -42,19 +42,13 @@ func ServeUserRegister(c *gin.Context) (res *pb.DouyinUserRegisterResponse, dyer
 
 func checkUserRegisterParams(c *gin.Context, pUsername, pPassword *string) *dyerror.DouyinError {
 	body := struct {
-		Username string `form:"username" json:"username" binding:"required"` // todo limit length
-		Password string `form:"password" json:"password" binding:"required"`
+		Username string `form:"username" json:"username" binding:"required,lte=32"` // todo limit length
+		Password string `form:"password" json:"password" binding:"required,lte=32"`
 	}{}
 	if err := c.ShouldBind(&body); err != nil {
 		return dyerror.HandleBindError(err)
 	}
-	//fmt.Printf("%+v\n", body)
-	username, password := body.Username, body.Password
-	if len(username) > 32 || len(password) > 32 {
-		//log.Printf("username: %v, password: %v", username, password)
-		return dyerror.ParamInputLengthExceededError
-	}
-	*pUsername = username
-	*pPassword = password
+	*pUsername = body.Username
+	*pPassword = body.Password
 	return nil
 }

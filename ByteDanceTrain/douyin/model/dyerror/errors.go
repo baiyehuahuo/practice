@@ -50,12 +50,15 @@ var (
 func HandleBindError(err error) *DouyinError {
 	switch err.(type) {
 	case validator.ValidationErrors:
+		// only consider the first err message
 		errMessage := err.(validator.ValidationErrors)[0].Error()
 		switch {
 		case strings.HasSuffix(errMessage, "'required' tag"):
 			return ParamEmptyError
 		case strings.HasSuffix(errMessage, "'oneof' tag"):
 			return ParamUnknownActionTypeError
+		case strings.HasSuffix(errMessage, "'lte' tag"):
+			return ParamInputLengthExceededError
 		default:
 			dyerr := UnknownError
 			dyerr.ErrMessage = errMessage
