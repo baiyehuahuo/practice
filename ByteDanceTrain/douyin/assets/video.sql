@@ -3,7 +3,7 @@ CREATE TABLE Videos
 (
     `id` INT UNSIGNED AUTO_INCREMENT COMMENT '视频唯一标识',
     `author_id` INT UNSIGNED NOT NULL COMMENT '视频作者id',
-    `play_url` VARCHAR(64) NOT NULL COMMENT '视频播放地址',
+    `play_url` VARCHAR(100) NOT NULL COMMENT '视频播放地址',
     `cover_url` VARCHAR(64) DEFAULT '' COMMENT '视频封面地址',
     `title` VARCHAR(32) DEFAULT '' COMMENT '视频标题',
     `publish_time` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '发表时间',

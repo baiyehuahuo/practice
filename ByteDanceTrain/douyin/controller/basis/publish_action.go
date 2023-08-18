@@ -64,9 +64,8 @@ func checkPublishActionParams(c *gin.Context, pToken, pTitle *string, pFile **mu
 	if err := c.ShouldBind(&body); err != nil {
 		return dyerror.HandleBindError(err)
 	}
-	file, err := c.FormFile("file")
+	file, err := c.FormFile("data")
 	if err == http.ErrMissingFile {
-		//log.Printf("token: %v, title: %v, err: %v", token, title, err)
 		return dyerror.ParamEmptyError
 	}
 	if err != nil {

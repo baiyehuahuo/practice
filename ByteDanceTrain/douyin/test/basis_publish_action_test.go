@@ -33,7 +33,7 @@ func TestPublishActionSuccess(t *testing.T) {
 	}
 	defer file.Close()
 
-	if part, err = writer.CreateFormFile("file", filepath.Base(testUploadFile)+strconv.Itoa(rand.Int())); err != nil { // 似乎是并发请求，同文件名会返回文件已存在的错误
+	if part, err = writer.CreateFormFile("data", filepath.Base(testUploadFile)+strconv.Itoa(rand.Int())); err != nil { // 似乎是并发请求，同文件名会返回文件已存在的错误
 		t.Fatalf("Test create form file fail: %v", err)
 	}
 
@@ -63,7 +63,7 @@ func TestPublishActionTokenAuthFail(t *testing.T) {
 	}
 	defer file.Close()
 
-	if part, err = writer.CreateFormFile("file", filepath.Base(testUploadFile)); err != nil {
+	if part, err = writer.CreateFormFile("data", filepath.Base(testUploadFile)); err != nil {
 		t.Fatalf("Test create form file fail: %v", err)
 	}
 
@@ -94,7 +94,7 @@ func TestPublishActionFileExistFail(t *testing.T) {
 	}
 	defer file.Close()
 
-	if part, err = writer.CreateFormFile("file", filepath.Base(testUploadExistFile)); err != nil {
+	if part, err = writer.CreateFormFile("data", filepath.Base(testUploadExistFile)); err != nil {
 		t.Fatalf("Test create form file fail: %v", err)
 	}
 
@@ -137,7 +137,7 @@ func TestPublishActionParamsEmptyFail(t *testing.T) {
 	}
 	defer file.Close()
 
-	if part, err = writer.CreateFormFile("file", filepath.Base(testUploadFile)+strconv.Itoa(rand.Int())); err != nil { // 似乎是并发请求，同文件名会返回文件已存在的错误
+	if part, err = writer.CreateFormFile("data", filepath.Base(testUploadFile)+strconv.Itoa(rand.Int())); err != nil { // 似乎是并发请求，同文件名会返回文件已存在的错误
 		t.Fatalf("Test create form file fail: %v", err)
 	}
 
