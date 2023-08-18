@@ -4,13 +4,18 @@ import (
 	"fmt"
 	"github.com/go-playground/validator/v10"
 	"strconv"
-	"strings"
 )
 
 type DouyinError struct {
 	ErrCode    int32
 	ErrMessage string
 }
+
+func (d *DouyinError) Error() string {
+	return d.ErrMessage
+}
+
+var _ error = &DouyinError{}
 
 var (
 	// ParamError 1xx
@@ -51,17 +56,20 @@ func HandleBindError(err error) *DouyinError {
 	switch err.(type) {
 	case validator.ValidationErrors:
 		// only consider the first err message
-		errMessage := err.(validator.ValidationErrors)[0].Error()
-		switch {
-		case strings.HasSuffix(errMessage, "'required' tag"):
+		//fmt.Printf("%s\n", err.(validator.ValidationErrors)[0].Tag())
+		//errMessage := err.(validator.ValidationErrors)[0].Error()
+		firstErr := err.(validator.ValidationErrors)[0]
+		switch firstErr.Tag() {
+		case "required":
 			return ParamEmptyError
-		case strings.HasSuffix(errMessage, "'oneof' tag"):
+		case "oneof":
 			return ParamUnknownActionTypeError
-		case strings.HasSuffix(errMessage, "'lte' tag"):
+		case "lte":
 			return ParamInputLengthExceededError
 		default:
+			fmt.Printf("%s\n", firstErr.Tag())
 			dyerr := UnknownError
-			dyerr.ErrMessage = errMessage
+			dyerr.ErrMessage = firstErr.Error()
 			return dyerr
 		}
 	case *strconv.NumError:

@@ -63,14 +63,6 @@ func ServeCommentAction(c *gin.Context) (res *pb.DouyinCommentActionResponse, dy
 	}, nil
 }
 
-type queryCommentActionBody struct {
-	Token       string `form:"token" json:"token"`
-	VideoID     int64  `form:"video_id" json:"video_id"`
-	ActionType  int    `form:"action_type" json:"action_type"`
-	CommentText string `form:"comment_text" json:"comment_text"`
-	CommentID   int64  `form:"comment_id" json:"comment_id"`
-}
-
 func checkCommentActionParams(c *gin.Context, pToken *string, pVideoID *int64, pAction *int, pCommentText *string, pCommentID *int64) *dyerror.DouyinError {
 	body := struct {
 		Token       string `form:"token" json:"token" binding:"required"`
