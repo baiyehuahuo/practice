@@ -7,7 +7,7 @@ import (
 )
 
 // CreateMessageEvent create a new record in the mysql database
-func CreateMessageEvent(msg *entity.Message) *dyerror.DouyinError {
+func CreateMessageEvent(msg *entity.Message) error {
 	if err := DBService.GetDB().Create(msg).Error; err != nil {
 		return dyerror.DBCreateCommentEventError
 	}

@@ -16,16 +16,16 @@ import (
 // 在个人页点击 粉丝/关注，能够打开该页面，会立即调用接口拉取关注用户和粉丝用户列表
 // Method is GET
 // user_id, token is required
-func ServeRelationFollowList(c *gin.Context) (res *pb.DouyinRelationFollowListResponse, dyerr *dyerror.DouyinError) {
+func ServeRelationFollowList(c *gin.Context) (res *pb.DouyinRelationFollowListResponse, err error) {
 	var (
 		userID int64
 		token  string
 	)
-	if dyerr = checkRelationFollowListParams(c, &userID, &token); dyerr != nil {
-		return nil, dyerr
+	if err = checkRelationFollowListParams(c, &userID, &token); err != nil {
+		return nil, err
 	}
-	if dyerr = TokenService.CheckToken(token, userID); dyerr != nil {
-		return nil, dyerr
+	if err = TokenService.CheckToken(token, userID); err != nil {
+		return nil, err
 	}
 	relations := RelationService.QueryRelationEventByUserID(userID)
 	pbUsers := make([]*pb.User, 0, len(relations))
@@ -41,7 +41,7 @@ func ServeRelationFollowList(c *gin.Context) (res *pb.DouyinRelationFollowListRe
 	}, nil
 }
 
-func checkRelationFollowListParams(c *gin.Context, pUserID *int64, pToken *string) *dyerror.DouyinError {
+func checkRelationFollowListParams(c *gin.Context, pUserID *int64, pToken *string) error {
 	body := struct {
 		UserID int64  `form:"user_id" json:"user_id" binding:"required"`
 		Token  string `form:"token" json:"token" binding:"required"`

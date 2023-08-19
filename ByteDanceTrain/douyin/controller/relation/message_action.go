@@ -15,18 +15,18 @@ import (
 // 点击发送，会通过消息发送接口发送该消息。
 // Method is POST
 // token, to_user_id, action_type, content is required
-func ServeMessageAction(c *gin.Context) (res *pb.DouyinMessageActionResponse, dyerr *dyerror.DouyinError) {
+func ServeMessageAction(c *gin.Context) (res *pb.DouyinMessageActionResponse, err error) {
 	var (
 		token, content string
 		toUserID       int64
 		actionType     int
 	)
-	if dyerr = checkMessageActionParams(c, &token, &toUserID, &actionType, &content); dyerr != nil {
-		return nil, dyerr
+	if err = checkMessageActionParams(c, &token, &toUserID, &actionType, &content); err != nil {
+		return nil, err
 	}
-	userID, dyerr := TokenService.GetUserIDFromToken(token)
-	if dyerr != nil {
-		return nil, dyerr
+	userID, err := TokenService.GetUserIDFromToken(token)
+	if err != nil {
+		return nil, err
 	}
 	switch actionType {
 	case 1:
@@ -36,8 +36,8 @@ func ServeMessageAction(c *gin.Context) (res *pb.DouyinMessageActionResponse, dy
 			Content:    content,
 			CreateTime: time.Now().Format("01-02"),
 		}
-		if dyerr = MessageService.CreateMessageEvent(&msg); dyerr != nil {
-			return nil, dyerr
+		if err = MessageService.CreateMessageEvent(&msg); err != nil {
+			return nil, err
 		}
 	}
 	return &pb.DouyinMessageActionResponse{
@@ -46,7 +46,7 @@ func ServeMessageAction(c *gin.Context) (res *pb.DouyinMessageActionResponse, dy
 	}, nil
 }
 
-func checkMessageActionParams(c *gin.Context, pToken *string, pToUserID *int64, pActionType *int, pContent *string) *dyerror.DouyinError {
+func checkMessageActionParams(c *gin.Context, pToken *string, pToUserID *int64, pActionType *int, pContent *string) error {
 	body := struct {
 		Token      string `form:"token" json:"token" binding:"required"`
 		ToUserID   int64  `form:"to_user_id" json:"to_user_id" binding:"required"`

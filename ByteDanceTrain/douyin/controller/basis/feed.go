@@ -18,13 +18,13 @@ import (
 // 不限制登录状态，返回按投稿时间倒序的视频列表，视频数由服务端控制，单次最多30个
 // 打开App会立即调用接口/douyin/feed/获取视频列表信息
 // Method is GET
-func ServeFeed(c *gin.Context) (res *pb.DouyinFeedResponse, dyerr *dyerror.DouyinError) {
+func ServeFeed(c *gin.Context) (res *pb.DouyinFeedResponse, err error) {
 	var (
 		latestTime time.Time
 		token      string
 	)
-	if dyerr = checkFeedParams(c, &latestTime, &token); dyerr != nil {
-		return nil, dyerr
+	if err = checkFeedParams(c, &latestTime, &token); err != nil {
+		return nil, err
 	}
 	userID, dyerr := TokenService.GetUserIDFromToken(token)
 	if token != "" && dyerr != nil { // 如果有 token 要验证
@@ -57,7 +57,7 @@ func ServeFeed(c *gin.Context) (res *pb.DouyinFeedResponse, dyerr *dyerror.Douyi
 	}, nil
 }
 
-func checkFeedParams(c *gin.Context, pLatestTime *time.Time, pToken *string) *dyerror.DouyinError {
+func checkFeedParams(c *gin.Context, pLatestTime *time.Time, pToken *string) error {
 	body := struct {
 		Token      string `form:"token" json:"token"`
 		LatestTime int64  `form:"latest_time" json:"latest_time"`

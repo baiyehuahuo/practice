@@ -7,7 +7,7 @@ import (
 )
 
 // CreateUser create a new record in the mysql database
-func CreateUser(user *entity.User) *dyerror.DouyinError {
+func CreateUser(user *entity.User) error {
 	if err := DBService.GetDB().Create(user).Error; err != nil {
 		return dyerror.DBCreateUserError
 	}

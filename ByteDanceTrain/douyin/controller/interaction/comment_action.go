@@ -20,18 +20,18 @@ import (
 // Method is POST
 // token, video_id, action_type is required
 // comment_text comment_id is optional
-func ServeCommentAction(c *gin.Context) (res *pb.DouyinCommentActionResponse, dyerr *dyerror.DouyinError) {
+func ServeCommentAction(c *gin.Context) (res *pb.DouyinCommentActionResponse, err error) {
 	var (
 		token, commentText string
 		videoID, commentID int64
 		actionType         int
 	)
-	if dyerr = checkCommentActionParams(c, &token, &videoID, &actionType, &commentText, &commentID); dyerr != nil {
-		return nil, dyerr
+	if err = checkCommentActionParams(c, &token, &videoID, &actionType, &commentText, &commentID); err != nil {
+		return nil, err
 	}
-	userID, dyerr := TokenService.GetUserIDFromToken(token)
-	if dyerr != nil {
-		return nil, dyerr
+	userID, err := TokenService.GetUserIDFromToken(token)
+	if err != nil {
+		return nil, err
 	}
 
 	var comment = &entity.Comment{VideoID: videoID}
@@ -41,8 +41,8 @@ func ServeCommentAction(c *gin.Context) (res *pb.DouyinCommentActionResponse, dy
 		comment.UserID = userID
 		comment.Content = commentText
 		comment.CreateDate = time.Now().Format("01-02")
-		if dyerr = CommentService.CreateCommentEvent(comment); dyerr != nil {
-			return nil, dyerr
+		if err = CommentService.CreateCommentEvent(comment); err != nil {
+			return nil, err
 		}
 	case 2:
 		// 删除评论
@@ -50,8 +50,8 @@ func ServeCommentAction(c *gin.Context) (res *pb.DouyinCommentActionResponse, dy
 		//if comment.ID == 0 {
 		//	return nil, dyerror.DBDeleteCommentEventError
 		//} todo 是不是加个错误未找到类型比较好？
-		if dyerr = CommentService.DeleteCommentEvent(comment); dyerr != nil {
-			return nil, dyerr
+		if err = CommentService.DeleteCommentEvent(comment); err != nil {
+			return nil, err
 		}
 	}
 	user := common.ConvertToPBUser(UserService.QueryUserByID(comment.UserID))
@@ -63,7 +63,7 @@ func ServeCommentAction(c *gin.Context) (res *pb.DouyinCommentActionResponse, dy
 	}, nil
 }
 
-func checkCommentActionParams(c *gin.Context, pToken *string, pVideoID *int64, pAction *int, pCommentText *string, pCommentID *int64) *dyerror.DouyinError {
+func checkCommentActionParams(c *gin.Context, pToken *string, pVideoID *int64, pAction *int, pCommentText *string, pCommentID *int64) error {
 	body := struct {
 		Token       string `form:"token" json:"token" binding:"required"`
 		VideoID     int64  `form:"video_id" json:"video_id" binding:"required"`

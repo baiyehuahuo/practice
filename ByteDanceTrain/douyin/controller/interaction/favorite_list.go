@@ -18,16 +18,16 @@ import (
 // 打开个人页，会立即调用这两个接口，分别将内容显示在“作品”和“喜欢”两个栏目下
 // Method is GET
 // user_id, token is required
-func ServeFavoriteList(c *gin.Context) (res *pb.DouyinFavoriteListResponse, dyerr *dyerror.DouyinError) {
+func ServeFavoriteList(c *gin.Context) (res *pb.DouyinFavoriteListResponse, err error) {
 	var (
 		userID int64
 		token  string
 	)
-	if dyerr = checkFavoriteListParams(c, &userID, &token); dyerr != nil {
-		return nil, dyerr
+	if err = checkFavoriteListParams(c, &userID, &token); err != nil {
+		return nil, err
 	}
-	if dyerr = TokenService.CheckToken(token, userID); dyerr != nil {
-		return nil, dyerr
+	if err = TokenService.CheckToken(token, userID); err != nil {
+		return nil, err
 	}
 	favorites := FavoriteService.QueryFavoritesByUserID(userID)
 	pbVideoList := make([]*pb.Video, 0, len(favorites))
@@ -46,7 +46,7 @@ func ServeFavoriteList(c *gin.Context) (res *pb.DouyinFavoriteListResponse, dyer
 	}, nil
 }
 
-func checkFavoriteListParams(c *gin.Context, pUserID *int64, pToken *string) *dyerror.DouyinError {
+func checkFavoriteListParams(c *gin.Context, pUserID *int64, pToken *string) error {
 	body := struct {
 		UserID int64  `form:"user_id" json:"user_id" binding:"required"`
 		Token  string `form:"token" json:"token" binding:"required"`

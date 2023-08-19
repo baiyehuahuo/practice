@@ -16,28 +16,28 @@ import (
 // 点击点赞按钮调用接口douyin/favorite/action/
 // Method is POST
 // token, video_id, action_type is required
-func ServeFavoriteAction(c *gin.Context) (res *pb.DouyinFavoriteActionResponse, dyerr *dyerror.DouyinError) {
+func ServeFavoriteAction(c *gin.Context) (res *pb.DouyinFavoriteActionResponse, err error) {
 	var (
 		token      string
 		videoID    int64
 		actionType int
 	)
-	if dyerr = checkFavoriteActionParams(c, &token, &videoID, &actionType); dyerr != nil {
-		return nil, dyerr
+	if err = checkFavoriteActionParams(c, &token, &videoID, &actionType); err != nil {
+		return nil, err
 	}
-	userID, dyerr := TokenService.GetUserIDFromToken(token)
-	if dyerr != nil {
-		return nil, dyerr
+	userID, err := TokenService.GetUserIDFromToken(token)
+	if err != nil {
+		return nil, err
 	}
 	video := VideoService.QueryVideoByVideoID(videoID)
 	switch actionType {
 	case 1:
-		if dyerr = FavoriteService.CreateFavoriteEvent(&entity.Favorite{UserID: userID, VideoID: videoID, AuthorID: video.AuthorID}); dyerr != nil {
-			return nil, dyerr
+		if err = FavoriteService.CreateFavoriteEvent(&entity.Favorite{UserID: userID, VideoID: videoID, AuthorID: video.AuthorID}); err != nil {
+			return nil, err
 		}
 	case 2:
-		if dyerr = FavoriteService.DeleteFavoriteEvent(&entity.Favorite{UserID: userID, VideoID: videoID}); dyerr != nil {
-			return nil, dyerr
+		if err = FavoriteService.DeleteFavoriteEvent(&entity.Favorite{UserID: userID, VideoID: videoID}); err != nil {
+			return nil, err
 		}
 	}
 	return &pb.DouyinFavoriteActionResponse{
@@ -46,7 +46,7 @@ func ServeFavoriteAction(c *gin.Context) (res *pb.DouyinFavoriteActionResponse, 
 	}, nil
 }
 
-func checkFavoriteActionParams(c *gin.Context, pToken *string, pVideoID *int64, pActionType *int) *dyerror.DouyinError {
+func checkFavoriteActionParams(c *gin.Context, pToken *string, pVideoID *int64, pActionType *int) error {
 	body := struct {
 		Token      string `form:"token" json:"token" binding:"required"`
 		VideoID    int64  `form:"video_id" json:"video_id" binding:"required"`

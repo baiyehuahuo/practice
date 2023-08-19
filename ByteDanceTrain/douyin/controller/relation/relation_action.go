@@ -14,28 +14,28 @@ import (
 // 在Feed首页点击头像上的+号 和个人页点击关注，都会调用该接口执行关注和取消关注的逻辑
 // Method is POST
 // token, to_user_id, action_type is required
-func ServeRelationAction(c *gin.Context) (res *pb.DouyinRelationActionResponse, dyerr *dyerror.DouyinError) {
+func ServeRelationAction(c *gin.Context) (res *pb.DouyinRelationActionResponse, err error) {
 	var (
 		token      string
 		toUserID   int64
 		actionType int
 	)
-	if dyerr = checkRelationActionParams(c, &token, &toUserID, &actionType); dyerr != nil {
-		return nil, dyerr
+	if err = checkRelationActionParams(c, &token, &toUserID, &actionType); err != nil {
+		return nil, err
 	}
-	userID, dyerr := TokenService.GetUserIDFromToken(token)
-	if dyerr != nil {
-		return nil, dyerr
+	userID, err := TokenService.GetUserIDFromToken(token)
+	if err != nil {
+		return nil, err
 	}
 	relation := &entity.Relation{UserID: userID, ToUserID: toUserID}
 	switch actionType {
 	case 1:
-		if dyerr = RelationService.CreateRelationEvent(relation); dyerr != nil {
-			return nil, dyerr
+		if err = RelationService.CreateRelationEvent(relation); err != nil {
+			return nil, err
 		}
 	case 2:
-		if dyerr = RelationService.DeleteRelationEvent(relation); dyerr != nil {
-			return nil, dyerr
+		if err = RelationService.DeleteRelationEvent(relation); err != nil {
+			return nil, err
 		}
 	}
 	return &pb.DouyinRelationActionResponse{
@@ -44,7 +44,7 @@ func ServeRelationAction(c *gin.Context) (res *pb.DouyinRelationActionResponse, 
 	}, nil
 }
 
-func checkRelationActionParams(c *gin.Context, pToken *string, pToUserID *int64, pActionType *int) *dyerror.DouyinError {
+func checkRelationActionParams(c *gin.Context, pToken *string, pToUserID *int64, pActionType *int) error {
 	body := struct {
 		Token      string `form:"token" json:"token" binding:"required"`
 		ToUserID   int64  `form:"to_user_id" json:"to_user_id" binding:"required"`

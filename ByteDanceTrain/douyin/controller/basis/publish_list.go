@@ -18,7 +18,7 @@ import (
 // 打开个人页，会立即调用这两个接口，分别将内容显示在“作品”和“喜欢”两个栏目下
 // Method is GET
 // user_id, token is required
-func ServePublishList(c *gin.Context) (res *pb.DouyinPublishListResponse, err *dyerror.DouyinError) {
+func ServePublishList(c *gin.Context) (res *pb.DouyinPublishListResponse, err error) {
 	var (
 		userID int64
 		token  string
@@ -46,7 +46,7 @@ func ServePublishList(c *gin.Context) (res *pb.DouyinPublishListResponse, err *d
 	}, nil
 }
 
-func checkPublishListParams(c *gin.Context, pUserID *int64, pToken *string) *dyerror.DouyinError {
+func checkPublishListParams(c *gin.Context, pUserID *int64, pToken *string) error {
 	body := struct {
 		UserID int64  `form:"user_id" json:"user_id" binding:"required"`
 		Token  string `form:"token" json:"token" binding:"required"`

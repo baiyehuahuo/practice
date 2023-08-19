@@ -5,7 +5,9 @@ import (
 	"douyin/controller/basis"
 	"douyin/controller/interaction"
 	"douyin/controller/relation"
+	"douyin/model/dyerror"
 	"douyin/model/empty_response"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	_ "net/http/pprof"
@@ -24,8 +26,9 @@ func SetupRouter(r *gin.Engine) {
 			res, err := basis.ServeFeed(c)
 			if err != nil {
 				res = empty_response.Feed()
-				*res.StatusCode = err.ErrCode
-				*res.StatusMsg = err.ErrMessage
+				dyerr := err.(*dyerror.DouyinError)
+				*res.StatusCode = dyerr.ErrCode
+				*res.StatusMsg = dyerr.ErrMessage
 				c.JSON(http.StatusOK, res)
 				return
 			}
@@ -35,8 +38,9 @@ func SetupRouter(r *gin.Engine) {
 			res, err := basis.ServeUserRegister(c)
 			if err != nil {
 				res = empty_response.UserRegister()
-				*res.StatusCode = err.ErrCode
-				*res.StatusMsg = err.ErrMessage
+				dyerr := err.(*dyerror.DouyinError)
+				*res.StatusCode = dyerr.ErrCode
+				*res.StatusMsg = dyerr.ErrMessage
 				c.JSON(http.StatusOK, res)
 				return
 			}
@@ -46,8 +50,9 @@ func SetupRouter(r *gin.Engine) {
 			res, err := basis.ServeUserLogin(c)
 			if err != nil {
 				res = empty_response.UserLogin()
-				*res.StatusCode = err.ErrCode
-				*res.StatusMsg = err.ErrMessage
+				dyerr := err.(*dyerror.DouyinError)
+				*res.StatusCode = dyerr.ErrCode
+				*res.StatusMsg = dyerr.ErrMessage
 				c.JSON(http.StatusOK, res)
 				return
 			}
@@ -57,8 +62,9 @@ func SetupRouter(r *gin.Engine) {
 			res, err := basis.ServeUserInfo(c)
 			if err != nil {
 				res = empty_response.User()
-				*res.StatusCode = err.ErrCode
-				*res.StatusMsg = err.ErrMessage
+				dyerr := err.(*dyerror.DouyinError)
+				*res.StatusCode = dyerr.ErrCode
+				*res.StatusMsg = dyerr.ErrMessage
 				c.JSON(http.StatusOK, res)
 				return
 			}
@@ -68,8 +74,12 @@ func SetupRouter(r *gin.Engine) {
 			res, err := basis.ServePublishAction(c)
 			if err != nil {
 				res = empty_response.PublishAction()
-				*res.StatusCode = err.ErrCode
-				*res.StatusMsg = err.ErrMessage
+				dyerr, ok := err.(*dyerror.DouyinError)
+				if !ok || dyerr == nil {
+					panic(fmt.Sprintf("err is not dyerror: %T %s", err, err))
+				}
+				*res.StatusCode = dyerr.ErrCode
+				*res.StatusMsg = dyerr.ErrMessage
 				c.JSON(http.StatusOK, res)
 				return
 			}
@@ -79,8 +89,9 @@ func SetupRouter(r *gin.Engine) {
 			res, err := basis.ServePublishList(c)
 			if err != nil {
 				res = empty_response.PublishList()
-				*res.StatusCode = err.ErrCode
-				*res.StatusMsg = err.ErrMessage
+				dyerr := err.(*dyerror.DouyinError)
+				*res.StatusCode = dyerr.ErrCode
+				*res.StatusMsg = dyerr.ErrMessage
 				c.JSON(http.StatusOK, res)
 				return
 			}
@@ -93,8 +104,9 @@ func SetupRouter(r *gin.Engine) {
 			res, err := interaction.ServeFavoriteAction(c)
 			if err != nil {
 				res = empty_response.FavoriteAction()
-				*res.StatusCode = err.ErrCode
-				*res.StatusMsg = err.ErrMessage
+				dyerr := err.(*dyerror.DouyinError)
+				*res.StatusCode = dyerr.ErrCode
+				*res.StatusMsg = dyerr.ErrMessage
 				c.JSON(http.StatusOK, res)
 				return
 			}
@@ -104,8 +116,9 @@ func SetupRouter(r *gin.Engine) {
 			res, err := interaction.ServeFavoriteList(c)
 			if err != nil {
 				res = empty_response.FavoriteList()
-				*res.StatusCode = err.ErrCode
-				*res.StatusMsg = err.ErrMessage
+				dyerr := err.(*dyerror.DouyinError)
+				*res.StatusCode = dyerr.ErrCode
+				*res.StatusMsg = dyerr.ErrMessage
 				c.JSON(http.StatusOK, res)
 				return
 			}
@@ -115,8 +128,9 @@ func SetupRouter(r *gin.Engine) {
 			res, err := interaction.ServeCommentAction(c)
 			if err != nil {
 				res = empty_response.CommentAction()
-				*res.StatusCode = err.ErrCode
-				*res.StatusMsg = err.ErrMessage
+				dyerr := err.(*dyerror.DouyinError)
+				*res.StatusCode = dyerr.ErrCode
+				*res.StatusMsg = dyerr.ErrMessage
 				c.JSON(http.StatusOK, res)
 				return
 			}
@@ -126,8 +140,9 @@ func SetupRouter(r *gin.Engine) {
 			res, err := interaction.ServeCommentList(c)
 			if err != nil {
 				res = empty_response.CommentList()
-				*res.StatusCode = err.ErrCode
-				*res.StatusMsg = err.ErrMessage
+				dyerr := err.(*dyerror.DouyinError)
+				*res.StatusCode = dyerr.ErrCode
+				*res.StatusMsg = dyerr.ErrMessage
 				c.JSON(http.StatusOK, res)
 				return
 			}
@@ -140,8 +155,9 @@ func SetupRouter(r *gin.Engine) {
 			res, err := relation.ServeRelationAction(c)
 			if err != nil {
 				res = empty_response.RelationAction()
-				*res.StatusCode = err.ErrCode
-				*res.StatusMsg = err.ErrMessage
+				dyerr := err.(*dyerror.DouyinError)
+				*res.StatusCode = dyerr.ErrCode
+				*res.StatusMsg = dyerr.ErrMessage
 				c.JSON(http.StatusOK, res)
 				return
 			}
@@ -151,8 +167,9 @@ func SetupRouter(r *gin.Engine) {
 			res, err := relation.ServeRelationFollowList(c)
 			if err != nil {
 				res = empty_response.RelationFollowList()
-				*res.StatusCode = err.ErrCode
-				*res.StatusMsg = err.ErrMessage
+				dyerr := err.(*dyerror.DouyinError)
+				*res.StatusCode = dyerr.ErrCode
+				*res.StatusMsg = dyerr.ErrMessage
 				c.JSON(http.StatusOK, res)
 				return
 			}
@@ -162,8 +179,9 @@ func SetupRouter(r *gin.Engine) {
 			res, err := relation.ServeRelationFollowerList(c)
 			if err != nil {
 				res = empty_response.RelationFollowerList()
-				*res.StatusCode = err.ErrCode
-				*res.StatusMsg = err.ErrMessage
+				dyerr := err.(*dyerror.DouyinError)
+				*res.StatusCode = dyerr.ErrCode
+				*res.StatusMsg = dyerr.ErrMessage
 				c.JSON(http.StatusOK, res)
 				return
 			}
@@ -173,8 +191,9 @@ func SetupRouter(r *gin.Engine) {
 			res, err := relation.ServeRelationFriendList(c)
 			if err != nil {
 				res = empty_response.RelationFriendList()
-				*res.StatusCode = err.ErrCode
-				*res.StatusMsg = err.ErrMessage
+				dyerr := err.(*dyerror.DouyinError)
+				*res.StatusCode = dyerr.ErrCode
+				*res.StatusMsg = dyerr.ErrMessage
 				c.JSON(http.StatusOK, res)
 				return
 			}
@@ -184,8 +203,9 @@ func SetupRouter(r *gin.Engine) {
 			res, err := relation.ServeMessageChat(c)
 			if err != nil {
 				res = empty_response.MessageChat()
-				*res.StatusCode = err.ErrCode
-				*res.StatusMsg = err.ErrMessage
+				dyerr := err.(*dyerror.DouyinError)
+				*res.StatusCode = dyerr.ErrCode
+				*res.StatusMsg = dyerr.ErrMessage
 				c.JSON(http.StatusOK, res)
 				return
 			}
@@ -195,8 +215,9 @@ func SetupRouter(r *gin.Engine) {
 			res, err := relation.ServeMessageAction(c)
 			if err != nil {
 				res = empty_response.MessageAction()
-				*res.StatusCode = err.ErrCode
-				*res.StatusMsg = err.ErrMessage
+				dyerr := err.(*dyerror.DouyinError)
+				*res.StatusCode = dyerr.ErrCode
+				*res.StatusMsg = dyerr.ErrMessage
 				c.JSON(http.StatusOK, res)
 				return
 			}
@@ -210,8 +231,9 @@ func SetupRouter(r *gin.Engine) {
 			res, err := basis.ServeFeed(c)
 			if err != nil {
 				res = empty_response.Feed()
-				*res.StatusCode = err.ErrCode
-				*res.StatusMsg = err.ErrMessage
+				dyerr := err.(*dyerror.DouyinError)
+				*res.StatusCode = dyerr.ErrCode
+				*res.StatusMsg = dyerr.ErrMessage
 				c.JSON(http.StatusOK, res)
 				return
 			}
@@ -221,8 +243,9 @@ func SetupRouter(r *gin.Engine) {
 			res, err := basis.ServeUserRegister(c)
 			if err != nil {
 				res = empty_response.UserRegister()
-				*res.StatusCode = err.ErrCode
-				*res.StatusMsg = err.ErrMessage
+				dyerr := err.(*dyerror.DouyinError)
+				*res.StatusCode = dyerr.ErrCode
+				*res.StatusMsg = dyerr.ErrMessage
 				c.JSON(http.StatusOK, res)
 				return
 			}
@@ -232,8 +255,9 @@ func SetupRouter(r *gin.Engine) {
 			res, err := basis.ServeUserLogin(c)
 			if err != nil {
 				res = empty_response.UserLogin()
-				*res.StatusCode = err.ErrCode
-				*res.StatusMsg = err.ErrMessage
+				dyerr := err.(*dyerror.DouyinError)
+				*res.StatusCode = dyerr.ErrCode
+				*res.StatusMsg = dyerr.ErrMessage
 				c.JSON(http.StatusOK, res)
 				return
 			}
@@ -243,8 +267,9 @@ func SetupRouter(r *gin.Engine) {
 			res, err := basis.ServeUserInfo(c)
 			if err != nil {
 				res = empty_response.User()
-				*res.StatusCode = err.ErrCode
-				*res.StatusMsg = err.ErrMessage
+				dyerr := err.(*dyerror.DouyinError)
+				*res.StatusCode = dyerr.ErrCode
+				*res.StatusMsg = dyerr.ErrMessage
 				c.JSON(http.StatusOK, res)
 				return
 			}
@@ -254,8 +279,9 @@ func SetupRouter(r *gin.Engine) {
 			res, err := basis.ServePublishAction(c)
 			if err != nil {
 				res = empty_response.PublishAction()
-				*res.StatusCode = err.ErrCode
-				*res.StatusMsg = err.ErrMessage
+				dyerr := err.(*dyerror.DouyinError)
+				*res.StatusCode = dyerr.ErrCode
+				*res.StatusMsg = dyerr.ErrMessage
 				c.JSON(http.StatusOK, res)
 				return
 			}
@@ -265,8 +291,9 @@ func SetupRouter(r *gin.Engine) {
 			res, err := basis.ServePublishList(c)
 			if err != nil {
 				res = empty_response.PublishList()
-				*res.StatusCode = err.ErrCode
-				*res.StatusMsg = err.ErrMessage
+				dyerr := err.(*dyerror.DouyinError)
+				*res.StatusCode = dyerr.ErrCode
+				*res.StatusMsg = dyerr.ErrMessage
 				c.JSON(http.StatusOK, res)
 				return
 			}
@@ -279,8 +306,9 @@ func SetupRouter(r *gin.Engine) {
 			res, err := interaction.ServeFavoriteAction(c)
 			if err != nil {
 				res = empty_response.FavoriteAction()
-				*res.StatusCode = err.ErrCode
-				*res.StatusMsg = err.ErrMessage
+				dyerr := err.(*dyerror.DouyinError)
+				*res.StatusCode = dyerr.ErrCode
+				*res.StatusMsg = dyerr.ErrMessage
 				c.JSON(http.StatusOK, res)
 				return
 			}
@@ -290,8 +318,9 @@ func SetupRouter(r *gin.Engine) {
 			res, err := interaction.ServeFavoriteList(c)
 			if err != nil {
 				res = empty_response.FavoriteList()
-				*res.StatusCode = err.ErrCode
-				*res.StatusMsg = err.ErrMessage
+				dyerr := err.(*dyerror.DouyinError)
+				*res.StatusCode = dyerr.ErrCode
+				*res.StatusMsg = dyerr.ErrMessage
 				c.JSON(http.StatusOK, res)
 				return
 			}
@@ -301,8 +330,9 @@ func SetupRouter(r *gin.Engine) {
 			res, err := interaction.ServeCommentAction(c)
 			if err != nil {
 				res = empty_response.CommentAction()
-				*res.StatusCode = err.ErrCode
-				*res.StatusMsg = err.ErrMessage
+				dyerr := err.(*dyerror.DouyinError)
+				*res.StatusCode = dyerr.ErrCode
+				*res.StatusMsg = dyerr.ErrMessage
 				c.JSON(http.StatusOK, res)
 				return
 			}
@@ -312,8 +342,9 @@ func SetupRouter(r *gin.Engine) {
 			res, err := interaction.ServeCommentList(c)
 			if err != nil {
 				res = empty_response.CommentList()
-				*res.StatusCode = err.ErrCode
-				*res.StatusMsg = err.ErrMessage
+				dyerr := err.(*dyerror.DouyinError)
+				*res.StatusCode = dyerr.ErrCode
+				*res.StatusMsg = dyerr.ErrMessage
 				c.JSON(http.StatusOK, res)
 				return
 			}
@@ -326,8 +357,9 @@ func SetupRouter(r *gin.Engine) {
 			res, err := relation.ServeRelationAction(c)
 			if err != nil {
 				res = empty_response.RelationAction()
-				*res.StatusCode = err.ErrCode
-				*res.StatusMsg = err.ErrMessage
+				dyerr := err.(*dyerror.DouyinError)
+				*res.StatusCode = dyerr.ErrCode
+				*res.StatusMsg = dyerr.ErrMessage
 				c.JSON(http.StatusOK, res)
 				return
 			}
@@ -337,8 +369,9 @@ func SetupRouter(r *gin.Engine) {
 			res, err := relation.ServeRelationFollowList(c)
 			if err != nil {
 				res = empty_response.RelationFollowList()
-				*res.StatusCode = err.ErrCode
-				*res.StatusMsg = err.ErrMessage
+				dyerr := err.(*dyerror.DouyinError)
+				*res.StatusCode = dyerr.ErrCode
+				*res.StatusMsg = dyerr.ErrMessage
 				c.JSON(http.StatusOK, res)
 				return
 			}
@@ -348,8 +381,9 @@ func SetupRouter(r *gin.Engine) {
 			res, err := relation.ServeRelationFollowerList(c)
 			if err != nil {
 				res = empty_response.RelationFollowerList()
-				*res.StatusCode = err.ErrCode
-				*res.StatusMsg = err.ErrMessage
+				dyerr := err.(*dyerror.DouyinError)
+				*res.StatusCode = dyerr.ErrCode
+				*res.StatusMsg = dyerr.ErrMessage
 				c.JSON(http.StatusOK, res)
 				return
 			}
@@ -359,8 +393,9 @@ func SetupRouter(r *gin.Engine) {
 			res, err := relation.ServeRelationFriendList(c)
 			if err != nil {
 				res = empty_response.RelationFriendList()
-				*res.StatusCode = err.ErrCode
-				*res.StatusMsg = err.ErrMessage
+				dyerr := err.(*dyerror.DouyinError)
+				*res.StatusCode = dyerr.ErrCode
+				*res.StatusMsg = dyerr.ErrMessage
 				c.JSON(http.StatusOK, res)
 				return
 			}
@@ -370,8 +405,9 @@ func SetupRouter(r *gin.Engine) {
 			res, err := relation.ServeMessageChat(c)
 			if err != nil {
 				res = empty_response.MessageChat()
-				*res.StatusCode = err.ErrCode
-				*res.StatusMsg = err.ErrMessage
+				dyerr := err.(*dyerror.DouyinError)
+				*res.StatusCode = dyerr.ErrCode
+				*res.StatusMsg = dyerr.ErrMessage
 				c.JSON(http.StatusOK, res)
 				return
 			}
@@ -381,8 +417,9 @@ func SetupRouter(r *gin.Engine) {
 			res, err := relation.ServeMessageAction(c)
 			if err != nil {
 				res = empty_response.MessageAction()
-				*res.StatusCode = err.ErrCode
-				*res.StatusMsg = err.ErrMessage
+				dyerr := err.(*dyerror.DouyinError)
+				*res.StatusCode = dyerr.ErrCode
+				*res.StatusMsg = dyerr.ErrMessage
 				c.JSON(http.StatusOK, res)
 				return
 			}

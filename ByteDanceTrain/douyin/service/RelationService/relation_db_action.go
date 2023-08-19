@@ -8,7 +8,7 @@ import (
 )
 
 // CreateRelationEvent create a new record in the mysql database
-func CreateRelationEvent(relation *entity.Relation) *dyerror.DouyinError {
+func CreateRelationEvent(relation *entity.Relation) error {
 	if err := DBService.GetDB().Create(relation).Error; err != nil {
 		return dyerror.DBCreateRelationEventError
 	}
@@ -16,7 +16,7 @@ func CreateRelationEvent(relation *entity.Relation) *dyerror.DouyinError {
 }
 
 // DeleteRelationEvent delete a relation record in mysql
-func DeleteRelationEvent(relation *entity.Relation) *dyerror.DouyinError {
+func DeleteRelationEvent(relation *entity.Relation) error {
 	if affect := DBService.GetDB().Where("user_id = ? and to_user_id = ?", relation.UserID, relation.ToUserID).Delete(relation).RowsAffected; affect != 1 {
 		return dyerror.DBDeleteRelationEventError
 	}

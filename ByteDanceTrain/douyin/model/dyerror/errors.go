@@ -52,7 +52,7 @@ var (
 	UnknownError = &DouyinError{ErrCode: 999}
 )
 
-func HandleBindError(err error) *DouyinError {
+func HandleBindError(err error) error {
 	switch err.(type) {
 	case validator.ValidationErrors:
 		// only consider the first err message

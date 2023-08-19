@@ -8,7 +8,7 @@ import (
 )
 
 // CreateVideo create a new record in table videos
-func CreateVideo(video *entity.Video) *dyerror.DouyinError {
+func CreateVideo(video *entity.Video) error {
 	if err := DBService.GetDB().Create(video).Error; err != nil {
 		return dyerror.DBCreateVideoError
 	}

@@ -16,16 +16,16 @@ import (
 // 在注册成功后会调用/douyin/user/接口拉取当前登录用户的全部信息，并存储到本地。
 // Method is GET
 // user_id, token is required
-func ServeUserInfo(c *gin.Context) (res *pb.DouyinUserResponse, dyerr *dyerror.DouyinError) {
+func ServeUserInfo(c *gin.Context) (res *pb.DouyinUserResponse, err error) {
 	var (
 		userID int64
 		token  string
 	)
-	if dyerr = checkUserInfoParams(c, &userID, &token); dyerr != nil {
-		return nil, dyerr
+	if err = checkUserInfoParams(c, &userID, &token); err != nil {
+		return nil, err
 	}
-	if dyerr = TokenService.CheckToken(token, userID); dyerr != nil {
-		return nil, dyerr
+	if err = TokenService.CheckToken(token, userID); err != nil {
+		return nil, err
 	}
 	user := common.ConvertToPBUser(UserService.QueryUserByID(userID)) // fwf 假设可能存在查询不到的情况？
 	*user.IsFollow = RelationService.QueryFollowByIDs(userID, *user.Id)
@@ -36,7 +36,7 @@ func ServeUserInfo(c *gin.Context) (res *pb.DouyinUserResponse, dyerr *dyerror.D
 	}, nil
 }
 
-func checkUserInfoParams(c *gin.Context, pUserID *int64, pToken *string) *dyerror.DouyinError {
+func checkUserInfoParams(c *gin.Context, pUserID *int64, pToken *string) error {
 	body := struct {
 		UserID int64  `form:"user_id" json:"user_id" binding:"required"`
 		Token  string `form:"token" json:"token" binding:"required"`

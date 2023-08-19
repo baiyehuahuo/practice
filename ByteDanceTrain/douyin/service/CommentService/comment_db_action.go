@@ -7,7 +7,7 @@ import (
 )
 
 // CreateCommentEvent create a new record in the mysql database
-func CreateCommentEvent(comment *entity.Comment) *dyerror.DouyinError {
+func CreateCommentEvent(comment *entity.Comment) error {
 	if err := DBService.GetDB().Create(comment).Error; err != nil {
 		return dyerror.DBCreateCommentEventError
 	}
@@ -15,7 +15,7 @@ func CreateCommentEvent(comment *entity.Comment) *dyerror.DouyinError {
 }
 
 // DeleteCommentEvent delete a Comment record in mysql
-func DeleteCommentEvent(comment *entity.Comment) *dyerror.DouyinError {
+func DeleteCommentEvent(comment *entity.Comment) error {
 	// 小心越权删除
 	if affect := DBService.GetDB().Where("user_id = ?", comment.UserID).Delete(comment).RowsAffected; affect != 1 {
 		return dyerror.DBDeleteCommentEventError

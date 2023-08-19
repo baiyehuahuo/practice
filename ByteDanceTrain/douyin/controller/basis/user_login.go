@@ -14,12 +14,12 @@ import (
 // 注册账号和登录账号的页面，该页面可以切换登录和注册两种模式，分别验证两个接口
 // Method is POST
 // username, password is required
-func ServeUserLogin(c *gin.Context) (res *pb.DouyinUserLoginResponse, dyerr *dyerror.DouyinError) {
+func ServeUserLogin(c *gin.Context) (res *pb.DouyinUserLoginResponse, err error) {
 	var (
 		username, password string
 	)
-	if dyerr = checkUserLoginParams(c, &username, &password); dyerr != nil {
-		return nil, dyerr
+	if err = checkUserLoginParams(c, &username, &password); err != nil {
+		return nil, err
 	}
 	user := UserService.QueryUserByName(username)
 	if user.Password != password {
@@ -37,7 +37,7 @@ func ServeUserLogin(c *gin.Context) (res *pb.DouyinUserLoginResponse, dyerr *dye
 	}, nil
 }
 
-func checkUserLoginParams(c *gin.Context, pUsername, pPassword *string) *dyerror.DouyinError {
+func checkUserLoginParams(c *gin.Context, pUsername, pPassword *string) error {
 	body := struct {
 		Username string `form:"username" json:"username" binding:"required"`
 		Password string `form:"password" json:"password" binding:"required"`

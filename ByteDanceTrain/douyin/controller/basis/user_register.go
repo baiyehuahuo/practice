@@ -15,21 +15,20 @@ import (
 // 注册账号和登录账号的页面，该页面可以切换登录和注册两种模式，分别验证两个接口
 // Method is POST
 // username, password is required
-func ServeUserRegister(c *gin.Context) (res *pb.DouyinUserRegisterResponse, dyerr *dyerror.DouyinError) {
+func ServeUserRegister(c *gin.Context) (res *pb.DouyinUserRegisterResponse, err error) {
 	var (
 		username, password string
 	)
-	if dyerr = checkUserRegisterParams(c, &username, &password); dyerr != nil {
-		return nil, dyerr
+	if err = checkUserRegisterParams(c, &username, &password); err != nil {
+		return nil, err
 	}
-	user := &entity.User{
+	if err = UserService.CreateUser(&entity.User{
 		Name:     username,
 		Password: password,
+	}); err != nil {
+		return nil, err
 	}
-	if err := UserService.CreateUser(user); err != nil {
-		return nil, dyerror.DBCreateUserError
-	}
-	user = UserService.QueryUserByName(user.Name)
+	user := UserService.QueryUserByName(username)
 	token := TokenService.GenerateToken()
 	TokenService.SetToken(token, user.ID)
 	return &pb.DouyinUserRegisterResponse{
@@ -40,7 +39,7 @@ func ServeUserRegister(c *gin.Context) (res *pb.DouyinUserRegisterResponse, dyer
 	}, nil
 }
 
-func checkUserRegisterParams(c *gin.Context, pUsername, pPassword *string) *dyerror.DouyinError {
+func checkUserRegisterParams(c *gin.Context, pUsername, pPassword *string) error {
 	body := struct {
 		Username string `form:"username" json:"username" binding:"required,lte=32"` // todo limit length
 		Password string `form:"password" json:"password" binding:"required,lte=32"`

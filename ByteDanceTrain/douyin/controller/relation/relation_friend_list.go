@@ -16,16 +16,16 @@ import (
 // 互相关注就是朋友
 // Method is GET
 // user_id, token is required
-func ServeRelationFriendList(c *gin.Context) (res *pb.DouyinRelationFriendListResponse, dyerr *dyerror.DouyinError) {
+func ServeRelationFriendList(c *gin.Context) (res *pb.DouyinRelationFriendListResponse, err error) {
 	var (
 		userID int64
 		token  string
 	)
-	if dyerr = checkRelationFriendListParams(c, &userID, &token); dyerr != nil {
-		return nil, dyerr
+	if err = checkRelationFriendListParams(c, &userID, &token); err != nil {
+		return nil, err
 	}
-	if dyerr = TokenService.CheckToken(token, userID); dyerr != nil {
-		return nil, dyerr
+	if err = TokenService.CheckToken(token, userID); err != nil {
+		return nil, err
 	}
 	var pbUsers []*pb.User
 	// follow relation
@@ -50,7 +50,7 @@ func ServeRelationFriendList(c *gin.Context) (res *pb.DouyinRelationFriendListRe
 	}, nil
 }
 
-func checkRelationFriendListParams(c *gin.Context, pUserID *int64, pToken *string) *dyerror.DouyinError {
+func checkRelationFriendListParams(c *gin.Context, pUserID *int64, pToken *string) error {
 	body := struct {
 		UserID int64  `form:"user_id" json:"user_id" binding:"required"`
 		Token  string `form:"token" json:"token" binding:"required"`

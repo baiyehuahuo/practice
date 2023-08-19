@@ -8,7 +8,7 @@ import (
 )
 
 // CreateFavoriteEvent create a new record in the mysql database
-func CreateFavoriteEvent(favorite *entity.Favorite) *dyerror.DouyinError {
+func CreateFavoriteEvent(favorite *entity.Favorite) error {
 	if err := DBService.GetDB().Create(favorite).Error; err != nil {
 		return dyerror.DBCreateFavoriteEventError
 	}
@@ -16,7 +16,7 @@ func CreateFavoriteEvent(favorite *entity.Favorite) *dyerror.DouyinError {
 }
 
 // DeleteFavoriteEvent delete a favorite record in mysql
-func DeleteFavoriteEvent(favorite *entity.Favorite) *dyerror.DouyinError {
+func DeleteFavoriteEvent(favorite *entity.Favorite) error {
 	// 小心越权取消
 	if affect := DBService.GetDB().Where("user_id = ? and video_id = ?", favorite.UserID, favorite.VideoID).Delete(favorite).RowsAffected; affect != 1 {
 		return dyerror.DBDeleteFavoriteEventError
