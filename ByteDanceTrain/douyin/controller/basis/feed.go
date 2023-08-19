@@ -46,7 +46,7 @@ func ServeFeed(c *gin.Context) (res *pb.DouyinFeedResponse, err error) {
 	}
 	var nextTime int64
 	if len(videos) > 0 {
-		nextTime = videos[len(videos)-1].PublishTime.Unix()
+		nextTime = videos[len(videos)-1].PublishTime.UnixMilli()
 	}
 
 	return &pb.DouyinFeedResponse{
@@ -68,7 +68,7 @@ func checkFeedParams(c *gin.Context, pLatestTime *time.Time, pToken *string) err
 	}
 	latestTime := body.LatestTime
 	if latestTime != 0 {
-		*pLatestTime = time.Unix(latestTime, 0)
+		*pLatestTime = time.UnixMilli(latestTime)
 	} else {
 		*pLatestTime = time.Now()
 	}
