@@ -53,7 +53,7 @@ const (
 	TestVideo1CommentCount     = 2
 	TestVideo1IsFavorite       = false
 	TestVideo1Title            = "长沙西湖公园"
-	TestVideo1PublishTimestamp = 1691686968
+	TestVideo1PublishTimestamp = 1691686968000
 
 	TestVideo2ID               = int64(3)
 	TestVideo2PlayURL          = "uploadfiles/user1/wx_camera_1675574086089.mp4"
@@ -62,7 +62,7 @@ const (
 	TestVideo2CommentCount     = 0
 	TestVideo2IsFavorite       = true
 	TestVideo2Title            = "莆田瞻圣寺"
-	TestVideo2PublishTimestamp = 1399548023
+	TestVideo2PublishTimestamp = 1399548023000
 
 	TestVideo3ID               = int64(4)
 	TestVideo3PlayURL          = "uploadfiles/user2/VIDEO_20230819_151710039.mp4"
@@ -71,7 +71,7 @@ const (
 	TestVideo3CommentCount     = 0
 	TestVideo3IsFavorite       = false
 	TestVideo3Title            = "莆田跳火堆"
-	TestVideo3PublishTimestamp = 0 // unknown
+	TestVideo3PublishTimestamp = 1376896830000
 )
 
 const (
@@ -89,19 +89,19 @@ const (
 	TestMessageToUserID1   = int64(2)
 	TestMessageFromUserID1 = int64(3)
 	TestMessageContent1    = "开学不快乐"
-	TestMessageCreateTime1 = "08-15"
+	TestMessageCreateTime1 = "1691686970000"
 
 	TestMessageID2         = int64(3)
 	TestMessageToUserID2   = int64(3)
 	TestMessageFromUserID2 = int64(2)
 	TestMessageContent2    = "早安"
-	TestMessageCreateTime2 = "08-15"
+	TestMessageCreateTime2 = "1691726568000"
 
 	TestMessageID3         = int64(4)
 	TestMessageToUserID3   = int64(2)
 	TestMessageFromUserID3 = int64(3)
 	TestMessageContent3    = "午安"
-	TestMessageCreateTime3 = "08-15"
+	TestMessageCreateTime3 = "1691748168000"
 )
 
 var (

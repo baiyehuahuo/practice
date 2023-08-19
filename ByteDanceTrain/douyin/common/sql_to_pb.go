@@ -7,6 +7,7 @@ import (
 	"douyin/service/FavoriteService"
 	"douyin/service/RelationService"
 	"douyin/service/VideoService"
+	"strconv"
 )
 
 func ConvertToPBUser(user *entity.User) *pb.User {
@@ -82,6 +83,6 @@ func ConvertToPBMessage(msg *entity.Message) *pb.Message {
 	*pbMessage.ToUserId = msg.ToUserID
 	*pbMessage.FromUserId = msg.FromUserID
 	*pbMessage.Content = msg.Content
-	*pbMessage.CreateTime = msg.CreateTime
+	*pbMessage.CreateTime = strconv.Itoa(int(msg.CreateTime.UnixMilli()))
 	return pbMessage
 }

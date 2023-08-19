@@ -18,8 +18,8 @@ func TestFeedSuccessWithAllParams(t *testing.T) {
 	getResponse(t, data, constants.RouteFeed, body)
 	if *body.StatusCode != constants.DefaultInt32 ||
 		*body.StatusMsg != constants.DefaultString ||
-		len(body.VideoList) != len(TestVideos[1:]) { // reverse timestamp
-		t.Fatalf("Test results are not as expected: %v %v %v", body.StatusCode, body.StatusMsg, len(body.VideoList))
+		len(body.VideoList) != len(TestVideos[1:]) {
+		t.Fatalf("Test results are not as expected: %v %v %v", *body.StatusCode, *body.StatusMsg, len(body.VideoList))
 	}
 	for i := range body.VideoList {
 		if !checkVideoEqual(body.VideoList[i], TestVideos[i+1]) {

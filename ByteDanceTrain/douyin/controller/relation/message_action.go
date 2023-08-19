@@ -8,7 +8,6 @@ import (
 	"douyin/service/MessageService"
 	"douyin/service/TokenService"
 	"github.com/gin-gonic/gin"
-	"time"
 )
 
 // ServeMessageAction handle message action request
@@ -34,7 +33,6 @@ func ServeMessageAction(c *gin.Context) (res *pb.DouyinMessageActionResponse, er
 			ToUserID:   toUserID,
 			FromUserID: userID,
 			Content:    content,
-			CreateTime: time.Now().Format("01-02"),
 		}
 		if err = MessageService.CreateMessageEvent(&msg); err != nil {
 			return nil, err
