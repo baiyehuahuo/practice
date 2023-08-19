@@ -16,8 +16,8 @@ VALUES (1, 'uploadfiles/root/animal.mp4', '2200-01-04 12:00:00');
 
 # timestamp 1691686968
 INSERT INTO Videos  (`id`, `author_id`, `play_url`, `cover_url`, `title`, `publish_time`)
-VALUES (2, 2, 'uploadfiles/fwf/抉择之战.war3', 'uploadfiles/fwf/抉择之战.png', '抉择之战 记录视频', '2023-08-11 01:02:48');
+VALUES (2, 2, 'uploadfiles/user1/video_20230603_161305.mp4', 'uploadfiles/user1/WX20230819-143711.png', '长沙西湖公园', '2023-08-11 01:02:48');
 
 # timestamp 1399548023
 INSERT INTO Videos  (`id`, `author_id`, `play_url`, `cover_url`, `title`, `publish_time`)
-VALUES (3, 2, 'uploadfiles/fwf/抉择之战.mp4', 'uploadfiles/fwf/抉择之战.jpg', '抉择之战 游戏视频', '2014-05-08 19:20:23');
+VALUES (3, 2, 'uploadfiles/user1/wx_camera_1675574086089.mp4', 'uploadfiles/user1/WX20230819-143736.png', '莆田瞻圣寺', '2014-05-08 19:20:23');

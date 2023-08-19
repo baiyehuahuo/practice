@@ -15,8 +15,8 @@ INSERT INTO Users  (`name`, `password`)
 VALUES ('root', 'rootpwd');
 
 INSERT INTO Users  (`name`, `password`, `avatar`, `background_image`, `signature`)
-VALUES ('fwf', 'fwf233', '/uploadfiles/fwf/avatar.png', '/uploadfiles/fwf/background.png', 'hello world');
+VALUES ('user1', 'passwd1', 'uploadfiles/user1/avatar.jpg', 'uploadfiles/user1/background.png', 'hello world');
 
 INSERT INTO Users  (`name`, `password`, `avatar`, `background_image`, `signature`)
-VALUES ('范伟锋', 'baiyehuahuo', '/uploadfiles/范伟锋/avatar.png', '/uploadfiles/范伟锋/background.png', 'fail world');
+VALUES ('user2', 'passwd2', 'uploadfiles/user2/avatar.jpg', 'uploadfiles/user2/background.png', 'fail world');
 

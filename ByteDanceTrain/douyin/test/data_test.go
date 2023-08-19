@@ -19,26 +19,26 @@ const (
 	RootUserFavoriteCount   = 2
 
 	TestUserID1              = int64(2) // 1 是 root
-	TestUsername1            = "fwf"
-	TestUserPassword1        = "fwf233"
+	TestUsername1            = "user1"
+	TestUserPassword1        = "passwd1"
 	TestUserFollowCount1     = 1
 	TestUserFollowerCount1   = 2
 	TestUserIsFollow1        = false
-	TestUserAvatar1          = "/uploadfiles/fwf/avatar.png"
-	TestUserBackgroundImage1 = "/uploadfiles/fwf/background.png"
+	TestUserAvatar1          = "uploadfiles/user1/avatar.jpg"
+	TestUserBackgroundImage1 = "uploadfiles/user1/background.png"
 	TestUserSignature1       = "hello world"
 	TestUserTotalFavorited1  = 3
 	TestUserWorkCount1       = 2
 	TestUserFavoriteCount1   = 1
 
 	TestUserID2              = int64(3) // 1 是 root
-	TestUsername2            = "范伟锋"
-	TestUserPassword2        = "baiyehuahuo"
+	TestUsername2            = "user2"
+	TestUserPassword2        = "passwd2"
 	TestUserFollowCount2     = 1
 	TestUserFollowerCount2   = 1
 	TestUserIsFollow2        = true
-	TestUserAvatar2          = "/uploadfiles/范伟锋/avatar.png"
-	TestUserBackgroundImage2 = "/uploadfiles/范伟锋/background.png"
+	TestUserAvatar2          = "uploadfiles/user2/avatar.jpg"
+	TestUserBackgroundImage2 = "uploadfiles/user2/background.png"
 	TestUserSignature2       = "fail world"
 	TestUserTotalFavorited2  = 0
 	TestUserWorkCount2       = 0
@@ -47,21 +47,21 @@ const (
 
 const (
 	TestVideo1ID               = int64(2)
-	TestVideo1PlayURL          = "uploadfiles/fwf/抉择之战.war3"
-	TestVideo1CoverURL         = "uploadfiles/fwf/抉择之战.png"
+	TestVideo1PlayURL          = "uploadfiles/user1/video_20230603_161305.mp4"
+	TestVideo1CoverURL         = "uploadfiles/user1/WX20230819-143711.png"
 	TestVideo1FavoriteCount    = 1
 	TestVideo1CommentCount     = 2
 	TestVideo1IsFavorite       = false
-	TestVideo1Title            = "抉择之战 记录视频"
+	TestVideo1Title            = "长沙西湖公园"
 	TestVideo1PublishTimestamp = 1691686968
 
 	TestVideo2ID               = int64(3)
-	TestVideo2PlayURL          = "uploadfiles/fwf/抉择之战.mp4"
-	TestVideo2CoverURL         = "uploadfiles/fwf/抉择之战.jpg"
+	TestVideo2PlayURL          = "uploadfiles/user1/wx_camera_1675574086089.mp4"
+	TestVideo2CoverURL         = "uploadfiles/user1/WX20230819-143736.png"
 	TestVideo2FavoriteCount    = 2
 	TestVideo2CommentCount     = 0
 	TestVideo2IsFavorite       = true
-	TestVideo2Title            = "抉择之战 游戏视频"
+	TestVideo2Title            = "莆田瞻圣寺"
 	TestVideo2PublishTimestamp = 1399548023
 )
 

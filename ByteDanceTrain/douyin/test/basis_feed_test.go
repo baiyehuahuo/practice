@@ -20,7 +20,7 @@ func TestFeedSuccessWithAllParams(t *testing.T) {
 		*body.StatusMsg != constants.DefaultString ||
 		len(body.VideoList) != 1 ||
 		!checkVideoEqual(body.VideoList[0], TestVideos[1]) { // reverse timestamp
-		t.Fatalf("Test results are not as expected: %v", body)
+		t.Fatalf("Test results are not as expected: %v %v", body.VideoList[0], TestVideos[1])
 	}
 }
 
@@ -37,7 +37,7 @@ func TestFeedSuccessWithoutParams(t *testing.T) {
 	}
 	for i := range body.VideoList {
 		if !checkVideoEqualWithoutFavorite(body.VideoList[i], TestVideos[i]) {
-			t.Fatalf("Test results are not as expected: %d %v", i, body)
+			t.Fatalf("Test results are not as expected: %d %v %v", i, body.VideoList[i], TestVideos[i])
 		}
 	}
 }
