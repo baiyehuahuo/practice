@@ -18,7 +18,7 @@ func TestPublishListSuccess(t *testing.T) {
 	getResponse(t, data, constants.RoutePublishList, body)
 	if *body.StatusCode != constants.DefaultInt32 ||
 		*body.StatusMsg != constants.DefaultString ||
-		len(body.VideoList) != len(TestVideos) {
+		len(body.VideoList) != len(TestVideos)-1 { // one is user2
 		t.Fatalf("Test results are not as expected: %v", body)
 	}
 	for i := range body.VideoList {

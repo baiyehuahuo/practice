@@ -61,6 +61,21 @@ func checkUserEqual(user1, user2 *pb.User) bool {
 		*user1.FavoriteCount == *user2.FavoriteCount
 }
 
+// if response user1 equals to user2 return true
+func checkUserEqualWithoutFollow(user1, user2 *pb.User) bool {
+	return *user1.Id == *user2.Id &&
+		*user1.Name == *user2.Name &&
+		*user1.FollowCount == *user2.FollowCount &&
+		*user1.FollowerCount == *user2.FollowerCount &&
+		//*user1.IsFollow == *user2.IsFollow &&
+		*user1.Avatar == *user2.Avatar &&
+		*user1.BackgroundImage == *user2.BackgroundImage &&
+		*user1.Signature == *user2.Signature &&
+		*user1.TotalFavorited == *user2.TotalFavorited &&
+		*user1.WorkCount == *user2.WorkCount &&
+		*user1.FavoriteCount == *user2.FavoriteCount
+}
+
 func checkVideoEqual(video1, video2 *pb.Video) bool {
 	return *video1.Id == *video2.Id &&
 		checkUserEqual(video1.Author, video2.Author) &&
@@ -74,7 +89,7 @@ func checkVideoEqual(video1, video2 *pb.Video) bool {
 
 func checkVideoEqualWithoutFavorite(video1, video2 *pb.Video) bool {
 	return *video1.Id == *video2.Id &&
-		checkUserEqual(video1.Author, video2.Author) &&
+		checkUserEqualWithoutFollow(video1.Author, video2.Author) &&
 		*video1.PlayUrl == *video2.PlayUrl &&
 		*video1.CoverUrl == *video2.CoverUrl &&
 		*video1.FavoriteCount == *video2.FavoriteCount &&

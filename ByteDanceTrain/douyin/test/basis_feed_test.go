@@ -18,9 +18,13 @@ func TestFeedSuccessWithAllParams(t *testing.T) {
 	getResponse(t, data, constants.RouteFeed, body)
 	if *body.StatusCode != constants.DefaultInt32 ||
 		*body.StatusMsg != constants.DefaultString ||
-		len(body.VideoList) != 1 ||
-		!checkVideoEqual(body.VideoList[0], TestVideos[1]) { // reverse timestamp
-		t.Fatalf("Test results are not as expected: %v %v", body.VideoList[0], TestVideos[1])
+		len(body.VideoList) != len(TestVideos[1:]) { // reverse timestamp
+		t.Fatalf("Test results are not as expected: %v %v %v", body.StatusCode, body.StatusMsg, len(body.VideoList))
+	}
+	for i := range body.VideoList {
+		if !checkVideoEqual(body.VideoList[i], TestVideos[i+1]) {
+			t.Fatalf("Test results are not as expected: %v %v ", body.VideoList[i], TestVideos[i+1])
+		}
 	}
 }
 
@@ -32,7 +36,7 @@ func TestFeedSuccessWithoutParams(t *testing.T) {
 	getResponse(t, data, constants.RouteFeed, body)
 	if *body.StatusCode != constants.DefaultInt32 ||
 		*body.StatusMsg != constants.DefaultString ||
-		len(body.VideoList) != len(TestVideos) { // reverse timestamp
+		len(body.VideoList) != len(TestVideos) {
 		t.Fatalf("Test results are not as expected: %v", body)
 	}
 	for i := range body.VideoList {

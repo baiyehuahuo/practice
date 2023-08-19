@@ -41,7 +41,7 @@ const (
 	TestUserBackgroundImage2 = "uploadfiles/user2/background.png"
 	TestUserSignature2       = "fail world"
 	TestUserTotalFavorited2  = 0
-	TestUserWorkCount2       = 0
+	TestUserWorkCount2       = 1
 	TestUserFavoriteCount2   = 0
 )
 
@@ -63,6 +63,15 @@ const (
 	TestVideo2IsFavorite       = true
 	TestVideo2Title            = "莆田瞻圣寺"
 	TestVideo2PublishTimestamp = 1399548023
+
+	TestVideo3ID               = int64(4)
+	TestVideo3PlayURL          = "uploadfiles/user2/VIDEO_20230819_151710039.mp4"
+	TestVideo3CoverURL         = "uploadfiles/user2/WX20230819-151839.png"
+	TestVideo3FavoriteCount    = 0
+	TestVideo3CommentCount     = 0
+	TestVideo3IsFavorite       = false
+	TestVideo3Title            = "莆田跳火堆"
+	TestVideo3PublishTimestamp = 0 // unknown
 )
 
 const (
@@ -221,6 +230,26 @@ func init() {
 	*video.IsFavorite = TestVideo2IsFavorite
 	*video.Title = TestVideo2Title
 	TestVideos = append(TestVideos, video)
+
+	video = &pb.Video{
+		Id:            new(int64),
+		Author:        TestUser2,
+		PlayUrl:       new(string),
+		CoverUrl:      new(string),
+		FavoriteCount: new(int64),
+		CommentCount:  new(int64),
+		IsFavorite:    new(bool),
+		Title:         new(string),
+	}
+	*video.Id = TestVideo3ID
+	*video.PlayUrl = TestVideo3PlayURL
+	*video.CoverUrl = TestVideo3CoverURL
+	*video.FavoriteCount = TestVideo3FavoriteCount
+	*video.CommentCount = TestVideo3CommentCount
+	*video.IsFavorite = TestVideo3IsFavorite
+	*video.Title = TestVideo3Title
+	TestVideos = append(TestVideos, video)
+
 	TestUserFavoriteVideo = TestVideos[1]
 
 	// comments
