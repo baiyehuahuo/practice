@@ -1,0 +1,18 @@
+syntax = "proto2";
+package douyin.pb;
+option go_package = ".;pb";
+
+import "protocol_common.proto";
+
+message douyin_message_chat_request {
+  required string token = 1; // 用户鉴权token
+  required int64 to_user_id = 2; // 对方用户id
+  required int64 pre_msg_time=3;//上次最新消息的时间（新增字段-apk更新中）
+}
+
+message douyin_message_chat_response {
+  required int32 status_code = 1; // 状态码，0-成功，其他值-失败
+  optional string status_msg = 2; // 返回状态描述
+  repeated Message message_list = 3; // 消息列表
+}
+
