@@ -1,4 +1,4 @@
-package common_data_structures
+package main
 
 type Item struct {
 	id  int

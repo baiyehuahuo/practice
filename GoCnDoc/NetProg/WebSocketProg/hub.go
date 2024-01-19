@@ -1,4 +1,4 @@
-//package main
+//package common_data_struct
 //
 //import "encoding/json"
 //

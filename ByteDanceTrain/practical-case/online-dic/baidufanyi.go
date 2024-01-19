@@ -79,7 +79,7 @@ type BaiduResponse struct {
 				Means  []struct {
 					Exp []struct {
 						Des []struct {
-							Main string        `json:"main"`
+							Main string        `json:"common_data_struct"`
 							Sub  []interface{} `json:"sub"`
 						} `json:"des"`
 						Pos string `json:"pos"`

@@ -1,5 +1,5 @@
 syntax = "proto3"; // 默认版本是 proto2 该语法表明版本
-option go_package="./;main"; // 路径/包名
+option go_package="./;common_data_struct"; // 路径/包名
 package main; // 防止命名冲突
 
 message Student { // 关键字定义
