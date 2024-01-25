@@ -8,6 +8,7 @@ import (
 	"io"
 	"log"
 	"net"
+	"net/http"
 	"reflect"
 	"strings"
 	"sync"
@@ -17,16 +18,16 @@ import (
 const MagicNumber = 0x3bef5c
 
 type Option struct {
-	MagicNumber       int
-	CodecType         codec.Type
-	ConnectionTimeout time.Duration
-	HandleTimeout     time.Duration
+	MagicNumber    int
+	CodecType      codec.Type
+	ConnectTimeout time.Duration
+	HandleTimeout  time.Duration
 }
 
 var DefaultOption = &Option{
-	MagicNumber:       MagicNumber,
-	CodecType:         codec.GobType,
-	ConnectionTimeout: time.Second * 10,
+	MagicNumber:    MagicNumber,
+	CodecType:      codec.GobType,
+	ConnectTimeout: time.Second * 10,
 }
 
 type Server struct {
@@ -39,6 +40,12 @@ func NewServer() *Server {
 
 // DefaultServer is the default instance of *Server.
 var DefaultServer = NewServer()
+
+const (
+	connected        = "200 Connected to Gee RPC"
+	defaultRPCPath   = "/_geerpc_"
+	defaultDebugPath = "/debug/geerpc"
+)
 
 // Accept accepts connections on the listener and serves requests
 // for each incoming connection.
@@ -219,4 +226,33 @@ func (server *Server) findService(serviceMethod string) (svc *service, mType *me
 		err = errors.New("rpc server: can't find method " + methodName)
 	}
 	return
+}
+
+func (server *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	if req.Method != "CONNECT" {
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		_, err := io.WriteString(w, "405 must CONNECT\n")
+		if err != nil {
+			log.Print("rpc connect ", req.RemoteAddr, ": ", err.Error())
+		}
+		return
+	}
+	conn, _, err := w.(http.Hijacker).Hijack()
+	if err != nil {
+		log.Print("rpc hijacking ", req.RemoteAddr, ": ", err.Error())
+		return
+	}
+	_, err = io.WriteString(conn, "HTTP/1.0 "+connected+"\n\n") // HTTP 协议格式 返回的信息在客户端被处理了
+	server.ServeConn(conn)
+}
+
+func (server *Server) HandleHTTP() {
+	http.Handle(defaultRPCPath, server)
+	http.Handle(defaultDebugPath, debugHTTP{server})
+	log.Println("rpc server debug path: ", defaultDebugPath)
+}
+
+func HandleHTTP() {
+	DefaultServer.HandleHTTP()
 }

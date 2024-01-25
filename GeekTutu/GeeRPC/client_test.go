@@ -2,6 +2,7 @@ package geerpc
 
 import (
 	"context"
+	"fmt"
 	"net"
 	"strings"
 	"testing"
@@ -20,14 +21,14 @@ func TestClient_dialTimeout(t *testing.T) {
 
 	t.Run("timeout", func(t *testing.T) {
 		_, err := dialTimeout(f, "tcp", l.Addr().String(), &Option{
-			ConnectionTimeout: time.Second,
+			ConnectTimeout: time.Second,
 		})
 		//log.Println("++++++++++++++++++++++", err)
 		_assert(err != nil && strings.Contains(err.Error(), "connect timeout"), "expect a timeout error")
 	})
 	t.Run("0", func(t *testing.T) {
 		_, err := dialTimeout(f, "tcp", l.Addr().String(), &Option{
-			ConnectionTimeout: 0,
+			ConnectTimeout: 0,
 		})
 		_assert(err == nil, "0 means no limit")
 	})
@@ -67,4 +68,21 @@ func TestClient_Call(t *testing.T) {
 		err := client.Call(context.Background(), "Bar.Timeout", 1, &reply)
 		_assert(err != nil && strings.Contains(err.Error(), "request handle timeout"), "expect a timeout error")
 	})
+}
+
+func TestXDial(t *testing.T) {
+	addrChan := make(chan string)
+	go func() {
+		protocol := "tcp"
+		l, err := net.Listen(protocol, ":0")
+		if err != nil {
+			t.Fatalf("failed to listen %s: %s", protocol, err.Error())
+		}
+		addrChan <- l.Addr().String()
+		Accept(l)
+	}()
+	addr := <-addrChan
+	protocol := "tcp"
+	_, err := XDial(fmt.Sprintf("%s@%s", protocol, addr))
+	_assert(err == nil, fmt.Sprintf("failed to connect %s socket", protocol))
 }

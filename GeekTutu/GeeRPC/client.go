@@ -1,6 +1,7 @@
 package geerpc
 
 import (
+	"bufio"
 	"context"
 	"encoding/json"
 	"errors"
@@ -9,6 +10,8 @@ import (
 	"io"
 	"log"
 	"net"
+	"net/http"
+	"strings"
 	"sync"
 	"time"
 )
@@ -20,10 +23,6 @@ type Call struct {
 	Reply         interface{} // reply from the function
 	Error         error       // if error occurs, it will be set
 	Done          chan *Call  // strobes when call is complete
-}
-
-func (call *Call) done() {
-	call.Done <- call
 }
 
 // Client represents an RPC Client.
@@ -42,10 +41,21 @@ type Client struct {
 	shutdown bool             //server has told us to stop
 }
 
+type clientResult struct {
+	client *Client
+	err    error
+}
+
+type newClientFunc func(conn net.Conn, opt *Option) (client *Client, err error)
+
 var (
 	_           io.Closer = (*Client)(nil)
 	ErrShutDown           = errors.New("connection is shut down")
 )
+
+func (call *Call) done() {
+	call.Done <- call
+}
 
 func (client *Client) Close() error {
 	client.mu.Lock()
@@ -127,54 +137,6 @@ func (client *Client) receive() {
 	client.terminateCalls(err)
 }
 
-func NewClient(conn net.Conn, opt *Option) (*Client, error) {
-	// conn 是源代码发出的请求 发出请求后 在这里构建 options 参数
-	f := codec.NewCodecFuncMap[opt.CodecType]
-	if f == nil {
-		err := fmt.Errorf("invalid codec type %s", opt.CodecType)
-		log.Println("rpc client: codec error: ", err)
-		return nil, err
-	}
-	// send options with server
-	if err := json.NewEncoder(conn).Encode(opt); err != nil {
-		log.Println("rpc client: options error: ", err)
-		_ = conn.Close()
-		return nil, err
-	}
-	return newClientCodec(f(conn), opt), nil
-}
-
-func newClientCodec(cc codec.Codec, opt *Option) *Client {
-	client := &Client{
-		cc:      cc,
-		opt:     opt,
-		seq:     1,
-		pending: make(map[uint64]*Call),
-	}
-	go client.receive()
-	return client
-}
-
-func parseOptions(opts ...*Option) (*Option, error) {
-	if len(opts) == 0 || opts[0] == nil {
-		return DefaultOption, nil
-	}
-	if len(opts) != 1 {
-		return nil, errors.New("number of options is more than 1")
-	}
-	opt := opts[0]
-	opt.MagicNumber = DefaultOption.MagicNumber
-	if opt.CodecType == "" {
-		opt.CodecType = DefaultOption.CodecType
-	}
-	return opt, nil
-}
-
-// Dial connects to an RPC server at the specified network address
-func Dial(network, address string, opts ...*Option) (client *Client, err error) {
-	return dialTimeout(NewClient, network, address, opts...)
-}
-
 func (client *Client) send(call *Call) {
 	client.sending.Lock()
 	defer client.sending.Unlock()
@@ -231,19 +193,60 @@ func (client *Client) Call(ctx context.Context, serviceMethod string, args, repl
 	}
 }
 
-type clientResult struct {
-	client *Client
-	err    error
+func NewClient(conn net.Conn, opt *Option) (*Client, error) {
+	// conn 是源代码发出的请求 发出请求后 在这里构建 options 参数
+	f := codec.NewCodecFuncMap[opt.CodecType]
+	if f == nil {
+		err := fmt.Errorf("invalid codec type %s", opt.CodecType)
+		log.Println("rpc client: codec error: ", err)
+		return nil, err
+	}
+	// send options with server
+	if err := json.NewEncoder(conn).Encode(opt); err != nil {
+		log.Println("rpc client: options error: ", err)
+		_ = conn.Close()
+		return nil, err
+	}
+	return newClientCodec(f(conn), opt), nil
 }
 
-type newClientFunc func(conn net.Conn, opt *Option) (client *Client, err error)
+func newClientCodec(cc codec.Codec, opt *Option) *Client {
+	client := &Client{
+		cc:      cc,
+		opt:     opt,
+		seq:     1,
+		pending: make(map[uint64]*Call),
+	}
+	go client.receive()
+	return client
+}
+
+func parseOptions(opts ...*Option) (*Option, error) {
+	if len(opts) == 0 || opts[0] == nil {
+		return DefaultOption, nil
+	}
+	if len(opts) != 1 {
+		return nil, errors.New("number of options is more than 1")
+	}
+	opt := opts[0]
+	opt.MagicNumber = DefaultOption.MagicNumber
+	if opt.CodecType == "" {
+		opt.CodecType = DefaultOption.CodecType
+	}
+	return opt, nil
+}
+
+// Dial connects to an RPC server at the specified network address
+func Dial(network, address string, opts ...*Option) (client *Client, err error) {
+	return dialTimeout(NewClient, network, address, opts...)
+}
 
 func dialTimeout(f newClientFunc, network, address string, opts ...*Option) (client *Client, err error) {
 	opt, err := parseOptions(opts...)
 	if err != nil {
 		return nil, err
 	}
-	conn, err := net.DialTimeout(network, address, opt.ConnectionTimeout)
+	conn, err := net.DialTimeout(network, address, opt.ConnectTimeout)
 	if err != nil {
 		return nil, err
 	}
@@ -260,14 +263,50 @@ func dialTimeout(f newClientFunc, network, address string, opts ...*Option) (cli
 			err:    err,
 		}
 	}()
-	if opt.ConnectionTimeout == 0 {
+	if opt.ConnectTimeout == 0 {
 		result := <-ch // 没有超时 直接阻塞
 		return result.client, result.err
 	}
 	select {
-	case <-time.After(opt.ConnectionTimeout):
-		return nil, fmt.Errorf("rpc, client: connect timeout: except within %s", opt.ConnectionTimeout.String())
+	case <-time.After(opt.ConnectTimeout):
+		return nil, fmt.Errorf("rpc, client: connect timeout: except within %s", opt.ConnectTimeout.String())
 	case result := <-ch:
 		return result.client, result.err
+	}
+}
+
+// NewHTTPClient new a Client instance via HTTP as transport protocol
+func NewHTTPClient(conn net.Conn, opt *Option) (*Client, error) {
+	// 先请求 HTTP
+	_, err := io.WriteString(conn, fmt.Sprintf("CONNECT %s HTTP/1.0\n\n", defaultRPCPath)) // 这条信息不知道在哪里 被谁给处理了 应该是http库处理的
+	if err != nil {
+		log.Print("NewHTTPClient error: ", err.Error())
+	}
+	resp, err := http.ReadResponse(bufio.NewReader(conn), &http.Request{Method: "CONNECT"})
+	if err == nil && resp.Status == connected {
+		// 连接成功后再完成正常的客户端
+		return NewClient(conn, opt)
+	}
+	if err == nil {
+		err = errors.New("unexpected HTTP response: " + resp.Status)
+	}
+	return nil, err
+}
+
+func DialHTTP(network, address string, opts ...*Option) (client *Client, err error) {
+	return dialTimeout(NewHTTPClient, network, address, opts...)
+}
+
+func XDial(rpcAddr string, opts ...*Option) (*Client, error) {
+	parts := strings.Split(rpcAddr, "@")
+	if len(parts) != 2 {
+		return nil, fmt.Errorf("rpc client err: wrong format '%s', expect protocol@addr", rpcAddr)
+	}
+	protocol, addr := parts[0], parts[1]
+	switch protocol {
+	case "http":
+		return DialHTTP("tcp", addr, opts...)
+	default:
+		return Dial(protocol, addr, opts...)
 	}
 }
