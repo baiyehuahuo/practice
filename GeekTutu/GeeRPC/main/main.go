@@ -3,9 +3,11 @@ package main
 import (
 	"context"
 	"geerpc"
+	"geerpc/registry"
 	"geerpc/xclient"
 	"log"
 	"net"
+	"net/http"
 	"sync"
 	"time"
 )
@@ -43,8 +45,8 @@ func foo(xc *xclient.XClient, ctx context.Context, typ, serviceMethod string, ar
 	}
 }
 
-func call(addr1, addr2 string) {
-	d := xclient.NewMultiServersDiscovery([]string{"tcp@" + addr1, "tcp@" + addr2})
+func call(registry string) {
+	d := xclient.NewGeeRegistryDiscovery(registry, 0)
 	xc := xclient.NewXClient(d, xclient.RandomSelect, nil)
 	defer func() {
 		if err := xc.Close(); err != nil {
@@ -65,8 +67,8 @@ func call(addr1, addr2 string) {
 	wg.Wait()
 }
 
-func broadcast(addr1, addr2 string) {
-	d := xclient.NewMultiServersDiscovery([]string{"tcp@" + addr1, "tcp@" + addr2})
+func broadcast(registry string) {
+	d := xclient.NewGeeRegistryDiscovery(registry, 0)
 	xc := xclient.NewXClient(d, xclient.RandomSelect, nil)
 	defer func() {
 		if err := xc.Close(); err != nil {
@@ -92,7 +94,21 @@ func broadcast(addr1, addr2 string) {
 	wg.Wait()
 }
 
-func startServer(addr chan string) {
+func startRegistry(wg *sync.WaitGroup) {
+	// 启动注册中心
+	l, err := net.Listen("tcp", ":9999")
+	if err != nil {
+		log.Println("Registry listen port 9999 failed: ", err.Error())
+		return
+	}
+	registry.HandleHTTP()
+	wg.Done()
+	if err = http.Serve(l, nil); err != nil {
+		log.Println("Registry listen failed: ", err.Error())
+	}
+}
+
+func startServer(registryAddr string, wg *sync.WaitGroup) {
 	l, _ := net.Listen("tcp", ":0")
 	server := geerpc.NewServer()
 	err := server.Register(new(Foo))
@@ -100,20 +116,27 @@ func startServer(addr chan string) {
 		log.Printf("Register server %s failed: %s", l.Addr().String(), err.Error())
 		return
 	}
-	addr <- l.Addr().String()
+	// 注册服务器
+	registry.Heartbeat(registryAddr, "tcp@"+l.Addr().String(), 0)
+	wg.Done()
 	server.Accept(l)
 }
 
 func main() {
 	log.SetFlags(0)
-	ch1 := make(chan string)
-	ch2 := make(chan string)
-	go startServer(ch1)
-	go startServer(ch2)
-
-	addr1 := <-ch1
-	addr2 := <-ch2
+	registryAddr := "http://localhost:9999/_geerpc_/registry"
+	wg := new(sync.WaitGroup)
+	wg.Add(1)
+	go startRegistry(wg)
+	wg.Wait()
 	time.Sleep(time.Second)
-	call(addr1, addr2)
-	broadcast(addr1, addr2)
+
+	wg.Add(2)
+	go startServer(registryAddr, wg)
+	go startServer(registryAddr, wg)
+	wg.Wait()
+
+	time.Sleep(time.Second)
+	call(registryAddr)
+	broadcast(registryAddr)
 }
