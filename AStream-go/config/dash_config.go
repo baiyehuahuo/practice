@@ -7,7 +7,6 @@ import (
 	"log"
 	"os"
 	"path"
-	"sync"
 	"time"
 )
 
@@ -30,16 +29,20 @@ const (
 
 var (
 	now         = time.Now()
-	timeSuffix  = fmt.Sprintf("%d-%d-%d.%d_%d_%d", now.Year(), now.Month(), now.Day(), now.Hour(), now.Minute(), now.Second())
+	timeSuffix  = now.Format("2006-01-02.15_04_05")
 	LogFilename = path.Join(LogFolder, "DASH_RUNTIME_LOG")
 
 	BufferLogFilename = path.Join(LogFolder, fmt.Sprintf("DASH_BUFFER_LOG_%s.csv", timeSuffix))
 	JsonLogPath       string
 	JsonABRLogPath    string
 	ServerDomain      = ""
-	JsonHandle        map[string]interface{}
-	JsonHandleLock    = sync.Mutex{}
 )
+
+func InitConfig(version string) {
+	initLogFolder(LogFolder)
+	JsonLogPath = path.Join(LogFolder, fmt.Sprintf("%s_%s.json", version, timeSuffix))
+	JsonABRLogPath = path.Join(LogFolder, fmt.Sprintf("%s-ABR_%s.json", version, timeSuffix))
+}
 
 func initLogFolder(folderPath string) {
 	s, err := os.Stat(LogFolder)
@@ -61,24 +64,4 @@ func initLogFolder(folderPath string) {
 		err = errors.New(fmt.Sprintf("%s is not a folder", folderPath))
 		log.Fatalf("%s initialize log folder failed: %s", consts.ConfigError, err.Error())
 	}
-}
-
-func InitConfig(version string) {
-	initLogFolder(LogFolder)
-	JsonLogPath = path.Join(LogFolder, fmt.Sprintf("%s_%s.json", version, timeSuffix))
-	JsonABRLogPath = path.Join(LogFolder, fmt.Sprintf("%s-ABR_%s.json", version, timeSuffix))
-	JsonHandle = make(map[string]interface{})
-	JsonHandle["playback_info"] = map[string]interface{}{
-		"start_time":                 nil,
-		"end_time":                   nil,
-		"initial_buffering_duration": nil,
-		"interruptions": map[string]interface{}{
-			"count":          0,
-			"events":         new([][]float64),
-			"total_duration": 0,
-		},
-		"up_shifts":   0,
-		"down_shifts": 0,
-	}
-
 }
