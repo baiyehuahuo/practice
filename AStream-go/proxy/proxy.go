@@ -1,7 +1,6 @@
 package proxy
 
 import (
-	"C"
 	"io"
 	_ "net/http/pprof"
 	"os"
@@ -68,7 +67,7 @@ func SynDownload(url string) {
 	hcClientMutex.Lock()
 	rsp, err := hcClient.Get(url)
 	hcClientMutex.Unlock()
-	
+
 	if err != nil {
 		fmt.Printf(logTag+"seg%d-L%d download error: %s\n", segmentNo, layer, err)
 		return

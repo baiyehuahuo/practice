@@ -3,8 +3,9 @@ package main
 import (
 	"AStream-go/config"
 	"AStream-go/consts"
-	"AStream-go/mpd"
+	"AStream-go/entity"
 	"AStream-go/proxy"
+	"AStream-go/read_mpd"
 	"AStream-go/utils"
 	"flag"
 	"fmt"
@@ -41,20 +42,7 @@ func init() {
 	}
 }
 
-/*
-def get_mpd(url):
-    """ 下载mpd文件并设置初始延迟
-        Module to download the MPD from the URL and save it to file
-    """
-    start = time.time()
-    glueConnection.syn_download(url)
-    mpd_file = config_dash.SVC_FILE_PATH + url.split('/')[-1]
-    config_dash.LOG.info("Downloaded the MPD file {}".format(mpd_file))
-    config_dash.JSON_HANDLE['mpd_delay'] = time.time() - start
-    return mpd_file
-*/
-
-func getMPD(mpdURL string) *mpd.MPD {
+func getMPD(mpdURL string) *entity.MPD {
 	// 下载mpd文件并设置初始延迟
 	start := time.Now()
 
@@ -72,7 +60,7 @@ func getMPD(mpdURL string) *mpd.MPD {
 	jsonHandleMutex.Lock()
 	jsonHandle["mpd_delay"] = time.Now().Sub(start)
 	jsonHandleMutex.Unlock()
-	return mpd.ParseMPD(config.DownloadPath + filepath.Base(mpdURL))
+	return read_mpd.ParseMPD(config.DownloadPath + filepath.Base(mpdURL))
 }
 
 func getDomain(mpdURL string) string {
@@ -109,31 +97,6 @@ func configureLogFile(logFilePath string) {
 
 /*
 def main():
- 	// finished
-    parser = ArgumentParser(description='Process Client parameters')
-    create_arguments(parser)
-    args = parser.parse_args()
-    globals().update(vars(args))
-
-	// finished
-    configure_log_file(playback_type=PLAYBACK.lower(), log_file=None)
-    clean_files(config_dash.SVC_FILE_PATH)
-
-	// finished
-    if not MPD:
-        print("ERROR: Please provide the URL to the MPD file. Try Again..")
-        return None
-
-	// finished
-    test.version = args.VERSION
-    print('Selected scheduler is : {}'.format(test.version))
-    glueConnection.setupPM()
-    config_dash.LOG.info('Downloading MPD file %s' % MPD)
-
-    # Retrieve the MPD files for the video
-    mpd_file = get_mpd(MPD)
-    domain = get_domain_name(MPD)
-    config_dash.SERVER_DOMAIN = domain
     dp_object = DashPlayback()
 
     # Reading the MPD file created
@@ -164,7 +127,14 @@ func main() {
 	proxy.ClientSetup()
 	logger.Infof("Downloading MPD file %s", *mpdURL)
 
-	_ = getMPD(*mpdURL)
+	mpd := getMPD(*mpdURL)
 	domain := getDomain(*mpdURL)
 	config.ServerDomain = domain
+
+	dashPlayback := &entity.DashPlayback{}
+	read_mpd.ReadMPD(dashPlayback, mpd)
+	logger.Infof("The DASH media has %d video representations", len(dashPlayback.Video))
+
+	logger.Warn("Started Normal-DASH Playback")
+
 }

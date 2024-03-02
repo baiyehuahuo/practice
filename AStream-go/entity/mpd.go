@@ -1,4 +1,4 @@
-package mpd
+package entity
 
 import "encoding/xml"
 
