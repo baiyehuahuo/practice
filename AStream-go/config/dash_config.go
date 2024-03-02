@@ -30,16 +30,18 @@ const (
 var (
 	now         = time.Now()
 	timeSuffix  = now.Format("2006-01-02.15_04_05")
-	LogFilename = path.Join(LogFolder, "DASH_RUNTIME_LOG")
+	LogFilename = "python.log"
 
 	BufferLogFilename = path.Join(LogFolder, fmt.Sprintf("DASH_BUFFER_LOG_%s.csv", timeSuffix))
 	JsonLogPath       string
 	JsonABRLogPath    string
+	Version           string
 	ServerDomain      = ""
 )
 
 func InitConfig(version string) {
 	initLogFolder(LogFolder)
+	Version = version
 	JsonLogPath = path.Join(LogFolder, fmt.Sprintf("%s_%s.json", version, timeSuffix))
 	JsonABRLogPath = path.Join(LogFolder, fmt.Sprintf("%s-ABR_%s.json", version, timeSuffix))
 }

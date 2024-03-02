@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 
 	"net/http"
 	"path/filepath"
@@ -27,12 +28,11 @@ const (
 )
 
 var (
-	hclient *http.Client
+	hcClientMutex sync.Mutex
+	hcClient      *http.Client
 )
 
 func ClientSetup() {
-	// useQUIC = usequic
-	// useMP = mp
 	// f, _ := os.OpenFile("golang.log", os.O_WRONLY|os.O_CREATE|os.O_SYNC|os.O_TRUNC, 0755)
 	// log.SetOutput(f)
 	// log.SetFlags(0)
@@ -41,27 +41,34 @@ func ClientSetup() {
 
 	// Accept any offered certificate chain
 	// Use a HTTP/2.0 connection via QUIC
-	hclient = &http.Client{
+	hcClientMutex.Lock()
+	hcClient = &http.Client{
 		//Transport: &h2quic.RoundTripper{
 		//	TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		//	QuicConfig:      &quic.Config{CreatePaths: true},
 		//},
 	}
+	hcClientMutex.Unlock()
 }
 
 func CloseConnection() {
-	if hclient != nil {
-		hclient.CloseIdleConnections()
+	hcClientMutex.Lock()
+	if hcClient != nil {
+		hcClient.CloseIdleConnections()
 		time.Sleep(time.Second * 10)
-		hclient = nil
+		hcClient = nil
 	}
+	hcClientMutex.Unlock()
 }
 
 func SynDownload(url string) {
 	segmentNo, layer := getSegmentInfo(url)
 
 	// fmt.Printf(logTag+"go moudle GET %s, ddl %d\n", url, priority.Weight)
-	rsp, err := hclient.Get(url)
+	hcClientMutex.Lock()
+	rsp, err := hcClient.Get(url)
+	hcClientMutex.Unlock()
+	
 	if err != nil {
 		fmt.Printf(logTag+"seg%d-L%d download error: %s\n", segmentNo, layer, err)
 		return
