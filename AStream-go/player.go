@@ -52,8 +52,11 @@ func NewDashPlayer(videoLength float64, segmentDuration int, bitrates []int) (pl
 		BufferLogFile:     config.BufferLogFilename,
 		Future:            time.Time{},
 		FutureLock:        sync.Mutex{},
+
+		DisplayLayer: nil,
 	}
 	player.BufferQueue = make([][]bool, player.PlaybackCount)
+	player.DisplayLayer = make([]int, player.PlaybackCount)
 	highestLayer := len(bitrates)
 	for i := range player.BufferQueue {
 		player.BufferQueue[i] = make([]bool, highestLayer) // initial is 0, seg 0 is 1, seg 1 is 2 ...

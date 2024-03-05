@@ -24,4 +24,5 @@ type DashPlayer struct {
 	BufferLogFile     string
 	Future            time.Time
 	FutureLock        sync.Mutex
+	DisplayLayer      []int
 }
