@@ -92,7 +92,7 @@ func ReadMPD(playback *entity.DashPlayback, mpd *entity.MPD) (segmentDuration in
 			moMap[bandwidth].SegmentSize = []float64{}
 			moMap[bandwidth].Start = representation.StartWithSap
 			moMap[bandwidth].TimeScale = representation.SegmentList.Timescale
-			//moMap[bandwidth].SegmentDuration = representation.SegmentList.Duration / representation.SegmentList.Timescale
+			moMap[bandwidth].Duration = representation.SegmentList.Duration
 			moMap[bandwidth].BaseURL = mpd.BaseURL
 			moMap[bandwidth].Initialization = representation.SegmentList.SegmentInitization.SourceURL
 			for _, segmentInfo := range representation.SegmentList.SegmentURL {

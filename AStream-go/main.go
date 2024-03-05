@@ -9,7 +9,6 @@ import (
 	"AStream-go/utils"
 	"flag"
 	"fmt"
-	"github.com/sirupsen/logrus"
 	"io"
 	"log"
 	"net/url"
@@ -88,7 +87,6 @@ func main() {
 
 	dashPlayback := &entity.DashPlayback{Audio: make(map[int]*entity.MediaObject), Video: make(map[int]*entity.MediaObject)}
 	segmentDuration := read_mpd.ReadMPD(dashPlayback, mpd)
-	logrus.New().Infof("The DASH media has %d video representations, segment duration is %v", len(dashPlayback.Video), segmentDuration)
 	utils.Infof("The DASH media has %d video representations, segment duration is %v", len(dashPlayback.Video), segmentDuration)
 
 	utils.Warn("Started Normal-DASH Playback")
