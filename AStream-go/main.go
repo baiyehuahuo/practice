@@ -26,9 +26,9 @@ func getMPD(mpdURL string) *entity.MPD {
 	// proxy.SynDownload(mpdURL)
 
 	source, _ := os.Open("BBB.mpd")
-	defer source.Close()
+	defer func(source *os.File) { _ = source.Close() }(source)
 	destination, _ := os.Create(path.Join(config.DownloadPath, filepath.Base(mpdURL)))
-	defer destination.Close()
+	defer func(destination *os.File) { _ = destination.Close() }(destination)
 	_, _ = io.Copy(destination, source)
 
 	// download log info
