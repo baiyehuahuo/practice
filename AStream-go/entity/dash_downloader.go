@@ -1,6 +1,6 @@
 package entity
 
-type DashPlayback struct {
+type DashDownloader struct {
 	MinBufferTime    float64
 	PlaybackDuration float64
 	Audio            map[int]*MediaObject

@@ -50,18 +50,7 @@ func getDomain(mpdURL string) string {
 }
 
 /*
-def main():
-    dp_object = DashPlayback()
-
-    # Reading the MPD file created
-    dp_object, video_segment_duration = read_mpd.read_mpd(mpd_file, dp_object)
-    config_dash.LOG.info("The DASH media has %d video representations" % len(dp_object.video))
-
-    if "NORMAL" in PLAYBACK.upper():
-        config_dash.LOG.critical("Started Normal-DASH Playback")
-        start_playback_smart(dp_object, domain, "NORMAL", video_segment_duration)
-    else:
-        config_dash.LOG.error("Unknown Playback parameter {}".format(PLAYBACK))
+   start_playback_smart(dp_object, domain, "NORMAL", video_segment_duration)
 */
 
 func main() {
@@ -85,10 +74,12 @@ func main() {
 	domain := getDomain(*mpdURL)
 	config.ServerDomain = domain
 
-	dashPlayback := &entity.DashPlayback{Audio: make(map[int]*entity.MediaObject), Video: make(map[int]*entity.MediaObject)}
-	segmentDuration := read_mpd.ReadMPD(dashPlayback, mpd)
-	utils.Infof("The DASH media has %d video representations, segment duration is %v", len(dashPlayback.Video), segmentDuration)
+	downloader := &entity.DashDownloader{Audio: make(map[int]*entity.MediaObject), Video: make(map[int]*entity.MediaObject)}
+	segmentDuration, segmentCount := read_mpd.ReadMPD(downloader, mpd)
+	utils.Infof("The DASH media has %d video representations, segment duration is %v", len(downloader.Video), segmentDuration)
 
-	utils.Warn("Started Normal-DASH Playback")
+	utils.Warn("Started DASH Playback")
+	startPlayback(downloader, domain, segmentDuration, segmentCount)
+
 	utils.SaveJsonHandle(config.JsonABRLogPath)
 }

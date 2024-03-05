@@ -62,12 +62,12 @@ func ParseMPD(path string) *entity.MPD {
 	return mpd
 }
 
-func ReadMPD(playback *entity.DashPlayback, mpd *entity.MPD) (segmentDuration int) {
+func ReadMPD(downloader *entity.DashDownloader, mpd *entity.MPD) (segmentDuration, segmentCount int) {
 	utils.Info("Reading the MPD file")
 
-	playback.PlaybackDuration = getPlaybackTime(mpd.MediaPresentationDuration)
-	utils.SetJsonHandleSecondValue("video_metadata", "playback_duration", playback.PlaybackDuration)
-	playback.MinBufferTime = getPlaybackTime(mpd.MinBufferTime)
+	downloader.PlaybackDuration = getPlaybackTime(mpd.MediaPresentationDuration)
+	utils.SetJsonHandleSecondValue("video_metadata", "playback_duration", downloader.PlaybackDuration)
+	downloader.MinBufferTime = getPlaybackTime(mpd.MinBufferTime)
 
 	var moMap map[int]*entity.MediaObject
 	var bandwidthList []int
@@ -75,11 +75,11 @@ func ReadMPD(playback *entity.DashPlayback, mpd *entity.MPD) (segmentDuration in
 		for _, representation := range adaptationSet.Representation {
 			mediaFound := false
 			if strings.Contains(representation.MimeType, "audio") {
-				moMap = playback.Audio
+				moMap = downloader.Audio
 				mediaFound = true
 				utils.Info("Found Audio")
 			} else if strings.Contains(representation.MimeType, "video") {
-				moMap = playback.Video
+				moMap = downloader.Video
 				mediaFound = true
 				utils.Info("Found Video")
 			}
@@ -99,8 +99,9 @@ func ReadMPD(playback *entity.DashPlayback, mpd *entity.MPD) (segmentDuration in
 				moMap[bandwidth].URLList = append(moMap[bandwidth].URLList, segmentInfo.Media)
 			}
 			segmentDuration = representation.SegmentList.Duration / representation.SegmentList.Timescale
+			segmentCount = len(moMap[bandwidth].URLList)
 		}
 	}
 	utils.SetJsonHandleSecondValue("video_metadata", "available_bitrates", bandwidthList)
-	return segmentDuration
+	return segmentDuration, segmentCount
 }
