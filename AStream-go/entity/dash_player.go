@@ -116,15 +116,111 @@ func (dp *DashPlayer) ABRSelect(abrType string) (segment int, layer int, state f
 }
 
 func (dp *DashPlayer) BLFirstSelect() (segment int, layer int, state float64) {
-	return
+	dp.BufferLock.Lock()
+	defer dp.BufferLock.Unlock()
+	state = 0 // 0 is normal download  > 0 is sleep time < 0 is out
+	segment, layer = dp.NextSegmentNumber, 0
+	bitrateLength := len(dp.Bitrates)
+
+	for layer < bitrateLength {
+		segment = dp.NextSegmentNumber
+		if segment == -1 && dp.BufferQueue[0][0] {
+			segment = 0
+		}
+		for dp.judgeSegmentInRange(segment) && dp.BufferQueue[segment+1][layer] {
+			segment++
+		}
+		if dp.judgeSegmentInRange(segment) && !dp.BufferQueue[segment+1][layer] {
+			break
+		}
+		layer++
+	}
+
+	dp.PlaybackStateLock.Lock()
+	defer dp.PlaybackStateLock.Unlock()
+	if dp.PlaybackState == "END" || !dp.judgeSegmentInRange(dp.NextSegmentNumber) {
+		state = -1
+	} else if layer == bitrateLength {
+		dp.FutureLock.Lock()
+		defer dp.FutureLock.Unlock()
+		state = max(dp.Future.Sub(time.Now()).Seconds(), 0.001)
+	}
+	return segment, layer, state
 }
 
 func (dp *DashPlayer) DDLFirstSelect() (segment int, layer int, state float64) {
-	return
+	dp.BufferLock.Lock()
+	defer dp.BufferLock.Unlock()
+	state = 0 // 0 is normal download  > 0 is sleep time < 0 is out
+	segment, layer = dp.NextSegmentNumber, 0
+	bitrateLength := len(dp.Bitrates)
+
+	for dp.judgeSegmentInRange(segment) {
+		if segment == -1 && dp.BufferQueue[0][0] {
+			segment = 0
+			continue
+		}
+
+		for layer = 0; layer < bitrateLength && dp.BufferQueue[segment+1][layer]; layer++ {
+		}
+
+		if layer < bitrateLength && !dp.BufferQueue[segment+1][layer] {
+			break
+		}
+
+		segment++
+	}
+
+	dp.PlaybackStateLock.Lock()
+	defer dp.PlaybackStateLock.Unlock()
+	if dp.PlaybackState == "END" || !dp.judgeSegmentInRange(dp.NextSegmentNumber) {
+		state = -1
+	} else if dp.judgeBufferOut(segment) {
+		dp.FutureLock.Lock()
+		defer dp.FutureLock.Unlock()
+		state = max(dp.Future.Sub(time.Now()).Seconds(), 0.001)
+	}
+	return segment, layer, state
 }
 
 func (dp *DashPlayer) BackFillingSelect() (segment int, layer int, state float64) {
-	return
+	dp.BufferLock.Lock()
+	defer dp.BufferLock.Unlock()
+	state = 0 // 0 is normal download  > 0 is sleep time < 0 is out
+	segment, layer = dp.NextSegmentNumber, 0
+	bitrateLength := len(dp.Bitrates)
+
+	for dp.judgeSegmentInRange(segment) && dp.BufferQueue[segment+1][0] {
+		segment++
+	}
+	if dp.judgeSegmentInRange(segment) && !dp.BufferQueue[segment+1][0] {
+		return segment, 0, 0
+	}
+
+	maxSegment := segment
+	layer = 1
+	for layer < bitrateLength {
+		segment = maxSegment - 1
+		for segment >= dp.NextSegmentNumber && dp.BufferQueue[segment+1][layer] {
+			segment--
+		}
+		if segment >= dp.NextSegmentNumber && !dp.BufferQueue[segment+1][layer] {
+			break
+		}
+		layer++
+	}
+
+	dp.PlaybackStateLock.Lock()
+	defer dp.PlaybackStateLock.Unlock()
+	if dp.PlaybackState == "END" || !dp.judgeSegmentInRange(dp.NextSegmentNumber) {
+		state = -1
+	} else if layer == bitrateLength {
+		dp.FutureLock.Lock()
+		defer dp.FutureLock.Unlock()
+		state = max(dp.Future.Sub(time.Now()).Seconds(), 0.001)
+	}
+
+	return segment, layer, state
 }
 
 func (dp *DashPlayer) judgeSegmentInRange(segment int) bool {
