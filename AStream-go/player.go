@@ -9,20 +9,6 @@ import (
 	"time"
 )
 
-var (
-	playerState map[string]bool
-	exitState   map[string]bool
-)
-
-func init() {
-	for _, state := range []string{"INITIALIZED", "INITIAL_BUFFERING", "PLAY", "PAUSE", "BUFFERING", "STOP", "END"} {
-		playerState[state] = true
-	}
-	for _, state := range []string{"STOP", "END"} {
-		exitState[state] = true
-	}
-}
-
 //    def __init__(self, video_length, segment_duration, bitrates):
 //        self.player_thread = None
 
@@ -30,7 +16,7 @@ func NewDashPlayer(videoLength float64, segmentDuration int, bitrates []int) (pl
 	utils.Info("Initializing the Buffer")
 	player = &entity.DashPlayer{
 		PlaybackDuration: videoLength,
-		SegmentDuration:  segmentDuration,
+		SegmentDuration:  time.Duration(segmentDuration) * time.Second,
 		Bitrates:         bitrates,
 
 		// Timers to keep track of playback time and the actual time
@@ -62,7 +48,7 @@ func NewDashPlayer(videoLength float64, segmentDuration int, bitrates []int) (pl
 		player.BufferQueue[i] = make([]bool, highestLayer) // initial is 0, seg 0 is 1, seg 1 is 2 ...
 	}
 
-	utils.Infof("VideoLength=%v,segmentDuration=%d,segmentCount=%d", player.PlaybackDuration, player.SegmentDuration, player.PlaybackCount)
+	utils.Infof("VideoLength=%v,segmentDuration=%v,segmentCount=%d", player.PlaybackDuration, player.SegmentDuration.Seconds(), player.PlaybackCount)
 	return player
 }
 

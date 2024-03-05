@@ -25,5 +25,6 @@ func startPlayback(downloader *entity.DashDownloader, domain string, segmentDura
 	var previousDownloadTime, previousDownloadSize []float64
 	for {
 		fmt.Println("hahaha", previousDownloadTime, previousDownloadSize)
+		return
 	}
 }
