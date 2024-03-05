@@ -34,3 +34,20 @@ func DeleteFiles(dirPath string, keyword string) {
 		Fatalf("%s clean files failed: %s", consts.UtilError, err.Error())
 	}
 }
+
+func CountSuffixFileSize(dirPath string, suffix string) int64 {
+	var ans int64
+	err := filepath.Walk(dirPath, func(filePath string, info fs.FileInfo, err error) error {
+		if info.IsDir() {
+			return nil
+		}
+		if strings.HasSuffix(info.Name(), suffix) {
+			ans += info.Size()
+		}
+		return nil
+	})
+	if err != nil {
+		Fatalf("%s clean files failed: %s", consts.UtilError, err.Error())
+	}
+	return ans
+}

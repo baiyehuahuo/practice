@@ -7,5 +7,7 @@ const (
 
 	UtilError = "Util Error:"
 
-	MainError = "MainRoute error"
+	MainError = "MainRoute error:"
+
+	DashPlayerError = "DashPlayer error:"
 )
