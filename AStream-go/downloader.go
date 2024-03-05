@@ -13,7 +13,7 @@ func startPlayback(downloader *entity.DashDownloader, domain string, segmentDura
 	}
 	sort.Ints(bitrates)
 
-	player := &entity.DashPlayer{}
+	player := NewDashPlayer(downloader.PlaybackDuration, segmentDuration, bitrates)
 	go play(player)
 	dpList := make([][]string, segmentCount)
 	for i := 0; i < segmentCount; i++ {
