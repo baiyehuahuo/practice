@@ -1,9 +1,11 @@
 package proxy
 
 import (
+	"AStream-go/config"
 	"io"
 	_ "net/http/pprof"
 	"os"
+	"path"
 	"strconv"
 	"strings"
 	"sync"
@@ -61,6 +63,17 @@ func CloseConnection() {
 }
 
 func SynDownload(url string) int64 {
+	filename := filepath.Base(url)
+	source, _ := os.Open(path.Join("dataset/BBB", filename))
+	defer func(source *os.File) { _ = source.Close() }(source)
+	destination, _ := os.Create(path.Join(config.DownloadPath, filename))
+	defer func(destination *os.File) { _ = destination.Close() }(destination)
+	size, _ := io.Copy(destination, source)
+	time.Sleep(time.Duration(float64(size) / 338743.625 * float64(time.Second)))
+	return size
+}
+
+func SynDownloadOri(url string) int64 {
 	segmentNo, layer := getSegmentInfo(url)
 
 	// fmt.Printf(logTag+"go moudle GET %s, ddl %d\n", url, priority.Weight)

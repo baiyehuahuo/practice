@@ -5,6 +5,7 @@ import (
 	"AStream-go/entity"
 	"AStream-go/utils"
 	"encoding/xml"
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -54,11 +55,11 @@ func ParseMPD(path string) *entity.MPD {
 		log.Fatalf("%s parse failed: %s", consts.MPDErrorTag, err.Error())
 	}
 
-	//fmt.Println(len(mpd.Periods[0].AdaptationSet[0].Representation))
-	//for _, representation := range mpd.Periods[0].AdaptationSet[0].Representation {
-	//	fmt.Println(len(representation.SegmentList.SegmentURL),
-	//		representation.SegmentList.SegmentURL[0].Media)
-	//}
+	fmt.Println(len(mpd.Periods[0].AdaptationSet[0].Representation))
+	fmt.Println(mpd.Periods[0].AdaptationSet[0].SegmentBase.SegmentInitization.SourceURL)
+	for _, representation := range mpd.Periods[0].AdaptationSet[0].Representation {
+		fmt.Println(len(representation.SegmentList.SegmentURL), representation.SegmentList.SegmentURL[0].Media)
+	}
 	return mpd
 }
 
@@ -94,7 +95,7 @@ func ReadMPD(downloader *entity.DashDownloader, mpd *entity.MPD) (segmentDuratio
 			moMap[bandwidth].TimeScale = representation.SegmentList.Timescale
 			moMap[bandwidth].Duration = representation.SegmentList.Duration
 			moMap[bandwidth].BaseURL = mpd.BaseURL
-			moMap[bandwidth].Initialization = representation.SegmentList.SegmentInitization.SourceURL
+			moMap[bandwidth].Initialization = adaptationSet.SegmentBase.SegmentInitization.SourceURL
 			for _, segmentInfo := range representation.SegmentList.SegmentURL {
 				moMap[bandwidth].URLList = append(moMap[bandwidth].URLList, segmentInfo.Media)
 			}

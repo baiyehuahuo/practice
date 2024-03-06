@@ -62,6 +62,7 @@ type AdaptationSet struct {
 
 	Lang                      string                    `xml:"lang,attr"`
 	BaseURL                   string                    `xml:"BaseURL"`
+	SegmentBase               SegmentBase               `xml:"SegmentBase"`
 	Representation            []Representation          `xml:"Representation"`
 	SegmentTemplate           []SegmentTemplate         `xml:"SegmentTemplate"`
 	SegmentList               SegmentList               `xml:"SegmentList"`
