@@ -20,7 +20,7 @@ func init() {
 		"initial_buffering_duration": nil,
 		"interruptions": map[string]interface{}{
 			"count":          0,
-			"events":         new([][]float64),
+			"events":         []interface{}{},
 			"total_duration": 0.0,
 		},
 		"up_shifts":   0,
@@ -34,7 +34,7 @@ func SetJsonHandleValue(key string, val interface{}) {
 	jsonHandle[key] = val
 }
 
-func SetJsonHandleMultiValue(keys []string, val interface{}) {
+func getLatestMap(keys []string) map[string]interface{} {
 	jsonHandleMutex.Lock()
 	defer jsonHandleMutex.Unlock()
 	var (
@@ -54,73 +54,54 @@ func SetJsonHandleMultiValue(keys []string, val interface{}) {
 		} else {
 			next, ok = v.(map[string]interface{})
 			if !ok {
-				Errorf("%s: SetJsonHandleMultiValue jsonHandle %s is not a map", consts.UtilError, keys[i])
-				return
+				Errorf("%s: getLatestMap jsonHandle %s is not a map", consts.UtilError, keys[i])
+				return nil
 			}
 			cur = next
 		}
 	}
-	cur[keys[keyLength-1]] = val
+	return cur
+}
+
+func SetJsonHandleMultiValue(keys []string, val interface{}) {
+	latestMap := getLatestMap(keys)
+	if latestMap == nil {
+		return
+	}
+	latestMap[keys[len(keys)-1]] = val
 }
 
 func SetJsonHandleMultiValueIntIncrease(keys []string) {
-	jsonHandleMutex.Lock()
-	defer jsonHandleMutex.Unlock()
-	var hash = jsonHandle
-	var ok bool
-	for _, key := range keys[:len(keys)-1] {
-		hash, ok = hash[key].(map[string]interface{})
-		if !ok {
-			Warnf("%s: SetJsonHandleMultiValueIntIncrease jsonHandle %s is not a map", consts.UtilError, key)
-			return
-		}
-	}
-	x, ok := hash[keys[len(keys)-1]].(int)
-	if !ok {
-		Warnf("%s: SetJsonHandleMultiValueIntIncrease jsonHandle %s is not a integer", consts.UtilError, keys[len(keys)-1])
+	latestMap := getLatestMap(keys)
+	if latestMap == nil {
 		return
 	}
-	hash[keys[len(keys)-1]] = x + 1
+	latestKey := keys[len(keys)-1]
+
+	x := latestMap[latestKey].(int) // needn't judge may be need zero
+	latestMap[latestKey] = x + 1
 }
 
 func SetJsonHandleMultiValueFloatAdd(keys []string, addVal float64) {
-	jsonHandleMutex.Lock()
-	defer jsonHandleMutex.Unlock()
-	var hash = jsonHandle
-	var ok bool
-	for _, key := range keys[:len(keys)-1] {
-		hash, ok = hash[key].(map[string]interface{})
-		if !ok {
-			Warnf("%s: SetJsonHandleMultiValueFloatAdd jsonHandle %s is not a map", consts.UtilError, key)
-			return
-		}
-	}
-	x, ok := hash[keys[len(keys)-1]].(float64)
-	if !ok {
-		Warnf("%s: SetJsonHandleMultiValueFloatAdd jsonHandle %s is not a float64", consts.UtilError, keys[len(keys)-1])
+	latestMap := getLatestMap(keys)
+	if latestMap == nil {
 		return
 	}
-	hash[keys[len(keys)-1]] = x + addVal
+	latestKey := keys[len(keys)-1]
+
+	x := latestMap[latestKey].(float64) // needn't judge may be need zero
+	latestMap[latestKey] = x + addVal
 }
 
 func SetJsonHandleMultiValueSliceAppend(keys []string, appendVal interface{}) {
-	jsonHandleMutex.Lock()
-	defer jsonHandleMutex.Unlock()
-	var hash = jsonHandle
-	var ok bool
-	for _, key := range keys[:len(keys)-1] {
-		hash, ok = hash[key].(map[string]interface{})
-		if !ok {
-			Warnf("%s: SetJsonHandleMultiValueSliceAppend jsonHandle %s is not a map", consts.UtilError, key)
-			return
-		}
-	}
-	x, ok := hash[keys[len(keys)-1]].([]interface{})
-	if !ok {
-		Warnf("%s: SetJsonHandleMultiValueSliceAppend jsonHandle %s is not a integer", consts.UtilError, keys[len(keys)-1])
+	latestMap := getLatestMap(keys)
+	if latestMap == nil {
 		return
 	}
-	hash[keys[len(keys)-1]] = append(x, appendVal)
+	latestKey := keys[len(keys)-1]
+
+	x := latestMap[latestKey].([]interface{})
+	latestMap[latestKey] = append(x, appendVal)
 }
 
 func GetJsonHandleValue(key string) (ans interface{}) {

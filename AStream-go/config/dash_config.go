@@ -16,15 +16,14 @@ const (
 	LogName  = ""
 	LogLevel = ""
 
-	LogFolder             = "AStreamLogs/"
-	NormalThreshold       = 4
-	BasicThreshold        = 10
-	BasicUpperThreshold   = 1.2
-	BasicDeltaCount       = 5
+	LogFolder       = "AStreamLogs/"
+	NormalThreshold = 4
+
 	InitialBufferingCount = 2
 	RebufferingCount      = 1
 
 	DownloadPath = "DownloadedSegment/"
+	Limit        = 1 // <= InitialBufferingCount is not limit
 )
 
 var (
@@ -36,7 +35,6 @@ var (
 	JsonLogPath       string
 	JsonABRLogPath    string
 	Version           string
-	ServerDomain      = ""
 )
 
 func InitConfig(version string) {

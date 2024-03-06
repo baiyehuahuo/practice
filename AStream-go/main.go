@@ -59,7 +59,6 @@ func main() {
 
 	mpd := getMPD(*mpdURL)
 	domain := getDomain(*mpdURL)
-	config.ServerDomain = domain
 
 	downloader := &entity.DashDownloader{Audio: make(map[int]*entity.MediaObject), Video: make(map[int]*entity.MediaObject)}
 	segmentDuration, segmentCount := read_mpd.ReadMPD(downloader, mpd)

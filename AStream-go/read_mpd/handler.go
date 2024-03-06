@@ -1,6 +1,7 @@
 package read_mpd
 
 import (
+	"AStream-go/config"
 	"AStream-go/consts"
 	"AStream-go/entity"
 	"AStream-go/utils"
@@ -72,6 +73,7 @@ func ReadMPD(downloader *entity.DashDownloader, mpd *entity.MPD) (segmentDuratio
 
 	var moMap map[int]*entity.MediaObject
 	var bandwidthList []int
+	var bandwidth int
 	for _, adaptationSet := range mpd.Periods[0].AdaptationSet {
 		for _, representation := range adaptationSet.Representation {
 			mediaFound := false
@@ -87,7 +89,7 @@ func ReadMPD(downloader *entity.DashDownloader, mpd *entity.MPD) (segmentDuratio
 			if mediaFound {
 				utils.Info("Retrieving Media")
 			}
-			bandwidth := representation.BandWidth
+			bandwidth = representation.BandWidth
 			bandwidthList = append(bandwidthList, bandwidth)
 			moMap[bandwidth] = &entity.MediaObject{}
 			moMap[bandwidth].SegmentSize = []float64{}
@@ -101,6 +103,12 @@ func ReadMPD(downloader *entity.DashDownloader, mpd *entity.MPD) (segmentDuratio
 			}
 			segmentDuration = representation.SegmentList.Duration / representation.SegmentList.Timescale
 			segmentCount = len(moMap[bandwidth].URLList)
+		}
+		if config.Limit > config.InitialBufferingCount && config.Limit < len(moMap[bandwidth].URLList) {
+			downloader.PlaybackDuration = downloader.MinBufferTime * float64(config.Limit)
+			utils.SetJsonHandleMultiValue([]string{"video_metadata", "playback_duration"}, downloader.PlaybackDuration)
+			moMap[bandwidth].URLList = moMap[bandwidth].URLList[:config.Limit]
+			segmentCount = config.Limit
 		}
 	}
 	utils.SetJsonHandleMultiValue([]string{"video_metadata", "available_bitrates"}, bandwidthList)
