@@ -34,35 +34,33 @@ func SetJsonHandleValue(key string, val interface{}) {
 	jsonHandle[key] = val
 }
 
-func SetJsonHandleSecondValue(key, key2 string, val interface{}) {
-	jsonHandleMutex.Lock()
-	defer jsonHandleMutex.Unlock()
-	second, ok := jsonHandle[key]
-	if !ok {
-		jsonHandle[key] = map[string]interface{}{key2: val}
-		return
-	}
-	hash, ok := second.(map[string]interface{})
-	if !ok {
-		Fatalf("%s: SetJsonHandleSecondValue jsonHandle %s is not a map", consts.UtilError, key)
-		return
-	}
-	hash[key2] = val
-}
-
 func SetJsonHandleMultiValue(keys []string, val interface{}) {
 	jsonHandleMutex.Lock()
 	defer jsonHandleMutex.Unlock()
-	var hash = jsonHandle
-	var ok bool
-	for _, key := range keys[:len(keys)-1] {
-		hash, ok = hash[key].(map[string]interface{})
+	var (
+		cur, next map[string]interface{}
+		v         interface{}
+		ok        bool
+		keyLength = len(keys)
+	)
+	cur = jsonHandle
+	for i := 0; i < keyLength-1; i++ {
+		v, ok = cur[keys[i]]
 		if !ok {
-			Warnf("%s: SetJsonHandleSecondValue jsonHandle %s is not a map", consts.UtilError, key)
-			return
+			next = map[string]interface{}{}
+			cur[keys[i]] = next
+			cur = next
+			continue
+		} else {
+			next, ok = v.(map[string]interface{})
+			if !ok {
+				Errorf("%s: SetJsonHandleMultiValue jsonHandle %s is not a map", consts.UtilError, keys[i])
+				return
+			}
+			cur = next
 		}
 	}
-	hash[keys[len(keys)-1]] = val
+	cur[keys[keyLength-1]] = val
 }
 
 func SetJsonHandleMultiValueIntIncrease(keys []string) {

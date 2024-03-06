@@ -67,7 +67,7 @@ func ReadMPD(downloader *entity.DashDownloader, mpd *entity.MPD) (segmentDuratio
 	utils.Info("Reading the MPD file")
 
 	downloader.PlaybackDuration = getPlaybackTime(mpd.MediaPresentationDuration)
-	utils.SetJsonHandleSecondValue("video_metadata", "playback_duration", downloader.PlaybackDuration)
+	utils.SetJsonHandleMultiValue([]string{"video_metadata", "playback_duration"}, downloader.PlaybackDuration)
 	downloader.MinBufferTime = getPlaybackTime(mpd.MinBufferTime)
 
 	var moMap map[int]*entity.MediaObject
@@ -103,6 +103,6 @@ func ReadMPD(downloader *entity.DashDownloader, mpd *entity.MPD) (segmentDuratio
 			segmentCount = len(moMap[bandwidth].URLList)
 		}
 	}
-	utils.SetJsonHandleSecondValue("video_metadata", "available_bitrates", bandwidthList)
+	utils.SetJsonHandleMultiValue([]string{"video_metadata", "available_bitrates"}, bandwidthList)
 	return segmentDuration, segmentCount
 }

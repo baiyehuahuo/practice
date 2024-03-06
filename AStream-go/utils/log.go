@@ -70,3 +70,27 @@ func Fatalf(format string, args ...interface{}) {
 	defer logMutex.Unlock()
 	logger.Fatalf(format, args...)
 }
+
+func Error(args ...interface{}) {
+	logMutex.Lock()
+	defer logMutex.Unlock()
+	logger.Error(args...)
+}
+
+func Errorf(format string, args ...interface{}) {
+	logMutex.Lock()
+	defer logMutex.Unlock()
+	logger.Errorf(format, args...)
+}
+
+func Debug(args ...interface{}) {
+	logMutex.Lock()
+	defer logMutex.Unlock()
+	logger.Debug(args...)
+}
+
+func Debugf(format string, args ...interface{}) {
+	logMutex.Lock()
+	defer logMutex.Unlock()
+	logger.Debugf(format, args...)
+}

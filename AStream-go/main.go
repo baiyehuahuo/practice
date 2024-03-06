@@ -27,7 +27,7 @@ func getMPD(mpdURL string) *entity.MPD {
 
 	utils.SetJsonHandleValue("mpd_delay", time.Now().Sub(start).Seconds())
 	mpdPath := config.DownloadPath + filepath.Base(mpdURL)
-	utils.SetJsonHandleSecondValue("video_metadata", "mpd_file", mpdPath)
+	utils.SetJsonHandleMultiValue([]string{"video_metadata", "mpd_file"}, mpdPath)
 
 	return read_mpd.ParseMPD(mpdPath)
 }

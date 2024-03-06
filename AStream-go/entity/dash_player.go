@@ -67,14 +67,14 @@ func (dp *DashPlayer) PlayerRouting() {
 		case "END":
 			// Video stopped by the user
 			utils.Warnf("Finished playback of the video: %v seconds of video played for %v seconds", dp.PlaybackDuration, time.Now().Sub(startTime).Seconds())
-			utils.SetJsonHandleSecondValue("playback_info", "end_time", time.Now())
+			utils.SetJsonHandleMultiValue([]string{"playback_info", "end_time"}, time.Now())
 			dp.PlaybackTimer.Pause()
 			return
 
 		case "STOP":
 			//# If video is stopped quit updating the playback time and exit player
 			utils.Infof("Player Stopped at time %v", time.Now().Sub(startTime).Seconds())
-			utils.SetJsonHandleSecondValue("playback_info", "end_time", time.Now())
+			utils.SetJsonHandleMultiValue([]string{"playback_info", "end_time"}, time.Now())
 			dp.PlaybackTimer.Pause()
 			dp.LogEntry("Stopped")
 			return
@@ -411,7 +411,7 @@ func (dp *DashPlayer) TotalRemain(segmentNumber int) time.Duration {
 func (dp *DashPlayer) Write(segment, layer int) {
 	if dp.ActualStartTime.IsZero() {
 		dp.ActualStartTime = time.Now()
-		utils.SetJsonHandleSecondValue("playback_info", "start_time", dp.ActualStartTime)
+		utils.SetJsonHandleMultiValue([]string{"playback_info", "start_time"}, dp.ActualStartTime)
 	}
 
 	dp.BufferLock.Lock()

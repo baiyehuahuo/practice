@@ -24,8 +24,6 @@ const (
 	// Prefix for PROXY specific messages
 	logTag      = "PROXY MODULE:"
 	svcFilePath = "DownloadedSegment"
-	timeout     = 10
-	errorSleep  = time.Hour * 24
 )
 
 var (
@@ -85,14 +83,14 @@ func SynDownloadOri(url string) int64 {
 		fmt.Printf(logTag+"seg%d-L%d download error: %s\n", segmentNo, layer, err)
 		return 0
 	}
-	defer rsp.Body.Close()
+	defer func(Body io.ReadCloser) { _ = Body.Close() }(rsp.Body)
 
 	segmentName := strings.Split(url, "/")[len(strings.Split(url, "/"))-1]
 	f, err := os.Create(filepath.Join(svcFilePath, segmentName))
 	if err != nil {
 		fmt.Printf(logTag+"seg%d-L%d create file fail: %s\n", segmentNo, layer, err)
 	}
-	defer f.Close()
+	defer func(f *os.File) { _ = f.Close() }(f)
 
 	received, err := io.Copy(f, rsp.Body)
 	if err != nil {
