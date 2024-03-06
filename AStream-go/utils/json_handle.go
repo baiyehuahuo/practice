@@ -21,7 +21,7 @@ func init() {
 		"interruptions": map[string]interface{}{
 			"count":          0,
 			"events":         new([][]float64),
-			"total_duration": 0,
+			"total_duration": 0.0,
 		},
 		"up_shifts":   0,
 		"down_shifts": 0,
@@ -44,7 +44,7 @@ func SetJsonHandleSecondValue(key, key2 string, val interface{}) {
 	}
 	hash, ok := second.(map[string]interface{})
 	if !ok {
-		Warnf("%s: SetJsonHandleSecondValue jsonHandle %s is not a map", consts.UtilError, key)
+		Fatalf("%s: SetJsonHandleSecondValue jsonHandle %s is not a map", consts.UtilError, key)
 		return
 	}
 	hash[key2] = val
@@ -73,13 +73,13 @@ func SetJsonHandleMultiValueIntIncrease(keys []string) {
 	for _, key := range keys[:len(keys)-1] {
 		hash, ok = hash[key].(map[string]interface{})
 		if !ok {
-			Warnf("%s: SetJsonHandleSecondValue jsonHandle %s is not a map", consts.UtilError, key)
+			Warnf("%s: SetJsonHandleMultiValueIntIncrease jsonHandle %s is not a map", consts.UtilError, key)
 			return
 		}
 	}
 	x, ok := hash[keys[len(keys)-1]].(int)
 	if !ok {
-		Warnf("%s: SetJsonHandleSecondValue jsonHandle %s is not a integer", consts.UtilError, keys[len(keys)-1])
+		Warnf("%s: SetJsonHandleMultiValueIntIncrease jsonHandle %s is not a integer", consts.UtilError, keys[len(keys)-1])
 		return
 	}
 	hash[keys[len(keys)-1]] = x + 1
@@ -93,13 +93,13 @@ func SetJsonHandleMultiValueFloatAdd(keys []string, addVal float64) {
 	for _, key := range keys[:len(keys)-1] {
 		hash, ok = hash[key].(map[string]interface{})
 		if !ok {
-			Warnf("%s: SetJsonHandleSecondValue jsonHandle %s is not a map", consts.UtilError, key)
+			Warnf("%s: SetJsonHandleMultiValueFloatAdd jsonHandle %s is not a map", consts.UtilError, key)
 			return
 		}
 	}
 	x, ok := hash[keys[len(keys)-1]].(float64)
 	if !ok {
-		Warnf("%s: SetJsonHandleSecondValue jsonHandle %s is not a integer", consts.UtilError, keys[len(keys)-1])
+		Warnf("%s: SetJsonHandleMultiValueFloatAdd jsonHandle %s is not a float64", consts.UtilError, keys[len(keys)-1])
 		return
 	}
 	hash[keys[len(keys)-1]] = x + addVal
@@ -113,13 +113,13 @@ func SetJsonHandleMultiValueSliceAppend(keys []string, appendVal interface{}) {
 	for _, key := range keys[:len(keys)-1] {
 		hash, ok = hash[key].(map[string]interface{})
 		if !ok {
-			Warnf("%s: SetJsonHandleSecondValue jsonHandle %s is not a map", consts.UtilError, key)
+			Warnf("%s: SetJsonHandleMultiValueSliceAppend jsonHandle %s is not a map", consts.UtilError, key)
 			return
 		}
 	}
 	x, ok := hash[keys[len(keys)-1]].([]interface{})
 	if !ok {
-		Warnf("%s: SetJsonHandleSecondValue jsonHandle %s is not a integer", consts.UtilError, keys[len(keys)-1])
+		Warnf("%s: SetJsonHandleMultiValueSliceAppend jsonHandle %s is not a integer", consts.UtilError, keys[len(keys)-1])
 		return
 	}
 	hash[keys[len(keys)-1]] = append(x, appendVal)
@@ -142,7 +142,7 @@ func GetJsonHandleSecondValue(key, key2 string) (ans interface{}) {
 	}
 	hash, ok := second.(map[string]interface{})
 	if !ok {
-		Warnf("%s: SetJsonHandleSecondValue jsonHandle %s is not a map", consts.UtilError, key)
+		Warnf("%s: GetJsonHandleSecondValue jsonHandle %s is not a map", consts.UtilError, key)
 		return
 	}
 	ans = hash[key2]
@@ -157,7 +157,7 @@ func GetJsonHandleMultiValue(keys []string) (ans interface{}) {
 	for _, key := range keys[:len(keys)-1] {
 		hash, ok = hash[key].(map[string]interface{})
 		if !ok {
-			Warnf("%s: SetJsonHandleSecondValue jsonHandle %s is not a map", consts.UtilError, key)
+			Warnf("%s: GetJsonHandleMultiValue jsonHandle %s is not a map", consts.UtilError, key)
 			return
 		}
 	}

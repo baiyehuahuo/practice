@@ -62,11 +62,11 @@ func main() {
 	config.ServerDomain = domain
 
 	downloader := &entity.DashDownloader{Audio: make(map[int]*entity.MediaObject), Video: make(map[int]*entity.MediaObject)}
-	segmentDuration, _ := read_mpd.ReadMPD(downloader, mpd)
+	segmentDuration, segmentCount := read_mpd.ReadMPD(downloader, mpd)
 	utils.Infof("The DASH media has %d video representations, segment duration is %v", len(downloader.Video), segmentDuration)
 
 	utils.Warn("Started DASH Playback")
-	//startPlayback(downloader, domain, segmentDuration, segmentCount)
+	startPlayback(downloader, domain, segmentDuration, segmentCount)
 
 	utils.SaveJsonHandle(config.JsonABRLogPath)
 }

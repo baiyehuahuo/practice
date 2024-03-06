@@ -69,7 +69,7 @@ func SynDownload(url string) int64 {
 	destination, _ := os.Create(path.Join(config.DownloadPath, filename))
 	defer func(destination *os.File) { _ = destination.Close() }(destination)
 	size, _ := io.Copy(destination, source)
-	time.Sleep(time.Duration(float64(size) / 338743.625 * float64(time.Second)))
+	time.Sleep(time.Duration(float64(size) / 338743 * float64(time.Second)))
 	return size
 }
 

@@ -116,7 +116,7 @@ func (dp *DashPlayer) PlayerRouting() {
 				}
 			}
 
-		case "INITIAL_BUFFERING":
+		case "INITIALIZED":
 			if dp.BufferSize() < config.InitialBufferingCount {
 				initialWait = time.Now().Sub(startTime).Seconds()
 				continue
@@ -125,7 +125,7 @@ func (dp *DashPlayer) PlayerRouting() {
 				utils.Infof("Initial Waiting Time = %.2f", initialWait)
 				utils.SetJsonHandleMultiValue([]string{"playback_info", "initial_buffering_duration"}, initialWait)
 				utils.SetJsonHandleMultiValue([]string{"playback_info", "start_time"}, time.Now())
-				fmt.Printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! initial time: %.2fs", initialWait)
+				fmt.Printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! initial time: %.2fs\n", initialWait)
 				dp.SetState("PLAY")
 				dp.LogEntry("InitialBuffering-Play")
 			}
@@ -158,7 +158,7 @@ func (dp *DashPlayer) PlayerRouting() {
 				var err error
 				for i := 0; i <= layerNo; i++ {
 					layerCount[i]++
-					fi, err = os.Stat(fmt.Sprintf("DownloadedSegment/BBB-III.seg%d-L%d.svc", segmentNumber, i))
+					fi, err = os.Stat(fmt.Sprintf("DownloadedSegment/BBB-I-720p.seg%d-L%d.svc", segmentNumber, i))
 					if err != nil {
 						utils.Fatalf("%s PLAY file stats error: %s", consts.DashPlayerError, err.Error())
 						continue
@@ -169,7 +169,7 @@ func (dp *DashPlayer) PlayerRouting() {
 
 			overall++
 			overallDownloadSize += segmentSize
-			fmt.Printf("display segment %d, layer %d", segmentNumber, layerNo)
+			fmt.Printf("display segment %d, layer %d\n", segmentNumber, layerNo)
 
 			// If playback hasn't started yet, wait for the playback_start_time
 			time.Sleep(dp.SegmentRemain())
@@ -179,7 +179,7 @@ func (dp *DashPlayer) PlayerRouting() {
 				dp.PlaybackTimer.Pause()
 				deleteFilePath := config.DownloadPath
 
-				overallDownloadTime = 400
+				overallDownloadTime = dp.PlaybackDuration
 				totalDownloaded := utils.CountSuffixFileSize(config.DownloadPath, ".svc") // overall_download_size
 				utils.CleanFiles(config.DownloadPath)
 				totalDownloadTime := overallDownloadTime
@@ -402,10 +402,10 @@ func (dp *DashPlayer) SegmentRemain() time.Duration {
 func (dp *DashPlayer) TotalRemain(segmentNumber int) time.Duration {
 	dp.BufferLock.Lock()
 	dp.FutureLock.Lock()
-	remain := dp.SegmentRemain() + time.Duration(segmentNumber-dp.NextSegmentNumber-1)*dp.SegmentDuration
+	remain := max(dp.Future.Sub(time.Now()), 0) + time.Duration(segmentNumber-dp.NextSegmentNumber-1)*dp.SegmentDuration
 	dp.FutureLock.Unlock()
 	dp.BufferLock.Unlock()
-	return remain
+	return max(remain, 0)
 }
 
 func (dp *DashPlayer) Write(segment, layer int) {
@@ -441,6 +441,6 @@ func (dp *DashPlayer) LogEntry(action string) {
 		logTime = time.Now().Sub(dp.ActualStartTime)
 	}
 	dp.PlaybackStateLock.Lock()
-	utils.Infof("BufferStats: EpochTime=%s, CurrentPlaybackTime=%s, CurrentBufferSize=%s, CurrentPlaybackState=%s, Action=%s", logTime.Seconds(), dp.PlaybackTimer.Time().Seconds(), dp.BufferSize(), dp.PlaybackState, action)
+	utils.Infof("BufferStats: EpochTime=%v, CurrentPlaybackTime=%v, CurrentBufferSize=%v, CurrentPlaybackState=%s, Action=%s", logTime.Seconds(), dp.PlaybackTimer.Time().Seconds(), dp.BufferSize(), dp.PlaybackState, action)
 	dp.PlaybackStateLock.Unlock()
 }
