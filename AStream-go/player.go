@@ -51,7 +51,3 @@ func NewDashPlayer(videoLength float64, segmentDuration int, bitrates []int) (pl
 	utils.Infof("VideoLength=%v,segmentDuration=%v,segmentCount=%d", player.PlaybackDuration, player.SegmentDuration.Seconds(), player.PlaybackCount)
 	return player
 }
-
-func play(player *entity.DashPlayer) {
-
-}

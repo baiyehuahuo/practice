@@ -60,7 +60,7 @@ func CloseConnection() {
 	hcClientMutex.Unlock()
 }
 
-func SynDownload(url string) {
+func SynDownload(url string) int64 {
 	segmentNo, layer := getSegmentInfo(url)
 
 	// fmt.Printf(logTag+"go moudle GET %s, ddl %d\n", url, priority.Weight)
@@ -70,7 +70,7 @@ func SynDownload(url string) {
 
 	if err != nil {
 		fmt.Printf(logTag+"seg%d-L%d download error: %s\n", segmentNo, layer, err)
-		return
+		return 0
 	}
 	defer rsp.Body.Close()
 
@@ -86,6 +86,7 @@ func SynDownload(url string) {
 		fmt.Printf(logTag+"seg%d-L%d io segment file copy error : %s\n", segmentNo, layer, err)
 	}
 	fmt.Printf(logTag+"seg%d-L%d body received: %d\n", segmentNo, layer, received)
+	return received
 }
 
 func getSegmentInfo(segmentURL string) (int, int) {
