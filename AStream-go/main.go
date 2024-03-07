@@ -19,7 +19,6 @@ func getMPD(mpdURL string) *entity.MPD {
 	// 下载mpd文件并设置初始延迟
 	start := time.Now()
 
-	// todo download really!
 	proxy.SynDownload(mpdURL)
 
 	// download log info
@@ -49,7 +48,7 @@ func main() {
 	utils.CleanFiles(config.DownloadPath)
 
 	if mpdURL == nil {
-		log.Fatalf("%s MPD url is empty", consts.MainError)
+		utils.Fatalf("%s MPD url is empty", consts.MainError)
 	}
 
 	config.InitConfig(*version)
@@ -64,7 +63,7 @@ func main() {
 	segmentDuration, segmentCount := read_mpd.ReadMPD(downloader, mpd)
 	utils.Infof("The DASH media has %d video representations, segment duration is %v", len(downloader.Video), segmentDuration)
 
-	utils.Warn("Started DASH Playback")
+	utils.Info("Started DASH Playback")
 	startPlayback(downloader, domain, segmentDuration, segmentCount)
 
 	utils.SaveJsonHandle(config.JsonABRLogPath)

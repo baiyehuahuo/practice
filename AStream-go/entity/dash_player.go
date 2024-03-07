@@ -56,12 +56,12 @@ func (dp *DashPlayer) PlayerRouting() {
 		overall             int
 	)
 
-	utils.Infof("Initialized player with video length %v", dp.PlaybackDuration)
+	utils.Warnf("Initialized player with video length %v", dp.PlaybackDuration)
 	for {
 		switch dp.PlaybackState {
 		case "END":
 			// Video stopped by the user
-			utils.Infof("Finished playback of the video: %v seconds of video played for %v seconds", dp.PlaybackDuration, time.Now().Sub(startTime).Seconds())
+			utils.Warnf("Finished playback of the video: %v seconds of video played for %v seconds", dp.PlaybackDuration, time.Now().Sub(startTime).Seconds())
 			utils.SetJsonHandleMultiValue([]string{"playback_info", "end_time"}, time.Now())
 			dp.PlaybackTimer.Pause()
 			return
@@ -85,7 +85,7 @@ func (dp *DashPlayer) PlayerRouting() {
 
 		case "BUFFERING":
 			if !buffering {
-				utils.Infof("Entering buffering stage after %.2f seconds of playback", dp.PlaybackTimer.Time().Seconds())
+				utils.Warnf("Entering buffering stage after %.2f seconds of playback", dp.PlaybackTimer.Time().Seconds())
 				dp.PlaybackTimer.Pause()
 				buffering = true
 				interruptionStart = time.Now()
@@ -138,8 +138,8 @@ func (dp *DashPlayer) PlayerRouting() {
 			}
 			playSegment := dp.BufferGet()
 			segmentNumber := playSegment["segment_number"].(int)
-			utils.Info("***************PLAYING*****************")
-			utils.Infof("Reading the segment number %d from the buffer at playtime %.2f", segmentNumber, dp.PlaybackTimer.Time().Seconds())
+			utils.Warn("***************PLAYING*****************")
+			utils.Warnf("Reading the segment number %d from the buffer at playtime %.2f", segmentNumber, dp.PlaybackTimer.Time().Seconds())
 			dp.LogEntry("StillPlaying")
 			// Start the playback
 			dp.PlaybackTimer.Start()
@@ -185,14 +185,14 @@ func (dp *DashPlayer) PlayerRouting() {
 					utils.SetJsonHandleMultiValue([]string{"playback_info", fmt.Sprintf("Layer%d_count", i)}, layerCount[i])
 				}
 
-				utils.Infof("Completed the video playback: %.2f seconds", dp.PlaybackTimer.Time().Seconds())
-				utils.Infof("Mean downrate: %v MBits", float64(totalDownloaded)/(totalDownloadTime*1024))
-				utils.Infof("Interruptions: %v", utils.GetJsonHandleMultiValue([]string{"playback_info", "interruptions", "count"}))
-				utils.Infof("Interruption time total: %v s", utils.GetJsonHandleMultiValue([]string{"playback_info", "interruptions", "total_duration"}))
+				utils.Warnf("Completed the video playback: %.2f seconds", dp.PlaybackTimer.Time().Seconds())
+				utils.Warnf("Mean downrate: %v MBits", float64(totalDownloaded)/(totalDownloadTime*1024))
+				utils.Warnf("Interruptions: %v", utils.GetJsonHandleMultiValue([]string{"playback_info", "interruptions", "count"}))
+				utils.Warnf("Interruption time total: %v s", utils.GetJsonHandleMultiValue([]string{"playback_info", "interruptions", "total_duration"}))
 				for i := range layerCount {
-					utils.Infof("Layer%d total count: %d ", i, layerCount[i])
+					utils.Warnf("Layer%d total count: %d ", i, layerCount[i])
 				}
-				utils.Infof("total count: %d ", overall)
+				utils.Warnf("total count: %d ", overall)
 
 				fmt.Printf("total buffer time %v, bandwidth %v\n", utils.GetJsonHandleMultiValue([]string{"playback_info", "interruptions", "total_duration"}), utils.GetJsonHandleMultiValue([]string{"playback_info", "mean_downrate"}))
 				utils.DeleteFiles(deleteFilePath, ".svc")
