@@ -32,7 +32,7 @@ func startPlayback(downloader *entity.DashDownloader, domain string, segmentDura
 	var segmentNumber, layer int
 	var state float64
 	for {
-		segmentNumber, layer, state = player.ABRSelect(abrType)
+		segmentNumber, layer, state = ABRSelect(player, abrType)
 		fmt.Println(segmentNumber, layer, state)
 		if state == -1 {
 			break
