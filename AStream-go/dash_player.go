@@ -1,11 +1,14 @@
-package entity
+package main
 
 import (
 	"AStream-go/config"
 	"AStream-go/consts"
+	"AStream-go/entity"
 	"AStream-go/utils"
 	"fmt"
+	"math"
 	"os"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -28,7 +31,7 @@ type DashPlayer struct {
 	PlaybackDuration  float64
 	SegmentDuration   time.Duration
 	Bitrates          []int
-	PlaybackTimer     *StopWatch
+	PlaybackTimer     *entity.StopWatch
 	ActualStartTime   time.Time
 	PlaybackState     string
 	PlaybackStateLock sync.Mutex
@@ -42,6 +45,46 @@ type DashPlayer struct {
 	Future            time.Time
 	FutureLock        sync.Mutex
 	DisplayLayer      []int
+}
+
+func NewDashPlayer(videoLength float64, segmentDuration int, bitrates []int) (player *DashPlayer) {
+	utils.Info("Initializing the Buffer")
+	player = &DashPlayer{
+		PlaybackDuration: videoLength,
+		SegmentDuration:  time.Duration(segmentDuration) * time.Second,
+		Bitrates:         bitrates,
+
+		// Timers to keep track of playback time and the actual time
+		PlaybackTimer:   &entity.StopWatch{},
+		ActualStartTime: time.Time{},
+
+		// Playback State
+		PlaybackState:     "INITIALIZED",
+		PlaybackStateLock: sync.Mutex{},
+
+		// Current video buffer that holds the segment data
+		PlaybackCount: int(math.Ceil(videoLength/float64(segmentDuration))) + 1, // add an initialization
+		BufferQSize:   0,
+		BufferQueue:   nil,
+		BufferLock:    sync.Mutex{},
+
+		NextSegmentNumber: -1,
+		Interruption:      0,
+		BufferLogFile:     config.BufferLogFilename,
+		Future:            time.Time{},
+		FutureLock:        sync.Mutex{},
+
+		DisplayLayer: nil,
+	}
+	player.BufferQueue = make([][]bool, player.PlaybackCount)
+	player.DisplayLayer = make([]int, player.PlaybackCount)
+	highestLayer := len(bitrates)
+	for i := range player.BufferQueue {
+		player.BufferQueue[i] = make([]bool, highestLayer) // initial is 0, seg 0 is 1, seg 1 is 2 ...
+	}
+
+	utils.Infof("VideoLength=%v,segmentDuration=%v,segmentCount=%d", player.PlaybackDuration, player.SegmentDuration.Seconds(), player.PlaybackCount)
+	return player
 }
 
 func (dp *DashPlayer) PlayerRouting() {
@@ -179,7 +222,9 @@ func (dp *DashPlayer) PlayerRouting() {
 				utils.CleanFiles(config.DownloadPath)
 				totalDownloadTime := overallDownloadTime
 
-				utils.SetJsonHandleMultiValue([]string{"playback_info", "mean_downrate"}, nil) // str(round(overall_download_size/(total_download_time*1024), 2))+" / "+str(round(total_downloaded/(total_download_time*1024), 2)))
+				meanDownloadRate := strconv.FormatFloat(math.Round(float64(overallDownloadSize)/(totalDownloadTime*1024)), 'f', 2, 64) + " / " +
+					strconv.FormatFloat(math.Round(float64(totalDownloaded)/(totalDownloadTime*1024)), 'f', 2, 64)
+				utils.SetJsonHandleMultiValue([]string{"playback_info", "mean_downrate"}, meanDownloadRate)
 				utils.SetJsonHandleMultiValue([]string{"playback_info", "mean_downtime"}, totalDownloadTime/float64(overall))
 				for i := range layerCount {
 					utils.SetJsonHandleMultiValue([]string{"playback_info", fmt.Sprintf("Layer%d_count", i)}, layerCount[i])
@@ -199,7 +244,6 @@ func (dp *DashPlayer) PlayerRouting() {
 				utils.DeleteFiles(deleteFilePath, "init")
 				dp.SetState("END") // 播放结束
 				dp.LogEntry("TheEnd")
-				return
 			}
 		default:
 			utils.Fatalf("%s Unknown player state: %s", consts.DashPlayerError, dp.PlaybackState)
@@ -296,7 +340,7 @@ func (dp *DashPlayer) BLFirstSelect() (segment int, layer int, state float64) {
 	defer dp.PlaybackStateLock.Unlock()
 	if dp.PlaybackState == "END" || !dp.judgeSegmentInRange(dp.NextSegmentNumber) {
 		state = -1
-	} else if layer == bitrateLength {
+	} else if layer == bitrateLength || !dp.judgeSegmentInRange(segment) {
 		dp.FutureLock.Lock()
 		defer dp.FutureLock.Unlock()
 		state = max(dp.Future.Sub(time.Now()).Seconds(), 0.001)
@@ -331,7 +375,7 @@ func (dp *DashPlayer) DDLFirstSelect() (segment int, layer int, state float64) {
 	defer dp.PlaybackStateLock.Unlock()
 	if dp.PlaybackState == "END" || !dp.judgeSegmentInRange(dp.NextSegmentNumber) {
 		state = -1
-	} else if dp.judgeBufferOut(segment) {
+	} else if layer == bitrateLength || !dp.judgeSegmentInRange(segment) {
 		dp.FutureLock.Lock()
 		defer dp.FutureLock.Unlock()
 		state = max(dp.Future.Sub(time.Now()).Seconds(), 0.001)
@@ -370,7 +414,7 @@ func (dp *DashPlayer) BackFillingSelect() (segment int, layer int, state float64
 	defer dp.PlaybackStateLock.Unlock()
 	if dp.PlaybackState == "END" || !dp.judgeSegmentInRange(dp.NextSegmentNumber) {
 		state = -1
-	} else if layer == bitrateLength {
+	} else if layer == bitrateLength || !dp.judgeSegmentInRange(segment) {
 		dp.FutureLock.Lock()
 		defer dp.FutureLock.Unlock()
 		state = max(dp.Future.Sub(time.Now()).Seconds(), 0.001)

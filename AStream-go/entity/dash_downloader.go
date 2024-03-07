@@ -2,7 +2,7 @@ package entity
 
 type DashDownloader struct {
 	MinBufferTime    float64 // 2s
-	PlaybackDuration float64 // 400s
+	PlaybackDuration float64 // 596s
 	Audio            map[int]*MediaObject
 	Video            map[int]*MediaObject
 }

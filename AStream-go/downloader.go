@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func startPlayback(downloader *entity.DashDownloader, domain string, segmentDuration, segmentCount int) {
+func startPlayback(downloader *entity.DashDownloader, domain string, segmentDuration, segmentCount int, abrType string) {
 	bitrates := make([]int, 0, len(downloader.Video))
 	for bitrate := range downloader.Video {
 		bitrates = append(bitrates, bitrate)
@@ -32,7 +32,7 @@ func startPlayback(downloader *entity.DashDownloader, domain string, segmentDura
 	var segmentNumber, layer int
 	var state float64
 	for {
-		segmentNumber, layer, state = player.ABRSelect("BLFirst")
+		segmentNumber, layer, state = player.ABRSelect(abrType)
 		fmt.Println(segmentNumber, layer, state)
 		if state == -1 {
 			break

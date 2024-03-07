@@ -64,7 +64,7 @@ func main() {
 	utils.Infof("The DASH media has %d video representations, segment duration is %v", len(downloader.Video), segmentDuration)
 
 	utils.Info("Started DASH Playback")
-	startPlayback(downloader, domain, segmentDuration, segmentCount)
+	startPlayback(downloader, domain, segmentDuration, segmentCount, *version)
 
 	utils.SaveJsonHandle(config.JsonABRLogPath)
 }
