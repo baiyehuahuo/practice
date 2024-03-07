@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"AStream-go/consts"
 	"github.com/sirupsen/logrus"
 	"os"
 	"sync"
@@ -23,13 +24,13 @@ func ConfigureLogFile(logFilePath string) {
 
 	file, err := os.OpenFile(logFilePath, os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
-		logger.Fatalf("%s open log file failed: ", err)
+		logger.Fatalf("%s %s open log file failed: %s", consts.UtilError, GetCallerName(), err)
 	}
 	//defer file.Close()
 
 	err = file.Truncate(0)
 	if err != nil {
-		logger.Fatalf("%s truncate log file failed: ", err)
+		logger.Fatalf("%s %s truncate log file failed: %s", consts.UtilError, GetCallerName(), err)
 	}
 
 	logger.SetOutput(file)

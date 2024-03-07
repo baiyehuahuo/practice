@@ -54,7 +54,7 @@ func getLatestMap(keys []string) map[string]interface{} {
 		} else {
 			next, ok = v.(map[string]interface{})
 			if !ok {
-				Errorf("%s: getLatestMap jsonHandle %s is not a map", consts.UtilError, keys[i])
+				Errorf("%s %s jsonHandle %v is not a map", consts.UtilError, GetCallerName(), keys[:i+1])
 				return nil
 			}
 			cur = next
@@ -104,44 +104,14 @@ func SetJsonHandleMultiValueSliceAppend(keys []string, appendVal interface{}) {
 	latestMap[latestKey] = append(x, appendVal)
 }
 
-func GetJsonHandleValue(key string) (ans interface{}) {
-	jsonHandleMutex.RLock()
-	defer jsonHandleMutex.RUnlock()
-	ans = jsonHandle[key]
-	return ans
-}
-
-func GetJsonHandleSecondValue(key, key2 string) (ans interface{}) {
-	jsonHandleMutex.Lock()
-	defer jsonHandleMutex.Unlock()
-	second, ok := jsonHandle[key]
-	if !ok {
-		Warnf("%s: GetJsonHandleSecondValue jsonHandle %s is not exist", consts.UtilError, key)
-		return nil
-	}
-	hash, ok := second.(map[string]interface{})
-	if !ok {
-		Warnf("%s: GetJsonHandleSecondValue jsonHandle %s is not a map", consts.UtilError, key)
+func GetJsonHandleMultiValue(keys []string) (ans interface{}) {
+	latestMap := getLatestMap(keys)
+	if latestMap == nil {
 		return
 	}
-	ans = hash[key2]
-	return ans
-}
+	latestKey := keys[len(keys)-1]
 
-func GetJsonHandleMultiValue(keys []string) (ans interface{}) {
-	jsonHandleMutex.Lock()
-	defer jsonHandleMutex.Unlock()
-	var hash = jsonHandle
-	var ok bool
-	for _, key := range keys[:len(keys)-1] {
-		hash, ok = hash[key].(map[string]interface{})
-		if !ok {
-			Warnf("%s: GetJsonHandleMultiValue jsonHandle %s is not a map", consts.UtilError, key)
-			return
-		}
-	}
-	ans = hash[keys[len(keys)-1]]
-	return ans
+	return latestMap[latestKey]
 }
 
 func SaveJsonHandle(savePath string) {
@@ -149,13 +119,13 @@ func SaveJsonHandle(savePath string) {
 	defer jsonHandleMutex.Unlock()
 	file, err := os.OpenFile(savePath, os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
-		Warnf("%s: SaveJsonHandle open file failed: %s", consts.UtilError, err.Error())
+		Errorf("%s %s open file failed: %s", consts.UtilError, GetCallerName(), err.Error())
 		return
 	}
 	// 创建编码器
 	encoder := json.NewEncoder(file)
 	err = encoder.Encode(jsonHandle)
 	if err != nil {
-		Warnf("%s: SaveJsonHandle encode data failed: %s", consts.UtilError, err.Error())
+		Errorf("%s %s encode data failed: %s", consts.UtilError, GetCallerName(), err.Error())
 	}
 }

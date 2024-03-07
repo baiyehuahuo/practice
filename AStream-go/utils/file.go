@@ -16,7 +16,7 @@ func CleanFiles(dirPath string) {
 		return os.Remove(filePath)
 	})
 	if err != nil {
-		Fatalf("%s clean files failed: %s", consts.UtilError, err.Error())
+		Fatalf("%s %s clean files failed: %s", consts.UtilError, GetCallerName(), err.Error())
 	}
 }
 
@@ -31,7 +31,7 @@ func DeleteFiles(dirPath string, keyword string) {
 		return nil
 	})
 	if err != nil {
-		Fatalf("%s clean files failed: %s", consts.UtilError, err.Error())
+		Errorf("%s %s delete files failed: %s", consts.UtilError, GetCallerName(), err.Error())
 	}
 }
 
@@ -47,7 +47,7 @@ func CountSuffixFileSize(dirPath string, suffix string) int64 {
 		return nil
 	})
 	if err != nil {
-		Fatalf("%s clean files failed: %s", consts.UtilError, err.Error())
+		Errorf("%s %s failed: %s", consts.UtilError, GetCallerName(), err.Error())
 	}
 	return ans
 }
