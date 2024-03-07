@@ -6,7 +6,6 @@ import (
 	"AStream-go/entity"
 	"AStream-go/utils"
 	"encoding/xml"
-	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -35,7 +34,7 @@ func getPlaybackTime(playbackTimeStr string) float64 {
 	for _, v := range numbers {
 		vFloat, err := strconv.ParseFloat(v, 64)
 		if err != nil {
-			utils.Fatalf("%s: getPlaybackTime failed: %s", consts.MPDErrorTag, err.Error())
+			utils.Fatalf("%s %s failed: %s", consts.MPDErrorTag, utils.GetCallerName(), err.Error())
 			return 0
 		}
 		ans += vFloat * base
@@ -47,20 +46,20 @@ func getPlaybackTime(playbackTimeStr string) float64 {
 func ParseMPD(path string) *entity.MPD {
 	content, err := os.ReadFile(path)
 	if err != nil {
-		log.Fatalf("%s read failed: %s", consts.MPDErrorTag, err.Error())
+		log.Fatalf("%s %s failed: %s", consts.MPDErrorTag, utils.GetCallerName(), err.Error())
 	}
 
 	mpd := new(entity.MPD)
 	err = xml.Unmarshal(content, mpd)
 	if err != nil {
-		log.Fatalf("%s parse failed: %s", consts.MPDErrorTag, err.Error())
+		log.Fatalf("%s %s unmarshal failed: %s", consts.MPDErrorTag, utils.GetCallerName(), err.Error())
 	}
 
-	fmt.Println(len(mpd.Periods[0].AdaptationSet[0].Representation))
-	fmt.Println(mpd.Periods[0].AdaptationSet[0].SegmentBase.SegmentInitization.SourceURL)
-	for _, representation := range mpd.Periods[0].AdaptationSet[0].Representation {
-		fmt.Println(len(representation.SegmentList.SegmentURL), representation.SegmentList.SegmentURL[0].Media)
-	}
+	//fmt.Println(len(mpd.Periods[0].AdaptationSet[0].Representation))
+	//fmt.Println(mpd.Periods[0].AdaptationSet[0].SegmentBase.SegmentInitization.SourceURL)
+	//for _, representation := range mpd.Periods[0].AdaptationSet[0].Representation {
+	//	fmt.Println(len(representation.SegmentList.SegmentURL), representation.SegmentList.SegmentURL[0].Media)
+	//}
 	return mpd
 }
 

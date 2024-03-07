@@ -13,17 +13,12 @@ import (
 
 var (
 	playerState map[string]bool
-	exitState   map[string]bool
 )
 
 func init() {
 	playerState = make(map[string]bool, 7)
-	exitState = make(map[string]bool, 2)
-	for _, state := range []string{"INITIALIZED", "INITIAL_BUFFERING", "PLAY", "PAUSE", "BUFFERING", "STOP", "END"} {
+	for _, state := range []string{"INITIALIZED", "PLAY", "PAUSE", "BUFFERING", "STOP", "END"} {
 		playerState[state] = true
-	}
-	for _, state := range []string{"STOP", "END"} {
-		exitState[state] = true
 	}
 }
 
@@ -61,12 +56,12 @@ func (dp *DashPlayer) PlayerRouting() {
 		overall             int
 	)
 
-	utils.Warnf("Initialized player with video length %v", dp.PlaybackDuration)
+	utils.Infof("Initialized player with video length %v", dp.PlaybackDuration)
 	for {
 		switch dp.PlaybackState {
 		case "END":
 			// Video stopped by the user
-			utils.Warnf("Finished playback of the video: %v seconds of video played for %v seconds", dp.PlaybackDuration, time.Now().Sub(startTime).Seconds())
+			utils.Infof("Finished playback of the video: %v seconds of video played for %v seconds", dp.PlaybackDuration, time.Now().Sub(startTime).Seconds())
 			utils.SetJsonHandleMultiValue([]string{"playback_info", "end_time"}, time.Now())
 			dp.PlaybackTimer.Pause()
 			return
@@ -90,7 +85,7 @@ func (dp *DashPlayer) PlayerRouting() {
 
 		case "BUFFERING":
 			if !buffering {
-				utils.Warnf("Entering buffering stage after %.2f seconds of playback", dp.PlaybackTimer.Time().Seconds())
+				utils.Infof("Entering buffering stage after %.2f seconds of playback", dp.PlaybackTimer.Time().Seconds())
 				dp.PlaybackTimer.Pause()
 				buffering = true
 				interruptionStart = time.Now()
@@ -143,8 +138,8 @@ func (dp *DashPlayer) PlayerRouting() {
 			}
 			playSegment := dp.BufferGet()
 			segmentNumber := playSegment["segment_number"].(int)
-			utils.Warn("***************PLAYING*****************")
-			utils.Warnf("Reading the segment number %d from the buffer at playtime %.2f", segmentNumber, dp.PlaybackTimer.Time().Seconds())
+			utils.Info("***************PLAYING*****************")
+			utils.Infof("Reading the segment number %d from the buffer at playtime %.2f", segmentNumber, dp.PlaybackTimer.Time().Seconds())
 			dp.LogEntry("StillPlaying")
 			// Start the playback
 			dp.PlaybackTimer.Start()
@@ -160,7 +155,7 @@ func (dp *DashPlayer) PlayerRouting() {
 					layerCount[i]++
 					fi, err = os.Stat(fmt.Sprintf("DownloadedSegment/BBB-I-720p.seg%d-L%d.svc", segmentNumber, i))
 					if err != nil {
-						utils.Fatalf("%s PLAY file stats error: %s", consts.DashPlayerError, err.Error())
+						utils.Errorf("%s get file %s stats error: %s", consts.DashPlayerError, fmt.Sprintf("DownloadedSegment/BBB-I-720p.seg%d-L%d.svc", segmentNumber, i), err.Error())
 						continue
 					}
 					segmentSize += fi.Size()
@@ -190,14 +185,14 @@ func (dp *DashPlayer) PlayerRouting() {
 					utils.SetJsonHandleMultiValue([]string{"playback_info", fmt.Sprintf("Layer%d_count", i)}, layerCount[i])
 				}
 
-				utils.Warnf("Completed the video playback: %.2f seconds", dp.PlaybackTimer.Time().Seconds())
-				utils.Warnf("Mean downrate: %v MBits", float64(totalDownloaded)/(totalDownloadTime*1024))
-				utils.Warnf("Interruptions: %v", utils.GetJsonHandleMultiValue([]string{"playback_info", "interruptions", "count"}))
-				utils.Warnf("Interruption time total: %v s", utils.GetJsonHandleMultiValue([]string{"playback_info", "interruptions", "total_duration"}))
+				utils.Infof("Completed the video playback: %.2f seconds", dp.PlaybackTimer.Time().Seconds())
+				utils.Infof("Mean downrate: %v MBits", float64(totalDownloaded)/(totalDownloadTime*1024))
+				utils.Infof("Interruptions: %v", utils.GetJsonHandleMultiValue([]string{"playback_info", "interruptions", "count"}))
+				utils.Infof("Interruption time total: %v s", utils.GetJsonHandleMultiValue([]string{"playback_info", "interruptions", "total_duration"}))
 				for i := range layerCount {
-					utils.Warnf("Layer%d total count: %d ", i, layerCount[i])
+					utils.Infof("Layer%d total count: %d ", i, layerCount[i])
 				}
-				utils.Warnf("total count: %d ", overall)
+				utils.Infof("total count: %d ", overall)
 
 				fmt.Printf("total buffer time %v, bandwidth %v\n", utils.GetJsonHandleMultiValue([]string{"playback_info", "interruptions", "total_duration"}), utils.GetJsonHandleMultiValue([]string{"playback_info", "mean_downrate"}))
 				utils.DeleteFiles(deleteFilePath, ".svc")
@@ -220,7 +215,7 @@ func (dp *DashPlayer) SetState(state string) {
 		dp.PlaybackState = state
 		dp.PlaybackStateLock.Unlock()
 	} else {
-		utils.Fatalf("Unidentified state: %s", state)
+		utils.Errorf("%s Unidentified state: %s", consts.DashPlayerError, state)
 	}
 }
 
@@ -271,7 +266,7 @@ func (dp *DashPlayer) ABRSelect(abrType string) (segment int, layer int, state f
 	case "BackFilling":
 		return dp.BackFillingSelect()
 	default:
-		utils.Fatalf("%s Unknown ABR Select Method: %s", consts.DashPlayerError, abrType)
+		utils.Fatalf("%s %s Unknown ABR Select Method: %s", consts.DashPlayerError, utils.GetCallerName(), abrType)
 		return
 	}
 }
@@ -423,7 +418,7 @@ func (dp *DashPlayer) Write(segment, layer int) {
 }
 
 func (dp *DashPlayer) Start() {
-	dp.SetState("INITIAL_BUFFERING")
+	dp.SetState("INITIALIZED")
 	utils.Info("Starting the player")
 	go dp.PlayerRouting()
 	dp.LogEntry("Starting")

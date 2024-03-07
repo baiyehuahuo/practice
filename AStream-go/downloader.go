@@ -17,7 +17,7 @@ func startPlayback(downloader *entity.DashDownloader, domain string, segmentDura
 	sort.Ints(bitrates)
 
 	player := NewDashPlayer(downloader.PlaybackDuration, segmentDuration, bitrates)
-	go player.PlayerRouting()
+	go player.Start()
 	dpList := make([][]string, segmentCount)
 	for i := 0; i < segmentCount; i++ {
 		for _, bitrate := range bitrates {
