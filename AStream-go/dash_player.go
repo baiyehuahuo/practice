@@ -97,6 +97,7 @@ func (dp *DashPlayer) PlayerRouting() {
 		overallDownloadTime float64
 		layerCount          = make([]int, len(dp.Bitrates))
 		overall             int
+		preDisplayLayer     int
 	)
 
 	utils.Warnf("Initialized player with video length %v", dp.PlaybackDuration)
@@ -205,6 +206,13 @@ func (dp *DashPlayer) PlayerRouting() {
 				}
 			}
 
+			if layerNo > preDisplayLayer {
+				utils.SetJsonHandleMultiValueIntIncrease([]string{"playback_info", "up_shifts"})
+			} else if layerNo < preDisplayLayer {
+				utils.SetJsonHandleMultiValueIntIncrease([]string{"playback_info", "down_shifts"})
+			}
+			preDisplayLayer = layerNo
+
 			overall++
 			overallDownloadSize += segmentSize
 			fmt.Printf("display segment %d, layer %d\n", segmentNumber, layerNo)
@@ -303,7 +311,7 @@ func (dp *DashPlayer) BufferGet() (playSegment map[string]interface{}) {
 
 func (dp *DashPlayer) SegmentRemain() time.Duration {
 	dp.FutureLock.Lock()
-	remain := max(dp.Future.Sub(time.Now()), 0)
+	remain := utils.MaxDuration(dp.Future.Sub(time.Now()), 0)
 	dp.FutureLock.Unlock()
 	return remain
 }
@@ -311,10 +319,10 @@ func (dp *DashPlayer) SegmentRemain() time.Duration {
 func (dp *DashPlayer) TotalRemain(segmentNumber int) time.Duration {
 	dp.BufferLock.Lock()
 	dp.FutureLock.Lock()
-	remain := max(dp.Future.Sub(time.Now()), 0) + time.Duration(segmentNumber-dp.NextSegmentNumber-1)*dp.SegmentDuration
+	remain := utils.MaxDuration(dp.Future.Sub(time.Now()), 0) + time.Duration(segmentNumber-dp.NextSegmentNumber-1)*dp.SegmentDuration
 	dp.FutureLock.Unlock()
 	dp.BufferLock.Unlock()
-	return max(remain, 0)
+	return utils.MaxDuration(remain, 0)
 }
 
 func (dp *DashPlayer) Write(segment, layer int) {

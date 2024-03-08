@@ -119,7 +119,7 @@ func getState(dp *DashPlayer, segment, layer int) (state float64) {
 	} else if layer == len(dp.Bitrates) || !judgeSegmentInRange(dp, segment) {
 		dp.FutureLock.Lock()
 		defer dp.FutureLock.Unlock()
-		state = max(dp.Future.Sub(time.Now()).Seconds(), 0.001)
+		state = utils.MaxFloat64(dp.Future.Sub(time.Now()).Seconds(), 0.001)
 	}
 	return state
 }

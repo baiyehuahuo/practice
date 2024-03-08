@@ -4,7 +4,6 @@ import (
 	"AStream-go/entity"
 	"AStream-go/proxy"
 	"fmt"
-	"path"
 	"sort"
 	"time"
 )
@@ -25,7 +24,7 @@ func startPlayback(downloader *entity.DashDownloader, domain string, segmentDura
 		}
 	}
 
-	proxy.SynDownload(path.Join(domain, downloader.Video[bitrates[0]].Initialization))
+	proxy.SynDownload(domain + downloader.Video[bitrates[0]].Initialization)
 	player.Write(-1, 0)
 	var previousDownloadTime []float64
 	var previousDownloadSize []int64
@@ -41,7 +40,7 @@ func startPlayback(downloader *entity.DashDownloader, domain string, segmentDura
 			continue
 		}
 		startTime := time.Now()
-		url := path.Join(domain, dpList[segmentNumber][layer])
+		url := domain + dpList[segmentNumber][layer]
 		downloadSize := proxy.SynDownload(url)
 
 		previousDownloadTime = append(previousDownloadTime, time.Now().Sub(startTime).Seconds())
