@@ -10,4 +10,6 @@ const (
 	MainError = "MainRoute error:"
 
 	DashPlayerError = "DashPlayer error:"
+
+	ProxyError = "Proxy error: "
 )

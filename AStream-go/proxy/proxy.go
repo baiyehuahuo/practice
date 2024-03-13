@@ -2,8 +2,8 @@ package proxy
 
 import (
 	"AStream-go/config"
+	"AStream-go/consts"
 	"io"
-	_ "net/http/pprof"
 	"os"
 	"path"
 	"strconv"
@@ -21,9 +21,7 @@ import (
 )
 
 const (
-	// Prefix for PROXY specific messages
-	logTag      = "PROXY MODULE:"
-	svcFilePath = "DownloadedSegment"
+	errorSleep = time.Hour * 24
 )
 
 var (
@@ -32,12 +30,6 @@ var (
 )
 
 func ClientSetup() {
-	// f, _ := os.OpenFile("golang.log", os.O_WRONLY|os.O_CREATE|os.O_SYNC|os.O_TRUNC, 0755)
-	// log.SetOutput(f)
-	// log.SetFlags(0)
-	// log.SetPrefix(logTag)
-	// log.SetOutput(os.Stdout)
-
 	// Accept any offered certificate chain
 	// Use a HTTP/2.0 connection via QUIC
 	hcClientMutex.Lock()
@@ -74,29 +66,28 @@ func SynDownload(url string) int64 {
 func SynDownloadOri(url string) int64 {
 	segmentNo, layer := getSegmentInfo(url)
 
-	// fmt.Printf(logTag+"go moudle GET %s, ddl %d\n", url, priority.Weight)
 	hcClientMutex.Lock()
 	rsp, err := hcClient.Get(url)
 	hcClientMutex.Unlock()
 
 	if err != nil {
-		fmt.Printf(logTag+"seg%d-L%d download error: %s\n", segmentNo, layer, err)
+		fmt.Printf(consts.ProxyTag+"seg%d-L%d download error: %s\n", segmentNo, layer, err)
 		return 0
 	}
 	defer func(Body io.ReadCloser) { _ = Body.Close() }(rsp.Body)
 
 	segmentName := strings.Split(url, "/")[len(strings.Split(url, "/"))-1]
-	f, err := os.Create(filepath.Join(svcFilePath, segmentName))
+	f, err := os.Create(filepath.Join(config.DownloadPath, segmentName))
 	if err != nil {
-		fmt.Printf(logTag+"seg%d-L%d create file fail: %s\n", segmentNo, layer, err)
+		fmt.Printf(consts.ProxyTag+"seg%d-L%d create file fail: %s\n", segmentNo, layer, err)
 	}
 	defer func(f *os.File) { _ = f.Close() }(f)
 
 	received, err := io.Copy(f, rsp.Body)
 	if err != nil {
-		fmt.Printf(logTag+"seg%d-L%d io segment file copy error : %s\n", segmentNo, layer, err)
+		fmt.Printf(consts.ProxyTag+"seg%d-L%d io segment file copy error : %s\n", segmentNo, layer, err)
 	}
-	fmt.Printf(logTag+"seg%d-L%d body received: %d\n", segmentNo, layer, received)
+	fmt.Printf(consts.ProxyTag+"seg%d-L%d body received: %d\n", segmentNo, layer, received)
 	return received
 }
 
@@ -115,8 +106,4 @@ func getSegmentInfo(segmentURL string) (int, int) {
 	layerNo, _ := strconv.Atoi(strings.Trim(LayInfo, "L"))
 
 	return segmentNo, layerNo
-}
-
-func getDep(segmentNo, layer int) uint32 {
-	return uint32(segmentNo<<4 | layer)
 }

@@ -15,8 +15,8 @@ func startPlayback(downloader *entity.DashDownloader, domain string, segmentDura
 	}
 	sort.Ints(bitrates)
 
-	player := NewDashPlayer(downloader.PlaybackDuration, segmentDuration, bitrates)
-	go player.Start()
+	dp := NewDashPlayer(downloader.PlaybackDuration, segmentDuration, bitrates)
+	go dp.Start()
 	dpList := make([][]string, segmentCount)
 	for i := 0; i < segmentCount; i++ {
 		for _, bitrate := range bitrates {
@@ -25,13 +25,13 @@ func startPlayback(downloader *entity.DashDownloader, domain string, segmentDura
 	}
 
 	proxy.SynDownload(domain + downloader.Video[bitrates[0]].Initialization)
-	player.Write(-1, 0)
+	dp.Write(-1, 0)
 	var previousDownloadTime []float64
 	var previousDownloadSize []int64
 	var segmentNumber, layer int
 	var state float64
 	for {
-		segmentNumber, layer, state = ABRSelect(player, abrType)
+		segmentNumber, layer, state = ABRSelect(dp, abrType)
 		fmt.Println(segmentNumber, layer, state)
 		if state == -1 {
 			break
@@ -45,9 +45,9 @@ func startPlayback(downloader *entity.DashDownloader, domain string, segmentDura
 
 		previousDownloadTime = append(previousDownloadTime, time.Now().Sub(startTime).Seconds())
 		previousDownloadSize = append(previousDownloadSize, downloadSize)
-		player.Write(segmentNumber, layer)
+		dp.Write(segmentNumber, layer)
 	}
-	sleepTime := player.TotalRemain(segmentNumber)
+	sleepTime := dp.TotalRemain(segmentNumber)
 	fmt.Printf("remain time: %v, and sleep 10s\n", sleepTime)
 	time.Sleep(sleepTime + time.Second*10)
 	proxy.CloseConnection()

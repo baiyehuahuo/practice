@@ -12,7 +12,7 @@ import (
 
 const (
 	LogFolder       = "AStreamLogs/"
-	NormalThreshold = 4
+	NormalThreshold = 20
 
 	InitialBufferingCount = 2
 	RebufferingCount      = 1

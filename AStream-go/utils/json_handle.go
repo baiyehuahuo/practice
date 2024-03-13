@@ -14,6 +14,7 @@ var (
 
 func init() {
 	jsonHandle = make(map[string]interface{})
+	jsonHandle["segment_info"] = []interface{}{}
 	jsonHandle["playback_info"] = map[string]interface{}{
 		"start_time":                 nil,
 		"end_time":                   nil,

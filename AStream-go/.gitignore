@@ -1,6 +1,7 @@
 *.png
 *.log
 *.mpd
+.idea
 DownloadedSegment/*
 AStreamLogs/*
 test/*

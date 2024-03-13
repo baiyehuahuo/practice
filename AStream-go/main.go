@@ -19,6 +19,9 @@ func getMPD(mpdURL string) *entity.MPD {
 	// 下载mpd文件并设置初始延迟
 	start := time.Now()
 
+	// download log info
+	utils.Infof("Downloading the MPD file %s", mpdURL)
+
 	proxy.SynDownload(mpdURL)
 
 	// download log info
