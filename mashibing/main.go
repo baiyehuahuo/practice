@@ -31,8 +31,37 @@ func index(ctx *gin.Context) {
 	ctx.HTML(http.StatusOK, "index.html", nil)
 }
 
+func toRegister(ctx *gin.Context) {
+	ctx.HTML(http.StatusOK, "register.html", nil)
+}
+
+func register(ctx *gin.Context) {
+	var user model.User
+	err := ctx.ShouldBind(&user)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	ctx.String(http.StatusOK, "get User %v", user)
+}
+
+func MyHandler(ctx *gin.Context) {
+	fmt.Println("My handler ...")
+}
+
+func MyHandlerB() func(ctx *gin.Context) {
+	counter := 0
+	return func(ctx *gin.Context) {
+		counter++
+		pth := ctx.FullPath()
+		method := ctx.Request.Method
+		fmt.Printf("My handlerB ... called times: %d\tfull path: %s\tmethod: %s\n", counter, pth, method)
+	}
+}
+
 func main() {
 	r := gin.Default()                     // 拿到一个 Engine 引擎 在New的基础上加入 Logger 与 Recovery 中间件
+	r.Use(MyHandler, MyHandlerB())         // 与加入 engine 的顺序有关
 	r.GET("ping", func(ctx *gin.Context) { // 获取 Get 连接的请求
 		ctx.JSON(http.StatusOK, gin.H{"msg": "pong"})
 	})
@@ -46,23 +75,9 @@ func main() {
 	r.LoadHTMLGlob("templates/*")
 	r.Static("/assets", "assets")
 	r.GET("/index", index)
+
 	fmt.Println("gin ... ")
 	if err := r.Run(); err != nil { // 开启服务 默认监听127.0.0.1:8080
 		log.Fatal(err)
 	}
-}
-
-func toRegister(ctx *gin.Context) {
-	ctx.HTML(http.StatusOK, "register.html", nil)
-}
-
-func register(ctx *gin.Context) {
-	var user model.User
-	err := ctx.ShouldBind(&user)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	ctx.String(http.StatusOK, "get User %v", user)
-
 }
