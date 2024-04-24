@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
+	"mashibing/model"
 	"net/http"
 )
 
@@ -59,9 +60,28 @@ func main() {
 	r.POST("/somePost", somePost)
 	r.POST("/postVal", postVal)
 	r.POST("/search", search)
+
+	r.GET("/toRegister", toRegister)
+	r.POST("/register", register)
+
 	r.LoadHTMLGlob("templates/*")
 	fmt.Println("gin ... ")
 	if err := r.Run(); err != nil { // 开启服务 默认监听127.0.0.1:8080
 		log.Fatal(err)
 	}
+}
+
+func toRegister(ctx *gin.Context) {
+	ctx.HTML(http.StatusOK, "register.html", nil)
+}
+
+func register(ctx *gin.Context) {
+	var user model.User
+	err := ctx.ShouldBind(&user)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	ctx.String(http.StatusOK, "get User %v", user)
+
 }
