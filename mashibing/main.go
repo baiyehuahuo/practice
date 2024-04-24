@@ -8,23 +8,35 @@ import (
 )
 
 func someGet(ctx *gin.Context) {
-	ctx.Writer.WriteString("this is someGet")
+	_, _ = ctx.Writer.WriteString("this is someGet")
 }
 
 func somePost(ctx *gin.Context) {
-	ctx.Writer.WriteString("this is somePost")
+	_, _ = ctx.Writer.WriteString("this is somePost")
 }
 
 func getKey(ctx *gin.Context) {
 	s := ctx.Query("name")
 	ss := ctx.DefaultQuery("age", "xxoo")
-	ctx.String(http.StatusOK, "Get Param Key name = %s\t%s", s, ss)
+	ctx.String(http.StatusOK, "Get Key name = %s\t%s", s, ss)
 }
 
 func postVal(ctx *gin.Context) {
-	s := ctx.PostForm("name")
-	ss := ctx.DefaultPostForm("age", "xxoo")
-	ctx.String(http.StatusOK, "Get Param Key name = %s\t%s", s, ss)
+	name := ctx.PostForm("name")
+	age := ctx.DefaultPostForm("age", "xxoo")
+	//ctx.String(http.StatusOK, "Post Val name = %s\t%s", s, ss)
+	ctx.HTML(http.StatusOK, "welcome.html", gin.H{"name": name, "age": age})
+}
+
+func getParam(ctx *gin.Context) {
+	s := ctx.Param("username")
+	ctx.String(http.StatusOK, "Get Param Key name = %s", s)
+}
+
+func getParams(ctx *gin.Context) {
+	name := ctx.Param("username")
+	age := ctx.Param("age")
+	ctx.String(http.StatusOK, "Get Param Key name = %s, age = %s", name, age)
 }
 
 func main() {
@@ -34,8 +46,11 @@ func main() {
 	})
 	r.GET("someGet", someGet)
 	r.GET("getKey", getKey)
+	r.GET("getParam/:username", getParam)
+	r.GET("getParam/:username/:age", getParams)
 	r.POST("somePost", somePost)
 	r.POST("postVal", postVal)
+	r.LoadHTMLGlob("templates/*")
 	fmt.Println("gin ... ")
 	if err := r.Run(); err != nil { // 开启服务 默认监听127.0.0.1:8080
 		log.Fatal(err)
