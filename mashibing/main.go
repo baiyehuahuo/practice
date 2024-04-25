@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"log"
 	"mashibing/model"
@@ -64,8 +66,27 @@ func main() {
 		"xmy": "jhm",
 		"jhm": "fwf",
 	}))
-
 	adminGroup.GET("/secret", HandleSecret)
+
+	r.GET("/testCookie", HandleTestCookie)
+
+	store := cookie.NewStore([]byte("secret"))
+	r.Use(sessions.Sessions("mysession", store))
+
+	r.GET("/hello", func(c *gin.Context) {
+		session := sessions.Default(c)
+
+		if session.Get("hello") != "world" {
+			session.Set("hello", "world")
+			err := session.Save()
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+		}
+
+		c.JSON(200, gin.H{"hello": session.Get("hello")})
+	})
 
 	if err := r.Run(); err != nil { // 开启服务 默认监听127.0.0.1:8080
 		log.Fatal(err)
@@ -79,4 +100,14 @@ func HandleSecret(ctx *gin.Context) {
 	} else {
 		ctx.JSON(http.StatusOK, gin.H{"user": user, "secret": "no secret"})
 	}
+}
+
+func HandleTestCookie(ctx *gin.Context) {
+	username, err := ctx.Cookie("username")
+	if err != nil {
+		username = "fwf"
+		ctx.SetCookie("username", username, 60*60, "/", "127.0.0.1", true, true)
+		fmt.Println("set cookie")
+	}
+	ctx.String(http.StatusOK, "test cookie")
 }
