@@ -93,12 +93,12 @@ func HandleTestDelete(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"err": err.Error()})
 		return
 	}
-	affected, err := service.DeleteCourse(&course)
+	service.DeleteCourse(&course)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"err": err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusOK, fmt.Sprintf("Delete success. Affected: %d", affected))
+	ctx.JSON(http.StatusOK, fmt.Sprintf("Delete success. Course: %v", course))
 }
 
 func HandleTestUpdate(ctx *gin.Context) {
@@ -108,12 +108,12 @@ func HandleTestUpdate(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"err": err.Error()})
 		return
 	}
-	affected, err := service.UpdateCourse(&course)
+	service.UpdateCourse(&course)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"err": err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusOK, fmt.Sprintf("Update success. Affected: %d", affected))
+	ctx.JSON(http.StatusOK, fmt.Sprintf("Update success. Course: %v", course))
 }
 
 func HandleTestQuery(ctx *gin.Context) {
@@ -123,10 +123,7 @@ func HandleTestQuery(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"err": err.Error()})
 		return
 	}
-	if _, err = service.QueryCourse(&course); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"err": err.Error()})
-		return
-	}
+	service.QueryCourse(&course)
 	ctx.JSON(http.StatusOK, fmt.Sprintf("Query success. Class name: %s  Tid: %d", course.Cname, course.Tid))
 }
 

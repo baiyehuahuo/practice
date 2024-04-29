@@ -1,106 +1,45 @@
 package service
 
 import (
-	"database/sql"
 	"fmt"
-	_ "github.com/go-sql-driver/mysql"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
+	"log"
 	"mashibing/model"
 )
 
-var db *sql.DB
+var db *gorm.DB
 
 func init() {
-	dsn := "root:password@tcp(127.0.0.1:3306)/mashibing"
+	dsn := "root:password@tcp(127.0.0.1:3306)/mashibing?charset=utf8mb4&parseTime=True&loc=Local"
 	var err error
-	db, err = sql.Open("mysql", dsn)
+	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	if err = db.Ping(); err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 		return
 	}
 	fmt.Println("connect mysql success")
 }
 
 func InsertCourse(course *model.Course) (int, error) {
-	stmt, err := db.Prepare("INSERT INTO course (Cname, Tid) VALUES (?, ?)")
-	if err != nil {
-		return 0, err
-	}
-	res, err := stmt.Exec(course.Cname, course.Tid)
-	if err != nil {
-		return 0, err
-	}
-	affected, err := res.RowsAffected()
-	if err != nil {
-		return int(affected), err
-	}
-	if err = stmt.Close(); err != nil {
-		return int(affected), err
-	}
-	return int(affected), err
+	result := db.Create(course)
+	return int(result.RowsAffected), result.Error
 }
 
-func DeleteCourse(course *model.Course) (int, error) {
-	stmt, err := db.Prepare("DELETE FROM course WHERE Cid=?")
-	if err != nil {
-		return 0, err
-	}
-	res, err := stmt.Exec(course.Cid)
-	if err != nil {
-		return 0, err
-	}
-	affected, err := res.RowsAffected()
-	if err != nil {
-		return int(affected), err
-	}
-	if err = stmt.Close(); err != nil {
-		return int(affected), err
-	}
-	return int(affected), err
+func DeleteCourse(course *model.Course) {
+	db.Delete(course)
 }
 
-func UpdateCourse(course *model.Course) (int, error) {
-	stmt, err := db.Prepare("UPDATE course SET Cname=?, Tid=? WHERE Cid=?")
-	if err != nil {
-		return 0, err
-	}
-	res, err := stmt.Exec(course.Cname, course.Tid, course.Cid)
-	if err != nil {
-		return 0, err
-	}
-	affected, err := res.RowsAffected()
-	if err != nil {
-		return int(affected), err
-	}
-	if err = stmt.Close(); err != nil {
-		return int(affected), err
-	}
-	return int(affected), err
+func UpdateCourse(course *model.Course) {
+	db.Save(course)
 }
 
-func QueryCourse(course *model.Course) (int, error) {
-	err := db.QueryRow("SELECT * FROM course WHERE Cid=?", course.Cid).Scan(&course.Cid, &course.Cname, &course.Tid)
-	if err != nil {
-		return 0, err
-	}
-	return 0, nil
+func QueryCourse(course *model.Course) {
+	db.First(course, course.Cid)
 }
 
 func QueryMultiCourse(course *model.Course) ([]*model.Course, error) {
-	rows, err := db.Query("SELECT * FROM course WHERE Cid>?", course.Cid)
-	if err != nil {
-		return nil, err
-	}
-	var courses []*model.Course
-	for rows.Next() {
-		course = &model.Course{}
-		if err = rows.Scan(&course.Cid, &course.Cname, &course.Tid); err != nil {
-			return nil, err
-		}
-		courses = append(courses, course)
-	}
-	return courses, nil
+	var ans []*model.Course
+	db.Where("cid > ?", course.Cid).Find(&ans)
+	return ans, nil
 }
