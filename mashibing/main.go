@@ -1,14 +1,13 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
-	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"mashibing/model"
+	"mashibing/service"
 	"net/http"
 )
 
@@ -17,8 +16,6 @@ var adminUsers = gin.H{
 	"xmy": gin.H{"email": "mfsnxy@qq.com", "phone": 66668888},
 	"jhm": gin.H{"email": "none@fff.com", "phone": 88886666},
 }
-
-var db *sql.DB
 
 func getParams(ctx *gin.Context) {
 	name := ctx.Param("username")
@@ -73,21 +70,6 @@ func HandleTestCookie(ctx *gin.Context) {
 	ctx.String(http.StatusOK, "test cookie")
 }
 
-func testDB() {
-	dsn := "root:password@tcp(127.0.0.1:3306)/mashibing"
-	var err error
-	db, err = sql.Open("mysql", dsn)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	if err = db.Ping(); err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println("connect mysql success")
-}
-
 func HandleTestInsert(ctx *gin.Context) {
 	var course model.Course
 	err := ctx.ShouldBind(&course)
@@ -95,32 +77,56 @@ func HandleTestInsert(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"err": err.Error()})
 		return
 	}
-	effect, err := InsertCourse(db, &course)
+	affected, err := service.InsertCourse(&course)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"err": err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{"effect": effect})
+	ctx.JSON(http.StatusOK, fmt.Sprintf("Insert success. Affected: %d", affected))
 }
 
-func InsertCourse(db *sql.DB, course *model.Course) (int, error) {
-	//db.Begin()
-	stmt, err := db.Prepare("insert into course (cname, tid) values (?, ?);")
+func HandleTestDelete(ctx *gin.Context) {
+	var course model.Course
+	err := ctx.ShouldBind(&course)
 	if err != nil {
-		return 0, err
+		ctx.JSON(http.StatusBadRequest, gin.H{"err": err.Error()})
+		return
 	}
-	res, err := stmt.Exec(course.Cname, course.Tid)
+	affected, err := service.DeleteCourse(&course)
 	if err != nil {
-		return 0, err
+		ctx.JSON(http.StatusInternalServerError, gin.H{"err": err.Error()})
+		return
 	}
-	effected, err := res.RowsAffected()
+	ctx.JSON(http.StatusOK, fmt.Sprintf("Delete success. Affected: %d", affected))
+}
+
+func HandleTestUpdate(ctx *gin.Context) {
+	var course model.Course
+	err := ctx.ShouldBind(&course)
 	if err != nil {
-		return int(effected), err
+		ctx.JSON(http.StatusBadRequest, gin.H{"err": err.Error()})
+		return
 	}
-	if err = stmt.Close(); err != nil {
-		return int(effected), err
+	affected, err := service.UpdateCourse(&course)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"err": err.Error()})
+		return
 	}
-	return int(effected), err
+	ctx.JSON(http.StatusOK, fmt.Sprintf("Update success. Affected: %d", affected))
+}
+
+func HandleTestQuery(ctx *gin.Context) {
+	var course model.Course
+	err := ctx.ShouldBind(&course)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"err": err.Error()})
+		return
+	}
+	if _, err = service.QueryCourse(&course); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"err": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, fmt.Sprintf("Query success. Class name: %s  Tid: %d", course.Cname, course.Tid))
 }
 
 func main() {
@@ -161,9 +167,10 @@ func main() {
 		c.JSON(200, gin.H{"hello": session.Get("hello")})
 	})
 
-	testDB()
-
 	r.POST("/testInsert", HandleTestInsert)
+	r.POST("/testDelete", HandleTestDelete)
+	r.POST("/testUpdate", HandleTestUpdate)
+	r.POST("/testQuery", HandleTestQuery)
 
 	if err := r.Run(); err != nil { // 开启服务 默认监听127.0.0.1:8080
 		log.Fatal(err)
