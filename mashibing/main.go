@@ -18,6 +18,8 @@ var adminUsers = gin.H{
 	"jhm": gin.H{"email": "none@fff.com", "phone": 88886666},
 }
 
+var db *sql.DB
+
 func getParams(ctx *gin.Context) {
 	name := ctx.Param("username")
 	age := ctx.Param("age")
@@ -73,7 +75,8 @@ func HandleTestCookie(ctx *gin.Context) {
 
 func testDB() {
 	dsn := "root:password@tcp(127.0.0.1:3306)/mashibing"
-	db, err := sql.Open("mysql", dsn)
+	var err error
+	db, err = sql.Open("mysql", dsn)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -83,6 +86,41 @@ func testDB() {
 		return
 	}
 	fmt.Println("connect mysql success")
+}
+
+func HandleTestInsert(ctx *gin.Context) {
+	var course model.Course
+	err := ctx.ShouldBind(&course)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"err": err.Error()})
+		return
+	}
+	effect, err := InsertCourse(db, &course)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"err": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"effect": effect})
+}
+
+func InsertCourse(db *sql.DB, course *model.Course) (int, error) {
+	//db.Begin()
+	stmt, err := db.Prepare("insert into course (cname, tid) values (?, ?);")
+	if err != nil {
+		return 0, err
+	}
+	res, err := stmt.Exec(course.Cname, course.Tid)
+	if err != nil {
+		return 0, err
+	}
+	effected, err := res.RowsAffected()
+	if err != nil {
+		return int(effected), err
+	}
+	if err = stmt.Close(); err != nil {
+		return int(effected), err
+	}
+	return int(effected), err
 }
 
 func main() {
@@ -125,7 +163,9 @@ func main() {
 
 	testDB()
 
-	//if err := r.Run(); err != nil { // 开启服务 默认监听127.0.0.1:8080
-	//	log.Fatal(err)
-	//}
+	r.POST("/testInsert", HandleTestInsert)
+
+	if err := r.Run(); err != nil { // 开启服务 默认监听127.0.0.1:8080
+		log.Fatal(err)
+	}
 }
