@@ -1,10 +1,12 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
+	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"mashibing/model"
 	"net/http"
@@ -50,6 +52,39 @@ func MyHandlerB() func(ctx *gin.Context) {
 	}
 }
 
+func HandleSecret(ctx *gin.Context) {
+	user := ctx.MustGet(gin.AuthUserKey).(string)
+	if secret, ok := adminUsers[user]; ok {
+		ctx.JSON(http.StatusOK, gin.H{"user": user, "secret": secret})
+	} else {
+		ctx.JSON(http.StatusOK, gin.H{"user": user, "secret": "no secret"})
+	}
+}
+
+func HandleTestCookie(ctx *gin.Context) {
+	username, err := ctx.Cookie("username")
+	if err != nil {
+		username = "fwf"
+		ctx.SetCookie("username", username, 60*60, "/", "127.0.0.1", true, true)
+		fmt.Println("set cookie")
+	}
+	ctx.String(http.StatusOK, "test cookie")
+}
+
+func testDB() {
+	dsn := "root:password@tcp(127.0.0.1:3306)/mashibing"
+	db, err := sql.Open("mysql", dsn)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	if err = db.Ping(); err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println("connect mysql success")
+}
+
 func main() {
 	r := gin.Default()  // 拿到一个 Engine 引擎 在New的基础上加入 Logger 与 Recovery 中间件
 	r.Use(MyHandlerB()) // 与加入 engine 的顺序有关
@@ -88,26 +123,9 @@ func main() {
 		c.JSON(200, gin.H{"hello": session.Get("hello")})
 	})
 
-	if err := r.Run(); err != nil { // 开启服务 默认监听127.0.0.1:8080
-		log.Fatal(err)
-	}
-}
+	testDB()
 
-func HandleSecret(ctx *gin.Context) {
-	user := ctx.MustGet(gin.AuthUserKey).(string)
-	if secret, ok := adminUsers[user]; ok {
-		ctx.JSON(http.StatusOK, gin.H{"user": user, "secret": secret})
-	} else {
-		ctx.JSON(http.StatusOK, gin.H{"user": user, "secret": "no secret"})
-	}
-}
-
-func HandleTestCookie(ctx *gin.Context) {
-	username, err := ctx.Cookie("username")
-	if err != nil {
-		username = "fwf"
-		ctx.SetCookie("username", username, 60*60, "/", "127.0.0.1", true, true)
-		fmt.Println("set cookie")
-	}
-	ctx.String(http.StatusOK, "test cookie")
+	//if err := r.Run(); err != nil { // 开启服务 默认监听127.0.0.1:8080
+	//	log.Fatal(err)
+	//}
 }
