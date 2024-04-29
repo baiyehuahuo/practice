@@ -88,3 +88,19 @@ func QueryCourse(course *model.Course) (int, error) {
 	}
 	return 0, nil
 }
+
+func QueryMultiCourse(course *model.Course) ([]*model.Course, error) {
+	rows, err := db.Query("SELECT * FROM course WHERE Cid>?", course.Cid)
+	if err != nil {
+		return nil, err
+	}
+	var courses []*model.Course
+	for rows.Next() {
+		course = &model.Course{}
+		if err = rows.Scan(&course.Cid, &course.Cname, &course.Tid); err != nil {
+			return nil, err
+		}
+		courses = append(courses, course)
+	}
+	return courses, nil
+}

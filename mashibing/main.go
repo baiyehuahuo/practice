@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
@@ -129,6 +130,26 @@ func HandleTestQuery(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, fmt.Sprintf("Query success. Class name: %s  Tid: %d", course.Cname, course.Tid))
 }
 
+func HandleTestMultiQuery(ctx *gin.Context) {
+	var course model.Course
+	err := ctx.ShouldBind(&course)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"err": err.Error()})
+		return
+	}
+	courses, err := service.QueryMultiCourse(&course)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"err": err.Error()})
+		return
+	}
+	var msg bytes.Buffer
+	msg.WriteString("Query success.  ")
+	for _, course := range courses {
+		msg.WriteString(fmt.Sprintf("Class ID: %d  Class name: %s  Tid: %d  ", course.Cid, course.Cname, course.Tid))
+	}
+	ctx.JSON(http.StatusOK, msg.String())
+}
+
 func main() {
 	r := gin.Default()  // 拿到一个 Engine 引擎 在New的基础上加入 Logger 与 Recovery 中间件
 	r.Use(MyHandlerB()) // 与加入 engine 的顺序有关
@@ -171,6 +192,7 @@ func main() {
 	r.POST("/testDelete", HandleTestDelete)
 	r.POST("/testUpdate", HandleTestUpdate)
 	r.POST("/testQuery", HandleTestQuery)
+	r.POST("/testMultiQuery", HandleTestMultiQuery)
 
 	if err := r.Run(); err != nil { // 开启服务 默认监听127.0.0.1:8080
 		log.Fatal(err)
