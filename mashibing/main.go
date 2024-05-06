@@ -147,6 +147,27 @@ func HandleTestMultiQuery(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, msg.String())
 }
 
+func HandleRedisSetCookie(ctx *gin.Context) {
+	var user model.User
+	err := ctx.ShouldBind(&user)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"err": err.Error()})
+	}
+	userCookie := ctx.PostForm("cookie")
+	service.SetCookie(user.Username, userCookie)
+	ctx.JSON(http.StatusOK, "Set cookie success")
+}
+
+func HandleRedisGetCookie(ctx *gin.Context) {
+	var user model.User
+	err := ctx.ShouldBind(&user)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"err": err.Error()})
+	}
+	userCookie := service.GetCookie(user.Username)
+	ctx.JSON(http.StatusOK, gin.H{"cookie": userCookie})
+}
+
 func main() {
 	r := gin.Default()  // 拿到一个 Engine 引擎 在New的基础上加入 Logger 与 Recovery 中间件
 	r.Use(MyHandlerB()) // 与加入 engine 的顺序有关
@@ -190,6 +211,9 @@ func main() {
 	r.POST("/testUpdate", HandleTestUpdate)
 	r.POST("/testQuery", HandleTestQuery)
 	r.POST("/testMultiQuery", HandleTestMultiQuery)
+
+	r.POST("/redisSetCookie", HandleRedisSetCookie)
+	r.POST("/redisGetCookie", HandleRedisGetCookie)
 
 	if err := r.Run(); err != nil { // 开启服务 默认监听127.0.0.1:8080
 		log.Fatal(err)
