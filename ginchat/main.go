@@ -18,7 +18,6 @@ func main() {
 }
 
 func DBModel() {
-
 	db, err := gorm.Open(mysql.New(mysql.Config{
 		DSN:                       "root:rootpwd@tcp(127.0.0.1:3306)/mashibing?charset=utf8&parseTime=True&loc=Local", // DSN data source name
 		DefaultStringSize:         256,                                                                                // string 类型字段的默认长度
@@ -31,7 +30,7 @@ func DBModel() {
 		log.Fatal("connect db failed.")
 	}
 
-	db.AutoMigrate(&models.UserBasic{})
+	_ = db.AutoMigrate(&models.UserBasic{})
 
 	user := &models.UserBasic{}
 	user.Name = "fwf"
