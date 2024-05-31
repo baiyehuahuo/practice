@@ -24,8 +24,14 @@ var db *gorm.DB
 
 func InitMySQL() {
 	var err error
+	user := viper.GetString("mysql.user")
+	password := viper.GetString("mysql.password")
+	ip := viper.GetString("mysql.ip")
+	port := viper.GetInt("mysql.port")
+	dataset := viper.GetString("mysql.dataset")
+	charset := viper.GetString("mysql.charset")
 	db, err = gorm.Open(mysql.New(mysql.Config{
-		DSN:                       viper.GetString("mysql.dns"),                        // DSN data source name
+		DSN:                       fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=True&loc=Local", user, password, ip, port, dataset, charset),
 		DefaultStringSize:         viper.GetUint("mysql.default_string_size"),          // string 类型字段的默认长度
 		DisableDatetimePrecision:  viper.GetBool("mysql.default_datetime_precision"),   // 禁用 datetime 精度，MySQL 5.6 之前的数据库不支持
 		DontSupportRenameIndex:    viper.GetBool("mysql.dont_support_rename_index"),    // 重命名索引时采用删除并新建的方式，MySQL 5.7 之前的数据库和 MariaDB 不支持重命名索引
