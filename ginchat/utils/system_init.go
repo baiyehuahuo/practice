@@ -5,7 +5,10 @@ import (
 	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"log"
+	"os"
+	"time"
 )
 
 func InitConfig() {
@@ -23,6 +26,15 @@ func InitConfig() {
 var db *gorm.DB
 
 func InitMySQL() {
+	newLogger := logger.New(
+		log.New(os.Stdout, "\r\n", log.LstdFlags),
+		logger.Config{
+			SlowThreshold: time.Second, // 慢 SQL 阈值
+			LogLevel:      logger.Info, // 级别
+			Colorful:      true,        // 彩色
+		},
+	)
+
 	var err error
 	user := viper.GetString("mysql.user")
 	password := viper.GetString("mysql.password")
@@ -37,7 +49,9 @@ func InitMySQL() {
 		DontSupportRenameIndex:    viper.GetBool("mysql.dont_support_rename_index"),    // 重命名索引时采用删除并新建的方式，MySQL 5.7 之前的数据库和 MariaDB 不支持重命名索引
 		DontSupportRenameColumn:   viper.GetBool("mysql.dont_support_rename_column"),   // 用 `change` 重命名列，MySQL 8 之前的数据库和 MariaDB 不支持重命名列
 		SkipInitializeWithVersion: viper.GetBool("mysql.skip_initialize_with_version"), // 根据当前 MySQL 版本自动配置
-	}), &gorm.Config{})
+	}), &gorm.Config{
+		Logger: newLogger,
+	})
 	if err != nil {
 		log.Fatal("connect db failed.")
 	}
