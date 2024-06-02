@@ -24,6 +24,49 @@ func GetUserList(c *gin.Context) {
 	})
 }
 
+// SearchUserByNameAndPassword
+// @Summary      Get User message by name and password
+// @Description  get a user messages from database
+// @Tags         用户服务
+// @param        name formData string true "用户名"
+// @param        password formData string true "密码"
+// @Success      200  {string}   json{"message", "data"}
+// @Router       /user/searchUserByNameAndPassword [post]
+func SearchUserByNameAndPassword(c *gin.Context) {
+	var (
+		code = http.StatusOK
+		msg  = "get user failed"
+		data *models.UserBasic
+		err  error
+	)
+	defer func() {
+		c.JSON(code, gin.H{
+			"message": msg,
+			"data":    data,
+		})
+	}()
+
+	input := struct {
+		Name     string `form:"name" json:"name" binding:"required"`
+		Password string `form:"password" json:"password" binding:"required"`
+	}{}
+	if err = c.ShouldBind(&input); err != nil {
+		code = http.StatusBadRequest
+		msg = err.Error()
+		return
+	}
+	if _, err = govalidator.ValidateStruct(input); err != nil {
+		code = http.StatusBadRequest
+		msg = err.Error()
+		return
+	}
+	user := models.FindUserByName(input.Name)
+	if utils.ValidPassword(input.Password, user.Salt, user.Password) {
+		msg = "get user success"
+		data = user
+	}
+}
+
 // CreateUser
 // @Summary      Create a new user
 // @Description  insert a user data into database

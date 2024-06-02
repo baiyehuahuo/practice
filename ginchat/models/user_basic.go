@@ -63,6 +63,12 @@ func FindUserByEmail(email string) *UserBasic {
 	return &user
 }
 
+func FindUserByNameAndPwd(name, password string) *UserBasic {
+	user := UserBasic{}
+	utils.GetDB().Where("name = ? and password = ?", name, password).First(&user)
+	return &user
+}
+
 func AutoMigrateUserBasic() error {
 	return utils.GetDB().AutoMigrate(&UserBasic{})
 }
