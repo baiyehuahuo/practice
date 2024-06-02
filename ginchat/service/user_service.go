@@ -69,7 +69,13 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	user := models.UserBasic{
+	if checkCode, checkMsg := checkExist(input.Name, input.Phone, input.Email); checkCode != http.StatusOK {
+		code = checkCode
+		msg = checkMsg
+		return
+	}
+
+	user := &models.UserBasic{
 		Name:          input.Name,
 		Password:      input.Password,
 		Phone:         input.Phone,
@@ -79,7 +85,7 @@ func CreateUser(c *gin.Context) {
 		LoginOutTime:  time.Now(),
 	}
 
-	if err = models.CreateUser(user).Error; err != nil {
+	if err = models.CreateUser(*user).Error; err != nil {
 		code = http.StatusInternalServerError
 		msg = err.Error()
 	}
@@ -169,15 +175,41 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 
-	user := models.UserBasic{}
+	if checkCode, checkMsg := checkExist(input.Name, input.Phone, input.Email); checkCode != http.StatusOK {
+		code = checkCode
+		msg = checkMsg
+		return
+	}
+
+	user := &models.UserBasic{}
 	user.ID = uint(input.ID)
 	user.Name = input.Name
 	user.Password = input.Password
 	user.Phone = input.Phone
 	user.Email = input.Email
 
-	if err = models.UpdateUser(user).Error; err != nil {
+	if err = models.UpdateUser(*user).Error; err != nil {
 		code = http.StatusInternalServerError
 		msg = err.Error()
 	}
+}
+
+func checkExist(name, phone, email string) (statusCode int, msg string) {
+	var user *models.UserBasic
+	if name != "" {
+		if user = models.FindUserByName(name); user.ID != 0 {
+			return http.StatusBadRequest, "name is exists"
+		}
+	}
+	if phone != "" {
+		if user = models.FindUserByPhone(phone); user.ID != 0 {
+			return http.StatusBadRequest, "phone is exists"
+		}
+	}
+	if email != "" {
+		if user = models.FindUserByEmail(email); user.ID != 0 {
+			return http.StatusBadRequest, "email is exists"
+		}
+	}
+	return http.StatusOK, ""
 }

@@ -31,7 +31,7 @@ import (
 func main() {
 	utils.InitConfig()
 	utils.InitMySQL()
-	AutoMigrates()
+	//AutoMigrates()
 
 	r := router.Router()
 	if err := r.Run(); err != nil {

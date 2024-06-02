@@ -44,6 +44,24 @@ func UpdateUser(user UserBasic) *gorm.DB {
 	return utils.GetDB().Updates(&user)
 }
 
+func FindUserByName(name string) *UserBasic {
+	var user UserBasic
+	utils.GetDB().Where("name = ?", name).First(&user)
+	return &user
+}
+
+func FindUserByPhone(phone string) *UserBasic {
+	var user UserBasic
+	utils.GetDB().Where("phone = ?", phone).First(&user)
+	return &user
+}
+
+func FindUserByEmail(email string) *UserBasic {
+	var user UserBasic
+	utils.GetDB().Where("email = ?", email).First(&user)
+	return &user
+}
+
 func AutoMigrateUserBasic() error {
 	return utils.GetDB().AutoMigrate(&UserBasic{})
 }
