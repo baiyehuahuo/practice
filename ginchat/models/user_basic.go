@@ -10,8 +10,8 @@ type UserBasic struct {
 	gorm.Model
 	Name          string    `gorm:"column:name" json:"name"`
 	Password      string    `gorm:"column:password" json:"password"`
-	Phone         string    `gorm:"column:phone" json:"phone"`
-	Email         string    `gorm:"column:email" json:"email"`
+	Phone         string    `gorm:"column:phone" json:"phone" valid:"matches(^1[3-9]{1}\\d{9}$)"`
+	Email         string    `gorm:"column:email" json:"email" valid:"email"`
 	Identity      string    `gorm:"column:identity" json:"identity"`
 	ClientIP      string    `gorm:"column:client_ip" json:"client_ip"`
 	ClientPort    string    `gorm:"column:client_port" json:"client_port"`
@@ -38,6 +38,10 @@ func CreateUser(user UserBasic) *gorm.DB {
 
 func DeleteUser(user UserBasic) *gorm.DB {
 	return utils.GetDB().Delete(&user)
+}
+
+func UpdateUser(user UserBasic) *gorm.DB {
+	return utils.GetDB().Updates(&user)
 }
 
 func AutoMigrateUserBasic() error {

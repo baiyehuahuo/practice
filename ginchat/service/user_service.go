@@ -2,9 +2,9 @@ package service
 
 import (
 	"ginchat/models"
+	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"strconv"
 	"time"
 )
 
@@ -34,38 +34,55 @@ func GetUserList(c *gin.Context) {
 // @Success      200  {string}   json{"message"}
 // @Router       /user/createUser [post]
 func CreateUser(c *gin.Context) {
-	var err error
+	var (
+		code = http.StatusOK
+		msg  = "create success"
+		err  error
+	)
+	defer func() {
+		c.JSON(code, gin.H{
+			"message": msg,
+		})
+	}()
+
+	input := struct {
+		Name       string `form:"name" json:"name" binding:"required"`
+		Password   string `form:"password" json:"password" binding:"required"`
+		Repassword string `form:"repassword" json:"repassword" binding:"required"`
+		Phone      string `form:"phone" json:"phone" valid:"matches(^1[3-9]{1}\\d{9}$)"`
+		Email      string `form:"email" json:"email" valid:"email"`
+	}{}
+
+	if err = c.ShouldBind(&input); err != nil {
+		code = http.StatusBadRequest
+		msg = err.Error()
+		return
+	}
+	if _, err = govalidator.ValidateStruct(input); err != nil {
+		code = http.StatusBadRequest
+		msg = err.Error()
+		return
+	}
+	if input.Repassword != input.Password {
+		code = http.StatusBadRequest
+		msg = "password is not equals to repassword"
+		return
+	}
+
 	user := models.UserBasic{
-		Name:          c.PostForm("name"),
-		Password:      c.PostForm("password"),
-		Phone:         c.PostForm("phone"),
-		Email:         c.PostForm("email"),
+		Name:          input.Name,
+		Password:      input.Password,
+		Phone:         input.Phone,
+		Email:         input.Email,
 		LoginTime:     time.Now(),
 		HeartBeatTime: time.Now(),
 		LoginOutTime:  time.Now(),
 	}
-	if user.Name == "" || user.Password == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "name or password is empty",
-		})
-		return
-	}
 
-	repassword := c.PostForm("repassword")
-	if repassword != user.Password {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "password is not equals to repassword",
-		})
-		return
-	}
-
-	var msg string = "create success"
 	if err = models.CreateUser(user).Error; err != nil {
+		code = http.StatusInternalServerError
 		msg = err.Error()
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"message": msg,
-	})
 }
 
 // DeleteUser
@@ -76,21 +93,91 @@ func CreateUser(c *gin.Context) {
 // @Success      200  {string}   json{"message"}
 // @Router       /user/deleteUser [post]
 func DeleteUser(c *gin.Context) {
-	var err error
-	id, err := strconv.ParseUint(c.PostForm("id"), 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "id is empty",
+	var (
+		code = http.StatusOK
+		msg  = "delete success"
+		err  error
+	)
+	defer func() {
+		c.JSON(code, gin.H{
+			"message": msg,
 		})
+	}()
+
+	input := struct {
+		ID int `form:"id" json:"id" binding:"required"`
+	}{}
+
+	if err = c.ShouldBind(&input); err != nil {
+		code = http.StatusBadRequest
+		msg = err.Error()
 		return
 	}
+	if _, err = govalidator.ValidateStruct(input); err != nil {
+		code = http.StatusBadRequest
+		msg = err.Error()
+		return
+	}
+
 	user := models.UserBasic{}
-	user.ID = uint(id)
-	msg := "delete success"
+	user.ID = uint(input.ID)
 	if err = models.DeleteUser(user).Error; err != nil {
+		code = http.StatusInternalServerError
 		msg = err.Error()
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"message": msg,
-	})
+}
+
+// UpdateUser
+// @Summary      Update user message
+// @Description  Update user message in database
+// @Tags         更新用户信息
+// @param        id formData int true "用户id"
+// @param        name formData string false "用户名"
+// @param        password formData string false "密码"
+// @param        phone formData string false "电话号码"
+// @param        email formData string false "邮箱"
+// @Success      200  {string}   json{"message"}
+// @Router       /user/updateUser [post]
+func UpdateUser(c *gin.Context) {
+	var (
+		code = http.StatusOK
+		msg  = "update success"
+		err  error
+	)
+	defer func() {
+		c.JSON(code, gin.H{
+			"message": msg,
+		})
+	}()
+
+	input := struct {
+		ID       int    `form:"id" json:"id" binding:"required"`
+		Name     string `form:"name" json:"name"`
+		Password string `form:"password" json:"password"`
+		Phone    string `form:"phone" json:"phone" valid:"matches(^1[3-9]{1}\\d{9}$)"`
+		Email    string `form:"email" json:"email" valid:"email"`
+	}{}
+
+	if err = c.ShouldBind(&input); err != nil {
+		code = http.StatusBadRequest
+		msg = err.Error()
+		return
+	}
+	if _, err = govalidator.ValidateStruct(input); err != nil {
+		code = http.StatusBadRequest
+		msg = err.Error()
+		return
+	}
+
+	user := models.UserBasic{}
+	user.ID = uint(input.ID)
+	user.Name = input.Name
+	user.Password = input.Password
+	user.Phone = input.Phone
+	user.Email = input.Email
+
+	if err = models.UpdateUser(user).Error; err != nil {
+		code = http.StatusInternalServerError
+		msg = err.Error()
+	}
 }
