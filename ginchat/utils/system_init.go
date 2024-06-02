@@ -55,6 +55,7 @@ func InitMySQL() {
 	if err != nil {
 		log.Fatal("connect db failed.")
 	}
+
 }
 
 func GetDB() *gorm.DB {

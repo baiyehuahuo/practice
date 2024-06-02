@@ -31,3 +31,15 @@ func GetUserList() []*UserBasic {
 	utils.GetDB().Find(&datas)
 	return datas
 }
+
+func CreateUser(user UserBasic) *gorm.DB {
+	return utils.GetDB().Create(&user)
+}
+
+func DeleteUser(user UserBasic) *gorm.DB {
+	return utils.GetDB().Delete(&user)
+}
+
+func AutoMigrateUserBasic() error {
+	return utils.GetDB().AutoMigrate(&UserBasic{})
+}

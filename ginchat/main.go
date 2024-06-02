@@ -1,6 +1,7 @@
 package main
 
 import (
+	"ginchat/models"
 	"ginchat/router"
 	"ginchat/utils"
 	_ "github.com/swaggo/files"       // swagger embed files
@@ -30,9 +31,17 @@ import (
 func main() {
 	utils.InitConfig()
 	utils.InitMySQL()
+	AutoMigrates()
 
 	r := router.Router()
 	if err := r.Run(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func AutoMigrates() {
+	err := models.AutoMigrateUserBasic()
+	if err != nil {
 		log.Fatal(err)
 	}
 }
