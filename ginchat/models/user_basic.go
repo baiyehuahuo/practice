@@ -10,6 +10,7 @@ type UserBasic struct {
 	gorm.Model
 	Name          string    `gorm:"column:name" json:"name"`
 	Password      string    `gorm:"column:password" json:"password"`
+	Salt          string    `gorm:"column:salt" json:"salt"`
 	Phone         string    `gorm:"column:phone" json:"phone" valid:"matches(^1[3-9]{1}\\d{9}$)"`
 	Email         string    `gorm:"column:email" json:"email" valid:"email"`
 	Identity      string    `gorm:"column:identity" json:"identity"`

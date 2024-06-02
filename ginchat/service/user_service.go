@@ -1,7 +1,9 @@
 package service
 
 import (
+	"fmt"
 	"ginchat/models"
+	"ginchat/utils"
 	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -75,9 +77,11 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
+	salt := fmt.Sprintf("%d", time.Now().UnixNano())
 	user := &models.UserBasic{
 		Name:          input.Name,
-		Password:      input.Password,
+		Password:      utils.MakePassword(input.Password, salt),
+		Salt:          salt,
 		Phone:         input.Phone,
 		Email:         input.Email,
 		LoginTime:     time.Now(),
