@@ -77,7 +77,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "message\"}",
+                        "description": "message\", \"data\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -103,7 +103,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "message\"}",
+                        "description": "message\", \"data\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -128,7 +128,7 @@
                 }
             }
         },
-        "/user/searchUserByNameAndPassword": {
+        "/user/loginUserByNameAndPassword": {
             "post": {
                 "description": "get a user messages from database",
                 "tags": [
@@ -203,7 +203,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "message\"}",
+                        "description": "message\", \"data\"}",
                         "schema": {
                             "type": "string"
                         }

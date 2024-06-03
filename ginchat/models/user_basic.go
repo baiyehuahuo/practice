@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"ginchat/utils"
 	"gorm.io/gorm"
 	"time"
@@ -45,6 +46,12 @@ func UpdateUser(user UserBasic) *gorm.DB {
 	return utils.GetDB().Updates(&user)
 }
 
+func FindUserByID(ID int) *UserBasic {
+	var user UserBasic
+	utils.GetDB().Where("id = ?", ID).First(&user)
+	return &user
+}
+
 func FindUserByName(name string) *UserBasic {
 	var user UserBasic
 	utils.GetDB().Where("name = ?", name).First(&user)
@@ -66,6 +73,8 @@ func FindUserByEmail(email string) *UserBasic {
 func FindUserByNameAndPwd(name, password string) *UserBasic {
 	user := UserBasic{}
 	utils.GetDB().Where("name = ? and password = ?", name, password).First(&user)
+	token := utils.Md5EncodeSmall(fmt.Sprintf("%d", time.Now().Unix()))
+	utils.GetDB().Model(&user).Where("id = ?", user.ID).Update("identity", token)
 	return &user
 }
 

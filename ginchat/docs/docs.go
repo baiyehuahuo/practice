@@ -83,7 +83,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "message\"}",
+                        "description": "message\", \"data\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -109,7 +109,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "message\"}",
+                        "description": "message\", \"data\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -134,7 +134,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/searchUserByNameAndPassword": {
+        "/user/loginUserByNameAndPassword": {
             "post": {
                 "description": "get a user messages from database",
                 "tags": [
@@ -209,7 +209,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "message\"}",
+                        "description": "message\", \"data\"}",
                         "schema": {
                             "type": "string"
                         }

@@ -24,15 +24,15 @@ func GetUserList(c *gin.Context) {
 	})
 }
 
-// SearchUserByNameAndPassword
+// LoginUserByNameAndPassword
 // @Summary      Get User message by name and password
 // @Description  get a user messages from database
 // @Tags         用户服务
 // @param        name formData string true "用户名"
 // @param        password formData string true "密码"
 // @Success      200  {string}   json{"message", "data"}
-// @Router       /user/searchUserByNameAndPassword [post]
-func SearchUserByNameAndPassword(c *gin.Context) {
+// @Router       /user/loginUserByNameAndPassword [post]
+func LoginUserByNameAndPassword(c *gin.Context) {
 	var (
 		code = http.StatusOK
 		msg  = "get user failed"
@@ -40,6 +40,9 @@ func SearchUserByNameAndPassword(c *gin.Context) {
 		err  error
 	)
 	defer func() {
+		if code != http.StatusOK {
+			data = nil
+		}
 		c.JSON(code, gin.H{
 			"message": msg,
 			"data":    data,
@@ -63,7 +66,7 @@ func SearchUserByNameAndPassword(c *gin.Context) {
 	user := models.FindUserByName(input.Name)
 	if utils.ValidPassword(input.Password, user.Salt, user.Password) {
 		msg = "get user success"
-		data = user
+		data = models.FindUserByNameAndPwd(user.Name, user.Password)
 	}
 }
 
@@ -76,17 +79,22 @@ func SearchUserByNameAndPassword(c *gin.Context) {
 // @param        repassword formData string true "确认密码"
 // @param        email formData string false "邮箱"
 // @param        phone formData string false "电话号码"
-// @Success      200  {string}   json{"message"}
+// @Success      200  {string}   json{"message", "data"}
 // @Router       /user/createUser [post]
 func CreateUser(c *gin.Context) {
 	var (
 		code = http.StatusOK
 		msg  = "create success"
+		data *models.UserBasic
 		err  error
 	)
 	defer func() {
+		if code != http.StatusOK {
+			data = nil
+		}
 		c.JSON(code, gin.H{
 			"message": msg,
+			"data":    data,
 		})
 	}()
 
@@ -121,7 +129,7 @@ func CreateUser(c *gin.Context) {
 	}
 
 	salt := fmt.Sprintf("%d", time.Now().UnixNano())
-	user := &models.UserBasic{
+	data = &models.UserBasic{
 		Name:          input.Name,
 		Password:      utils.MakePassword(input.Password, salt),
 		Salt:          salt,
@@ -132,7 +140,7 @@ func CreateUser(c *gin.Context) {
 		LoginOutTime:  time.Now(),
 	}
 
-	if err = models.CreateUser(*user).Error; err != nil {
+	if err = models.CreateUser(*data).Error; err != nil {
 		code = http.StatusInternalServerError
 		msg = err.Error()
 	}
@@ -143,17 +151,19 @@ func CreateUser(c *gin.Context) {
 // @Description  Delete a user from database
 // @Tags         用户删除
 // @param        id formData int true "用户id"
-// @Success      200  {string}   json{"message"}
+// @Success      200  {string}   json{"message", "data"}
 // @Router       /user/deleteUser [post]
 func DeleteUser(c *gin.Context) {
 	var (
 		code = http.StatusOK
 		msg  = "delete success"
+		data *models.UserBasic
 		err  error
 	)
 	defer func() {
 		c.JSON(code, gin.H{
 			"message": msg,
+			"data":    data,
 		})
 	}()
 
@@ -172,9 +182,8 @@ func DeleteUser(c *gin.Context) {
 		return
 	}
 
-	user := models.UserBasic{}
-	user.ID = uint(input.ID)
-	if err = models.DeleteUser(user).Error; err != nil {
+	data = models.FindUserByID(input.ID)
+	if err = models.DeleteUser(*data).Error; err != nil {
 		code = http.StatusInternalServerError
 		msg = err.Error()
 	}
@@ -189,17 +198,22 @@ func DeleteUser(c *gin.Context) {
 // @param        password formData string false "密码"
 // @param        phone formData string false "电话号码"
 // @param        email formData string false "邮箱"
-// @Success      200  {string}   json{"message"}
+// @Success      200  {string}   json{"message", "data"}
 // @Router       /user/updateUser [post]
 func UpdateUser(c *gin.Context) {
 	var (
 		code = http.StatusOK
 		msg  = "update success"
+		data *models.UserBasic
 		err  error
 	)
 	defer func() {
+		if code != http.StatusOK {
+			data = nil
+		}
 		c.JSON(code, gin.H{
 			"message": msg,
+			"data":    data,
 		})
 	}()
 
@@ -228,14 +242,13 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 
-	user := &models.UserBasic{}
-	user.ID = uint(input.ID)
-	user.Name = input.Name
-	user.Password = input.Password
-	user.Phone = input.Phone
-	user.Email = input.Email
+	data = models.FindUserByID(input.ID)
+	data.Name = input.Name
+	data.Password = input.Password
+	data.Phone = input.Phone
+	data.Email = input.Email
 
-	if err = models.UpdateUser(*user).Error; err != nil {
+	if err = models.UpdateUser(*data).Error; err != nil {
 		code = http.StatusInternalServerError
 		msg = err.Error()
 	}

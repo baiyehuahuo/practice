@@ -54,7 +54,7 @@ paths:
         type: string
       responses:
         "200":
-          description: message"}
+          description: message", "data"}
           schema:
             type: string
       summary: Create a new user
@@ -71,7 +71,7 @@ paths:
         type: integer
       responses:
         "200":
-          description: message"}
+          description: message", "data"}
           schema:
             type: string
       summary: Delete a user
@@ -88,7 +88,7 @@ paths:
       summary: List Users
       tags:
       - 用户服务
-  /user/searchUserByNameAndPassword:
+  /user/loginUserByNameAndPassword:
     post:
       description: get a user messages from database
       parameters:
@@ -137,7 +137,7 @@ paths:
         type: string
       responses:
         "200":
-          description: message"}
+          description: message", "data"}
           schema:
             type: string
       summary: Update user message
