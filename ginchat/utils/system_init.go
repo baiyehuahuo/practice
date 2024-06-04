@@ -1,8 +1,10 @@
 package utils
 
 import (
+	"context"
 	"fmt"
-	"github.com/go-redis/redis"
+	"github.com/gin-gonic/gin"
+	redis "github.com/go-redis/redis/v8"
 	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -78,12 +80,42 @@ func InitRedis() {
 		PoolSize:     poolSize,
 		MinIdleConns: minPoolConn,
 	})
-	err := red.Ping().Err()
-	if err != nil {
+	if err := red.Ping(context.Background()).Err(); err != nil {
 		log.Fatal("connect redis failed.", err)
 	}
 }
 
 func GetRedis() *redis.Client {
 	return red
+}
+
+const (
+	PublishKey = "websocket"
+)
+
+// Publish send message to redis
+func Publish(ctx *gin.Context, channel string, msg string) error {
+	if err := red.Publish(ctx, channel, msg).Err(); err != nil {
+		return err
+	}
+	fmt.Println("Publish message to channel: ", channel, msg)
+	return nil
+}
+
+// Subscribe scribe redis message
+func Subscribe(ctx *gin.Context, channel string) (string, error) {
+	sub := red.Subscribe(ctx, channel)
+	defer func(sub *redis.PubSub) {
+		err := sub.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(sub)
+	msg, err := sub.ReceiveMessage(ctx)
+	if err != nil {
+		fmt.Println(err)
+		return "", err
+	}
+	fmt.Println("subscribe from channel: ", msg)
+	return msg.Payload, nil
 }
