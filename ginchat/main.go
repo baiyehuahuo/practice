@@ -32,7 +32,7 @@ func main() {
 	utils.InitConfig()
 	utils.InitMySQL()
 	utils.InitRedis()
-	//AutoMigrates()
+	AutoMigrates()
 
 	r := router.Router()
 	if err := r.Run(); err != nil {
@@ -41,8 +41,17 @@ func main() {
 }
 
 func AutoMigrates() {
-	err := models.AutoMigrateUserBasic()
-	if err != nil {
+	var err error
+	if err = models.AutoMigrateUserBasic(); err != nil {
+		log.Fatal(err)
+	}
+	if err = models.AutoMigrateMessage(); err != nil {
+		log.Fatal(err)
+	}
+	if err = models.AutoMigrateContact(); err != nil {
+		log.Fatal(err)
+	}
+	if err = models.AutoMigrateGroupBasic(); err != nil {
 		log.Fatal(err)
 	}
 }
