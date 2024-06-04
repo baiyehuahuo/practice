@@ -262,6 +262,10 @@ var upGrade = websocket.Upgrader{
 	},
 }
 
+func SendUserMsg(c *gin.Context) {
+	models.Chat(c.Writer, c.Request)
+}
+
 func SendMsg(c *gin.Context) {
 	ws, err := upGrade.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
