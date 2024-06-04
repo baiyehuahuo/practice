@@ -10,3 +10,9 @@ mysql:
   dont_support_rename_index: true
   dont_support_rename_column: true
   skip_initialize_with_version: false
+redis:
+  ip: 127.0.0.1
+  port: 6379
+  DB: 0
+  pool_size: 30
+  min_idle_conn: 30

@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"github.com/go-redis/redis"
 	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -23,7 +24,10 @@ func InitConfig() {
 	//fmt.Println(config)
 }
 
-var db *gorm.DB
+var (
+	db  *gorm.DB
+	red *redis.Client
+)
 
 func InitMySQL() {
 	newLogger := logger.New(
@@ -53,11 +57,33 @@ func InitMySQL() {
 		Logger: newLogger,
 	})
 	if err != nil {
-		log.Fatal("connect db failed.")
+		log.Fatal("connect db failed.", err)
 	}
-
 }
 
 func GetDB() *gorm.DB {
 	return db
+}
+
+func InitRedis() {
+	ip := viper.GetString("redis.ip")
+	port := viper.GetInt("redis.port")
+	dbCode := viper.GetInt("redis.db")
+	poolSize := viper.GetInt("redis.pool_size")
+	minPoolConn := viper.GetInt("redis.min_pool_conn")
+	red = redis.NewClient(&redis.Options{
+		Addr:         fmt.Sprintf("%s:%d", ip, port),
+		Password:     "",
+		DB:           dbCode,
+		PoolSize:     poolSize,
+		MinIdleConns: minPoolConn,
+	})
+	err := red.Ping().Err()
+	if err != nil {
+		log.Fatal("connect redis failed.", err)
+	}
+}
+
+func GetRedis() *redis.Client {
+	return red
 }
