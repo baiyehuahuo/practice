@@ -20,31 +20,34 @@ import (
 func GetUserList(c *gin.Context) {
 	var datas = models.GetUserList()
 	c.JSON(http.StatusOK, gin.H{
-		"code": http.StatusOK,
+		"code": 0,
 		"data": datas,
 	})
 }
 
-// LoginUserByNameAndPassword
+// FindUserByNameAndPassword
 // @Summary      Get User message by name and password
 // @Description  get a user messages from database
 // @Tags         用户服务
 // @param        name formData string true "用户名"
 // @param        password formData string true "密码"
-// @Success      200  {string}   json{"message", "data"}
-// @Router       /user/loginUserByNameAndPassword [post]
-func LoginUserByNameAndPassword(c *gin.Context) {
+// @Success      200  {string}   json{"code", "message", "data"}
+// @Router       /user/findUserByNameAndPassword [post]
+func FindUserByNameAndPassword(c *gin.Context) {
 	var (
-		code = http.StatusOK
-		msg  = "get user failed"
-		data *models.UserBasic
-		err  error
+		code    = http.StatusOK
+		msgCode = 0
+		msg     = "get user failed"
+		data    *models.UserBasic
+		err     error
 	)
 	defer func() {
 		if code != http.StatusOK {
+			msgCode = -1
 			data = nil
 		}
 		c.JSON(code, gin.H{
+			"code":    msgCode,
 			"message": msg,
 			"data":    data,
 		})
@@ -80,20 +83,23 @@ func LoginUserByNameAndPassword(c *gin.Context) {
 // @param        repassword formData string true "确认密码"
 // @param        email formData string false "邮箱"
 // @param        phone formData string false "电话号码"
-// @Success      200  {string}   json{"message", "data"}
+// @Success      200  {string}   json{"code", "message", "data"}
 // @Router       /user/createUser [post]
 func CreateUser(c *gin.Context) {
 	var (
-		code = http.StatusOK
-		msg  = "create success"
-		data *models.UserBasic
-		err  error
+		code    = http.StatusOK
+		msgCode = 0
+		msg     = "create success"
+		data    *models.UserBasic
+		err     error
 	)
 	defer func() {
 		if code != http.StatusOK {
+			msgCode = -1
 			data = nil
 		}
 		c.JSON(code, gin.H{
+			"code":    msgCode,
 			"message": msg,
 			"data":    data,
 		})
@@ -152,17 +158,23 @@ func CreateUser(c *gin.Context) {
 // @Description  Delete a user from database
 // @Tags         用户删除
 // @param        id formData int true "用户id"
-// @Success      200  {string}   json{"message", "data"}
+// @Success      200  {string}   json{"code", "message", "data"}
 // @Router       /user/deleteUser [post]
 func DeleteUser(c *gin.Context) {
 	var (
-		code = http.StatusOK
-		msg  = "delete success"
-		data *models.UserBasic
-		err  error
+		code    = http.StatusOK
+		msgCode = 0
+		msg     = "delete success"
+		data    *models.UserBasic
+		err     error
 	)
 	defer func() {
+		if code != http.StatusOK {
+			msgCode = -1
+			data = nil
+		}
 		c.JSON(code, gin.H{
+			"code":    msgCode,
 			"message": msg,
 			"data":    data,
 		})
@@ -199,20 +211,23 @@ func DeleteUser(c *gin.Context) {
 // @param        password formData string false "密码"
 // @param        phone formData string false "电话号码"
 // @param        email formData string false "邮箱"
-// @Success      200  {string}   json{"message", "data"}
+// @Success      200  {string}   json{"code", "message", "data"}
 // @Router       /user/updateUser [post]
 func UpdateUser(c *gin.Context) {
 	var (
-		code = http.StatusOK
-		msg  = "update success"
-		data *models.UserBasic
-		err  error
+		code    = http.StatusOK
+		msgCode = 0
+		msg     = "update success"
+		data    *models.UserBasic
+		err     error
 	)
 	defer func() {
 		if code != http.StatusOK {
+			msgCode = -1
 			data = nil
 		}
 		c.JSON(code, gin.H{
+			"code":    msgCode,
 			"message": msg,
 			"data":    data,
 		})

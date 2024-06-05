@@ -77,7 +77,7 @@ func Chat(w http.ResponseWriter, request *http.Request) {
 	go sendProc(node)
 	// 6. 接收逻辑
 	go recvProc(node)
-	sendMsg(uint(userIDInt), []byte("nihao"))
+	sendMsg(uint(userIDInt), []byte("欢迎加入新世界"))
 }
 
 func sendProc(node *Node) {
@@ -105,7 +105,7 @@ func recvProc(node *Node) {
 	}
 }
 
-var udpSendChan chan []byte = make(chan []byte, 1024)
+var udpSendChan = make(chan []byte, 1024)
 
 func broadMsg(data []byte) {
 	udpSendChan <- data

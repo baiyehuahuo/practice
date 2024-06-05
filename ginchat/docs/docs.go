@@ -39,6 +39,21 @@ const docTemplate = `{
                 }
             }
         },
+        "/toRegister": {
+            "get": {
+                "tags": [
+                    "注册"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/user/createUser": {
             "post": {
                 "description": "insert a user data into database",
@@ -83,7 +98,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "message\", \"data\"}",
+                        "description": "code\", \"message\", \"data\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -109,7 +124,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "message\", \"data\"}",
+                        "description": "code\", \"message\", \"data\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -117,24 +132,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/getUserList": {
-            "get": {
-                "description": "get all user messages in database",
-                "tags": [
-                    "用户服务"
-                ],
-                "summary": "List Users",
-                "responses": {
-                    "200": {
-                        "description": "code\", \"data\"}",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/user/loginUserByNameAndPassword": {
+        "/user/findUserByNameAndPassword": {
             "post": {
                 "description": "get a user messages from database",
                 "tags": [
@@ -159,7 +157,24 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "message\", \"data\"}",
+                        "description": "code\", \"message\", \"data\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/getUserList": {
+            "get": {
+                "description": "get all user messages in database",
+                "tags": [
+                    "用户服务"
+                ],
+                "summary": "List Users",
+                "responses": {
+                    "200": {
+                        "description": "code\", \"data\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -209,7 +224,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "message\", \"data\"}",
+                        "description": "code\", \"message\", \"data\"}",
                         "schema": {
                             "type": "string"
                         }
