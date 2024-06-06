@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!--js include-->
+    {{template "/chat/head.shtml"}}
+</head>
+<body>
+<header class="mui-bar mui-bar-nav">
+    <h1 class="mui-title">登录</h1>
+</header>
+{{.}}
+<div class="mui-content" id="pageapp">
+    <form id='login-form' class="mui-input-group">
+        <div class="mui-input-row">
+            <label>账号</label>
+            <input v-model="user.name" placeholder="请输入用户名" type="text" class="mui-input-clear mui-input">
+        </div>
+        <div class="mui-input-row">
+            <label>密码</label>
+            <input v-model="user.password" placeholder="请输入密码" type="password" class="mui-input-clear mui-input">
+        </div>
+        <div class="mui-input-row">
+            <label>请再次输入密码</label>
+            <input v-model="user.repassword" placeholder="请再次输入密码" type="password" class="mui-input-clear mui-input">
+        </div>
+    </form>
+    <div class="mui-content-padded">
+        <button @click="login" type="button" class="mui-btn mui-btn-block mui-btn-primary">注册</button>
+        <div class="link-area">
+            <a id='reg' href="/index">登录账号</a>
+            <span class="spliter">|</span> <a id='forgetPassword'>忘记密码</a>
+        </div>
+    </div>
+    <div class="mui-content-padded oauth-area">
+    </div>
+</div>
+
+<script>
+    var app = new Vue({
+        el: "#pageapp",
+        data: function () {
+            return {
+                user: {
+                    name: "",
+                    password: "",
+                    repassword: "",
+                }
+            }
+        },
+        methods: {
+            login: function () {
+                console.log("Login method invoked.");
+                console.log("User data:", this.user);
+                // Here you should include the actual implementation of util.post
+                // For demonstration purposes only
+                // 构造要发送的用户数据
+                let userData = {
+                    name: this.user.name,
+                    password: this.user.password,
+                    repassword: this.user.repassword,
+                };
+                console.log("User data:", userData)
+                fetch("/user/createUser", {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json' // 确保设置了正确的Content-Type
+                    },
+                    body: JSON.stringify(userData) // 将用户数据转换为JSON字符串
+                }).then(response => response.json()).then(res => {
+                    console.log("Response:", res);
+                    if (res.code !== 0) {
+                        mui.toast(res.message);
+                    } else {
+                        var url = "/index"
+                        location.href = url
+                        mui.toast("注册成功,即将跳转")
+                    }
+                })
+                    .catch(error => {
+                        console.error("Error during login:", error);
+                    });
+            }
+        }
+    })
+</script>
+</body>
+</html>
