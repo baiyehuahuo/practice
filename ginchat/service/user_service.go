@@ -274,27 +274,20 @@ func UpdateUser(c *gin.Context) {
 // @Summary      get user friends
 // @Description  get all user friends message from database
 // @Tags         从数据库中获取好友信息
-// @param        id query int true "用户id"
+// @param        id formData int true "用户id"
 // @Success      200  {string}   json{"code", "message", "data"}
-// @Router       /user/searchFriends [get]
+// @Router       /user/searchFriends [post]
 func SearchFriends(c *gin.Context) {
 	var (
-		code    = http.StatusOK
-		msgCode = 0
-		msg     = "search friends success"
-		data    []*models.UserBasic
-		err     error
+		code = http.StatusOK
+		data []*models.UserBasic
+		err  error
 	)
 	defer func() {
 		if code != http.StatusOK {
-			msgCode = -1
 			data = nil
 		}
-		c.JSON(code, gin.H{
-			"code":    msgCode,
-			"message": msg,
-			"data":    data,
-		})
+		utils.RespOKList(c.Writer, data, len(data))
 	}()
 
 	input := struct {
@@ -303,12 +296,10 @@ func SearchFriends(c *gin.Context) {
 
 	if err = c.ShouldBind(&input); err != nil {
 		code = http.StatusBadRequest
-		msg = err.Error()
 		return
 	}
 	if _, err = govalidator.ValidateStruct(input); err != nil {
 		code = http.StatusBadRequest
-		msg = err.Error()
 		return
 	}
 
