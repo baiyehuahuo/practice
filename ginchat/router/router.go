@@ -17,14 +17,15 @@ func Router() *gin.Engine {
 
 	// 静态资源
 	r.LoadHTMLGlob("views/**/*")
-	r.Static("/asset", "./asset")
+	r.Static("/asset", "asset")
 	r.StaticFile("/favicon.ico", "asset/images/favicon.ico")
 	//r.LoadHTMLGlob("views/index.html")
 
 	// 首页
 	r.GET("/", service.GetIndex)
 	r.GET("/index", service.GetIndex)
-	r.GET("/toRegister", service.Register)
+	r.GET("/toRegister", service.ToRegister)
+	r.GET("/toChat", service.ToChat)
 
 	// 用户模块
 	r.GET("/user/getUserList", service.GetUserList)
