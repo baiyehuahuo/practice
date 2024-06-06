@@ -9,7 +9,7 @@
 
         })
     }
-    function userId(){
+    function userID(){
         return parseInt(util.parseQuery("userId"))
     }
     var app=new Vue(
@@ -41,9 +41,9 @@
                     msglist:[],
 
                     msgcontext:{
-                        dstid:10,
+                        targetID:10,
                         cmd:10,
-                        userid:userId()
+                        userID:userID()
                     },
                     plugins:[
                         {
@@ -223,8 +223,8 @@
                         var data={
 
                         }
-                        data.ismine = userId()==msg.userid;
-                        //console.log(data.ismine,userId(),msg.userid)
+                        data.ismine = userID()==msg.userID;
+                        //console.log(data.ismine,userId(),msg.userID)
                         data.user = user;
                         data.msg = msg;
                         this.msglist = this.msglist.concat(data)
@@ -240,15 +240,17 @@
 
                     },
                     sendtxtmsg:function(txt){
-                        //{id:1,userid:2,dstid:3,cmd:10,media:1,content:"hello"}
+                        //{id:1,userID:2,targetID:3,cmd:10,media:1,content:"hello"}
                         var msg =this.createmsgcontext();
                         msg.media=1;
                         msg.content=txt;
+                        console.log(userInfo())
+                        console.log(msg)
                         this.showmsg(userInfo(),msg);
                         this.webSocket.send(JSON.stringify(msg))
                     },
                     sendpicmsg:function(picurl){
-                        //{id:1,userid:2,dstid:3,cmd:10,media:4,url:"http://www.baidu.com/a/log,jpg"}
+                        //{id:1,userID:2,targetID:3,cmd:10,media:4,url:"http://www.baidu.com/a/log,jpg"}
                         var msg =this.createmsgcontext();
                         msg.media=4;
                         msg.url=picurl;
@@ -256,7 +258,7 @@
                         this.webSocket.send(JSON.stringify(msg))
                     },
                     sendaudiomsg:function(url,num){
-                        //{id:1,userid:2,dstid:3,cmd:10,media:3,url:"http://www.a,com/dsturl.mp3",anount:40}
+                        //{id:1,userID:2,targetID:3,cmd:10,media:3,url:"http://www.a,com/dsturl.mp3",anount:40}
                         var msg =this.createmsgcontext();
                         msg.media=3;
                         msg.url=url;
@@ -266,26 +268,26 @@
                         this.webSocket.send(JSON.stringify(msg))
                     },
                     singlemsg:function(user){
-                        //console.log(user)
+                        console.log(user)
                         this.win = "single";
                         this.title = "和"+user.name+"聊天中";
-                        this.msgcontext.dstid = parseInt(user.id);
+                        this.msgcontext.targetID = parseInt(user.ID);
                         this.msgcontext.cmd = 10;
                     },
                     groupmsg:function(group){
 
                         this.win = "group";
                         this.title=group.name;
-                        this.msgcontext.dstid = parseInt(group.id);
+                        this.msgcontext.targetID = parseInt(group.id);
                         this.msgcontext.cmd = 11;
                     },
-                    loaduserinfo:function(userid,cb){
-                        userid = ""+userid;
-                        var userinfo = this.usermap[userid];
+                    loaduserinfo:function(userID,cb){
+                        userID = ""+userID;
+                        var userinfo = this.usermap[userID];
                         if(!userinfo){
-                            post("user/find",{id:parseInt(userid)},function(res){
+                            post("user/find",{id:parseInt(userID)},function(res){
                                 cb(res.data);
-                                this.usermap[userid] = res.data;
+                                this.usermap[userID] = res.data;
                             }.bind(this))
                         }else{
                             cb(userinfo)
@@ -293,13 +295,13 @@
                     },
                     onmessage:function(data){
 
-                        this.loaduserinfo(data.userid,function(user){
+                        this.loaduserinfo(data.userID,function(user){
                             this.showmsg(user,data)
                         }.bind(this))
 
                     },
                     initwebsocket:function(){
-                        var url="ws://"+location.host+"/user/sendUserMsg?userID="+userId()+"&token=" +util.parseQuery("token");
+                        var url="ws://"+location.host+"/user/sendUserMsg?userID="+userID()+"&token=" +util.parseQuery("token");
                         this.webSocket=new WebSocket(url);
                         //消息处理
                         this.webSocket.onmessage = function(evt){
@@ -327,7 +329,7 @@
                     },
                     loadfriends:function(){
                         var that = this;
-                        post("searchFriends",{id:userId()},function(res){
+                        post("searchFriends",{id:userID()},function(res){
                             that.friends = res.Rows ||[];
                             var usermap = this.usermap;
                             for(var i in res.Rows){
@@ -340,7 +342,7 @@
                     },
                     loadcommunitys:function(){
                         var that = this;
-                        post("contact/loadcommunity",{id:userId()},function(res){
+                        post("contact/loadcommunity",{id:userID()},function(res){
                             that.communitys = res.rows ||[];
                         })
                     },
@@ -363,7 +365,7 @@
                     },
                     _addfriend:function(dstobj){
                         var that = this
-                        post("contact/addfriend",{dstid:dstobj,userid: userId()},function(res){
+                        post("contact/addfriend",{targetID:dstobj,userID: userID()},function(res){
                             if(res.code==0){
                                 mui.toast("添加成功");
                                 that.loadfriends();
@@ -374,7 +376,7 @@
                     },
                     _joincomunity:function(dstobj){
                         var that = this;
-                        post("contact/joincommunity",{dstid:dstobj,"userid":userId()},function(res){
+                        post("contact/joincommunity",{targetID:dstobj,"userID":userID()},function(res){
                             if(res.code==0){
                                 mui.toast("添加成功");
 
@@ -401,7 +403,7 @@
                         document.querySelector('.mui-popup-input input').type = 'number';
                     },
                     quit:function () {
-                        sessionStorage.removeItem("userid")
+                        sessionStorage.removeItem("userID")
                         sessionStorage.removeItem("userinfo")
                         location.href="login.shtml"
                     }
