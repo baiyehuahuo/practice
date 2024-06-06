@@ -52,6 +52,12 @@ func FindUserByID(ID int) *UserBasic {
 	return &user
 }
 
+func FindUserByIDs(IDs []int) []*UserBasic {
+	var users []*UserBasic
+	utils.GetDB().Where("id in ?", IDs).Find(&users)
+	return users
+}
+
 func FindUserByName(name string) *UserBasic {
 	var user UserBasic
 	utils.GetDB().Where("name = ?", name).First(&user)

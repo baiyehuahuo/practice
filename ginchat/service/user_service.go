@@ -270,6 +270,51 @@ func UpdateUser(c *gin.Context) {
 	}
 }
 
+// SearchFriends
+// @Summary      get user friends
+// @Description  get all user friends message from database
+// @Tags         从数据库中获取好友信息
+// @param        id query int true "用户id"
+// @Success      200  {string}   json{"code", "message", "data"}
+// @Router       /user/searchFriends [get]
+func SearchFriends(c *gin.Context) {
+	var (
+		code    = http.StatusOK
+		msgCode = 0
+		msg     = "search friends success"
+		data    []*models.UserBasic
+		err     error
+	)
+	defer func() {
+		if code != http.StatusOK {
+			msgCode = -1
+			data = nil
+		}
+		c.JSON(code, gin.H{
+			"code":    msgCode,
+			"message": msg,
+			"data":    data,
+		})
+	}()
+
+	input := struct {
+		ID uint `form:"id" json:"id" binding:"required"`
+	}{}
+
+	if err = c.ShouldBind(&input); err != nil {
+		code = http.StatusBadRequest
+		msg = err.Error()
+		return
+	}
+	if _, err = govalidator.ValidateStruct(input); err != nil {
+		code = http.StatusBadRequest
+		msg = err.Error()
+		return
+	}
+
+	data = models.SearchFriends(input.ID)
+}
+
 // 防止跨域站点 伪造请求
 var upGrade = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {

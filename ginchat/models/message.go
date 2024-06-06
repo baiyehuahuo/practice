@@ -2,7 +2,6 @@ package models
 
 import (
 	"encoding/json"
-	"fmt"
 	"ginchat/utils"
 	"github.com/gorilla/websocket"
 	"gopkg.in/fatih/set.v0"
@@ -59,7 +58,7 @@ func Chat(w http.ResponseWriter, request *http.Request) {
 		},
 	}).Upgrade(w, request, nil)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 	// 2. 获取 conn
@@ -69,7 +68,8 @@ func Chat(w http.ResponseWriter, request *http.Request) {
 	rwLocker.Lock()
 	userIDInt, err := strconv.Atoi(userIDStr)
 	if err != nil {
-		log.Fatal(err)
+		log.Println("user id is empty", userIDStr)
+		return
 	}
 	clientMap[uint(userIDInt)] = node
 	rwLocker.Unlock()
@@ -101,7 +101,7 @@ func recvProc(node *Node) {
 			return
 		}
 		broadMsg(data)
-		fmt.Println("[ws] receive <<<<<< ", string(data))
+		log.Println("[ws] receive <<<<<< ", string(data))
 	}
 }
 
@@ -122,7 +122,7 @@ func init() {
 		for {
 			select {
 			case data := <-udpSendChan:
-				fmt.Println("[ws] udp write <<<<<< ", string(data))
+				log.Println("[ws] udp write <<<<<< ", string(data))
 				_, err = con.Write(data)
 				if err != nil {
 					log.Println(err)
@@ -145,7 +145,7 @@ func init() {
 				log.Println(err)
 				return
 			}
-			fmt.Println("[ws] udp receive <<<<<< ", string(buf[:length]))
+			log.Println("[ws] udp receive <<<<<< ", string(buf[:length]))
 			broadMsg(buf[:length])
 		}
 	}()
