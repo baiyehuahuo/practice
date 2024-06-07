@@ -27,6 +27,20 @@ func SearchFriends(userID uint) []*UserBasic {
 	return FindUserByIDs(friendIDs)
 }
 
+func AddFriend(userID uint, targetID uint) bool {
+	user := FindUserByID(int(userID))
+	target := FindUserByID(int(targetID))
+	if user.ID == 0 || target.ID == 0 {
+		return false
+	}
+	con := Contact{}
+	con.OwnerID = user.ID
+	con.TargetID = target.ID
+	con.Type = 1
+	utils.GetDB().Create(&con)
+	return true
+}
+
 func AutoMigrateContact() error {
 	return utils.GetDB().AutoMigrate(&Contact{})
 }

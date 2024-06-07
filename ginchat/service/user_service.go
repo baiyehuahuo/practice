@@ -7,6 +7,7 @@ import (
 	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"log"
 	"net/http"
 	"time"
 )
@@ -304,6 +305,35 @@ func SearchFriends(c *gin.Context) {
 	}
 
 	data = models.SearchFriends(input.ID)
+}
+
+// AddFriend
+// @Summary      add a new friend
+// @Tags         添加一个新朋友
+// @param        userID formData int true "用户 ID"
+// @param        targetID formData int true "好友 ID"
+// @Success      200  {string}   json{"code", "message", "data"}
+// @Router       /user/addFriend [post]
+func AddFriend(c *gin.Context) {
+	var err error
+	input := struct {
+		ID       uint `form:"userID" json:"userID" binding:"required"`
+		TargetID uint `form:"targetID" json:"targetID" binding:"required"`
+	}{}
+
+	if err = c.ShouldBind(&input); err != nil {
+		return
+	}
+	if _, err = govalidator.ValidateStruct(input); err != nil {
+		return
+	}
+
+	log.Println(input)
+	if models.AddFriend(uint(input.ID), uint(input.TargetID)) {
+		utils.RespOK(c.Writer, nil, "添加成功")
+	} else {
+		utils.RespFail(c.Writer, "添加失败")
+	}
 }
 
 // 防止跨域站点 伪造请求
