@@ -15,14 +15,14 @@ import (
 
 type Message struct {
 	gorm.Model
-	FromID  uint   // sender
-	ToID    uint   // receiver
-	Type    int    // message type (group or one-to-one)
-	Media   int    // message type (text or picture)
-	Content string // message content
-	Picture string
-	Desc    string
-	Amount  int // other
+	UserID   uint   `json:"userID"`   // sender
+	TargetID uint   `json:"targetID"` // receiver
+	Type     int    `json:"type"`     // message type (group or one-to-one)
+	Media    int    `json:"media"`    // message type (text or picture)
+	Content  string `json:"content"`  // message content
+	Picture  string `json:"picture"`
+	Desc     string `json:"desc"`
+	Amount   int    `json:"amount"`
 }
 
 func (msg *Message) TableName() string {
@@ -77,6 +77,7 @@ func Chat(w http.ResponseWriter, request *http.Request) {
 	go sendProc(node)
 	// 6. 接收逻辑
 	go recvProc(node)
+
 	sendMsg(uint(userIDInt), []byte("欢迎加入新世界"))
 }
 
@@ -84,6 +85,7 @@ func sendProc(node *Node) {
 	for {
 		select {
 		case data := <-node.DataQueue:
+			log.Println("[ws] sendMsg >>> msg: ", string(data))
 			err := node.Conn.WriteMessage(websocket.TextMessage, data)
 			if err != nil {
 				log.Println(err)
@@ -100,8 +102,8 @@ func recvProc(node *Node) {
 			log.Println(err)
 			return
 		}
-		broadMsg(data)
 		log.Println("[ws] receive <<<<<< ", string(data))
+		broadMsg(data)
 	}
 }
 
@@ -113,42 +115,49 @@ func broadMsg(data []byte) {
 
 func init() {
 	// 完成 UDP 数据发送协程
-	go func() {
-		con, err := net.DialUDP("udp", nil, &net.UDPAddr{IP: net.IP{192, 168, 0, 255}, Port: 3000})
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer con.Close()
-		for {
-			select {
-			case data := <-udpSendChan:
-				log.Println("[ws] udp write <<<<<< ", string(data))
-				_, err = con.Write(data)
-				if err != nil {
-					log.Println(err)
-					return
-				}
-			}
-		}
-	}()
+	go udpSendProc()
+
 	// 完成 UDP 数据接收协程
-	go func() {
-		con, err := net.ListenUDP("udp", &net.UDPAddr{IP: net.IPv4zero, Port: 3000})
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer con.Close()
-		for {
-			var buf = make([]byte, 512)
-			length, err := con.Read(buf)
+	go udpRecvProc()
+
+	log.Println("init goroutine")
+}
+
+func udpSendProc() {
+	con, err := net.DialUDP("udp", nil, &net.UDPAddr{IP: net.IP{192, 168, 3, 255}, Port: 3000})
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer con.Close()
+	for {
+		select {
+		case data := <-udpSendChan:
+			log.Println("[ws] udp write <<<<<< ", string(data))
+			_, err = con.Write(data)
 			if err != nil {
 				log.Println(err)
 				return
 			}
-			log.Println("[ws] udp receive <<<<<< ", string(buf[:length]))
-			broadMsg(buf[:length])
 		}
-	}()
+	}
+}
+
+func udpRecvProc() {
+	con, err := net.ListenUDP("udp", &net.UDPAddr{IP: net.IPv4zero, Port: 3000})
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer con.Close()
+	for {
+		var buf = make([]byte, 512)
+		length, err := con.Read(buf)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		log.Println("[ws] udp receive <<<<<< ", string(buf[:length]))
+		dispatch(buf[:length])
+	}
 }
 
 // 后端调度逻辑处理
@@ -159,10 +168,11 @@ func dispatch(data []byte) {
 		log.Println(err)
 		return
 	}
+	log.Println("get message: ", msg)
 	switch msg.Type {
 	case 1: // 私信
 		// sendMsg
-		sendMsg(msg.ToID, []byte(msg.Content))
+		sendMsg(msg.TargetID, []byte(msg.Content))
 	case 2: // 群发
 		// sendGroupMsg
 	case 3: // 广播
@@ -170,7 +180,6 @@ func dispatch(data []byte) {
 	case 4:
 		// exit
 	default:
-
 	}
 }
 

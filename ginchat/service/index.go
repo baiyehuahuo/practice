@@ -68,3 +68,7 @@ func ToChat(c *gin.Context) {
 		panic(err)
 	}
 }
+
+func Chat(c *gin.Context) {
+	models.Chat(c.Writer, c.Request)
+}
