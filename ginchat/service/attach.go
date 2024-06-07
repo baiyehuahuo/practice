@@ -14,6 +14,7 @@ import (
 
 func Upload(c *gin.Context) {
 	w, req := c.Writer, c.Request
+	log.Println(c.Request.URL.String())
 	srcFile, head, err := req.FormFile("file")
 	if err != nil {
 		log.Println("form file err:", err)
@@ -35,6 +36,7 @@ func Upload(c *gin.Context) {
 		utils.RespFail(w, err.Error())
 		return
 	}
+	defer dstFile.Close()
 	if _, err = io.Copy(dstFile, srcFile); err != nil {
 		log.Println("copy file err:", err)
 		utils.RespFail(w, err.Error())
