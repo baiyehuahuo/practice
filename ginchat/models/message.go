@@ -128,7 +128,12 @@ func udpSendProc() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer con.Close()
+	defer func(con *net.UDPConn) {
+		err = con.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}(con)
 	for {
 		select {
 		case data := <-udpSendChan:
@@ -147,7 +152,12 @@ func udpRecvProc() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer con.Close()
+	defer func(con *net.UDPConn) {
+		err = con.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}(con)
 	for {
 		var buf = make([]byte, 512)
 		length, err := con.Read(buf)

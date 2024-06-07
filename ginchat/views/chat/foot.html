@@ -32,7 +32,7 @@
                     title:"",
                     doutu:{
                         config:{
-                            "baseurl":"/asset/plugins/doutu/",
+                            "baseurl":"asset/plugins/doutu",
                             "pkgids":["mkgif","emoj"]
                         },
                         packages:[],
@@ -200,8 +200,8 @@
                         }
                         var that = this;
                         for(var id in res){
-                            //console.log("res[i]",id,res[id])
-                            post(res[id],{},function(pkginfo){
+                            console.log("res[i]", id, res[id])
+                            get(res[id],{},function(pkginfo){
                                 //console.log("post res[i]",id,res[id],pkginfo)
                                 var baseurl= config.baseurl+"/"+pkginfo.id+"/"
                                 for(var j in pkginfo.assets){
@@ -215,14 +215,13 @@
 
                             })
                         }
+                        console.log("load doutures: ", res)
                     },
                     showweixin:function(){
                         mui.alert("请加微信号jiepool-winlion索取")
                     } ,
                     showmsg:function(user,msg){
-                        var data={
-
-                        }
+                        var data={}
                         data.ismine = userID()==msg.userID;
                         //console.log(data.ismine,userId(),msg.userID)
                         data.user = user;
@@ -253,6 +252,7 @@
                     sendpicmsg:function(picurl){
                         //{id:1,userID:2,targetID:3,cmd:10,media:4,url:"http://www.baidu.com/a/log,jpg"}
                         var msg =this.createmsgcontext();
+                        msg.type=1
                         msg.media=4;
                         msg.url=picurl;
                         this.showmsg(userInfo(),msg)
