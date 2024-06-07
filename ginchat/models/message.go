@@ -172,7 +172,7 @@ func dispatch(data []byte) {
 	switch msg.Type {
 	case 1: // 私信
 		// sendMsg
-		sendMsg(msg.TargetID, []byte(msg.Content))
+		sendMsg(msg.TargetID, data)
 	case 2: // 群发
 		// sendGroupMsg
 	case 3: // 广播
