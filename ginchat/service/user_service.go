@@ -7,7 +7,6 @@ import (
 	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"log"
 	"net/http"
 	"time"
 )
@@ -328,7 +327,6 @@ func AddFriend(c *gin.Context) {
 		return
 	}
 
-	log.Println(input)
 	if models.AddFriend(uint(input.ID), uint(input.TargetID)) {
 		utils.RespOK(c.Writer, nil, "添加成功")
 	} else {
