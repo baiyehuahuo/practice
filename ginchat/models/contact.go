@@ -8,9 +8,9 @@ import (
 
 type Contact struct {
 	gorm.Model
-	OwnerID  uint // who's contact
-	TargetID uint // target user id
-	Type     int
+	OwnerID  uint   `gorm:"uniqueIndex:idt;type:int(11);NOT NULL;DEFAULT:0;"`
+	TargetID uint   `gorm:"uniqueIndex:idt;type:int(11);NOT NULL;DEFAULT:0;"`
+	Type     int    `gorm:"uniqueIndex:idt;type:int(11);NOT NULL;DEFAULT:0;"`
 	Desc     string `gorm:"type:varchar(255);"`
 }
 
@@ -33,6 +33,10 @@ func AddFriend(userID uint, targetID uint) bool {
 	target := FindUserByID(int(targetID))
 	if user.ID == 0 || target.ID == 0 {
 		log.Println("user ID or target ID is none:", user.ID, target.ID)
+		return false
+	}
+	if user.ID == target.ID {
+		log.Println("user ID equals to target ID :", user.ID, target.ID)
 		return false
 	}
 	db := utils.GetDB()
