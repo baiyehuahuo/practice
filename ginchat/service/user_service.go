@@ -334,6 +334,34 @@ func AddFriend(c *gin.Context) {
 	}
 }
 
+// CreateCommunity
+// @Summary      create a new community
+// @Tags         建群
+// @param        userID formData int true "用户 ID"
+// @param        name formData string true "群名"
+// @Success      200  {string}   json{"code", "message", "data"}
+// @Router       /user/createCommunity [post]
+func CreateCommunity(c *gin.Context) {
+	var err error
+	input := struct {
+		ID   uint   `form:"userID" json:"userID" binding:"required"`
+		Name string `form:"name" json:"name" binding:"required"`
+	}{}
+
+	if err = c.ShouldBind(&input); err != nil {
+		return
+	}
+	if _, err = govalidator.ValidateStruct(input); err != nil {
+		return
+	}
+
+	if err = models.CreateCommunity(input.Name, input.ID); err == nil {
+		utils.RespOK(c.Writer, nil, "创建成功")
+	} else {
+		utils.RespFail(c.Writer, "创建失败： "+err.Error())
+	}
+}
+
 // 防止跨域站点 伪造请求
 var upGrade = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {

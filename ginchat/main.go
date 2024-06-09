@@ -54,4 +54,7 @@ func AutoMigrates() {
 	if err = models.AutoMigrateGroupBasic(); err != nil {
 		log.Fatal(err)
 	}
+	if err = models.AutoMigrateCommunity(); err != nil {
+		log.Fatal(err)
+	}
 }
