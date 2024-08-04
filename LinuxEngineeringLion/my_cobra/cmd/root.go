@@ -19,11 +19,20 @@ var rootCmd = &cobra.Command{
 		fmt.Println("license: ", cmd.PersistentFlags().Lookup("license").Value)
 		fmt.Println("config: ", cmd.PersistentFlags().Lookup("config").Value)
 		fmt.Println("source: ", cmd.Flags().Lookup("source").Value)
+		fmt.Println("-------------------------------------")
+		fmt.Println("viper author: ", viper.GetString("author"))
+		fmt.Println("viper license: ", viper.GetString("license"))
 		fmt.Println("root cmd run end")
 	},
+	TraverseChildren: true, // 向子命令传递所有父命令解析的标志。
 }
 
 func Execute() {
+	rootCmd.AddCommand(initCmd)
+	rootCmd.AddCommand(cusArgsCheckCmd)
+	rootCmd.AddCommand(argsNoCheckCmd)
+	rootCmd.AddCommand(argsLimitCheckCmd)
+	rootCmd.AddCommand(argsValidCheckCmd)
 	rootCmd.Execute()
 }
 
@@ -42,6 +51,19 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "NO CONFIG", "配置文件")
 	// 本地标识
 	rootCmd.Flags().StringP("source", "s", "NO SOURCE", "")
+
+	if err := viper.BindPFlag("author", rootCmd.PersistentFlags().Lookup("author")); err != nil {
+		log.Println(err)
+		return
+	}
+
+	if err := viper.BindPFlag("license", rootCmd.PersistentFlags().Lookup("license")); err != nil {
+		log.Println(err)
+		return
+	}
+
+	viper.SetDefault("author", "范伟锋")
+	viper.SetDefault("license", "github")
 }
 
 func initConfig() {
